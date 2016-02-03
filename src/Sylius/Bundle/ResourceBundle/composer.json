@@ -38,7 +38,9 @@
     },
     "require-dev": {
         "phpspec/phpspec": "^2.4",
+        "phpunit/phpunit": "^4.8",
         "akeneo/phpspec-skip-example-extension": "~1.2",
+        "mongofill/mongofill": "dev-master",
         "doctrine/mongodb-odm": "^1.0",
         "doctrine/orm": "^2.4.8,<2.5",
         "jackalope/jackalope": "^1.2",
@@ -46,7 +48,8 @@
         "doctrine/phpcr-odm": "^1.3",
         "sylius/rbac-bundle": "0.17.*",
         "sylius/translation-bundle": "0.17.*",
-        "twig/twig": "~1.11"
+        "twig/twig": "~1.11",
+        "matthiasnoback/symfony-dependency-injection-test": "0.*"
     },
     "suggest": {
         "doctrine/mongodb-odm": "1.0.*@dev",
@@ -62,7 +65,10 @@
         "psr-4": { "Sylius\\Bundle\\ResourceBundle\\": "" }
     },
     "autoload-dev": {
-        "psr-4": { "Sylius\\Bundle\\ResourceBundle\\spec\\": "spec/" }
+        "psr-4": {
+            "Sylius\\Bundle\\ResourceBundle\\spec\\": "spec/",
+            "AppBundle\\": "Tests/Functional/src/AppBundle/"
+        }
     },
     "minimum-stability": "dev",
     "extra": {

@@ -1,0 +1,26 @@
+imports:
+    - { resource: api.yml }
+
+framework:
+    secret: "Three can keep a secret, if two of them are dead."
+    router:
+        resource: %kernel.root_dir%/routing.yml
+    session: ~
+    form: ~
+    templating: { engines: ['twig'] }
+
+twig:
+    debug: "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+
+doctrine:
+    dbal:
+        driver: pdo_sqlite
+        dbname: sylius
+        path: db.sql
+        charset: UTF8
+    orm:
+        auto_generate_proxy_classes: %kernel.debug%
+        entity_managers:
+            default:
+                auto_mapping: true
