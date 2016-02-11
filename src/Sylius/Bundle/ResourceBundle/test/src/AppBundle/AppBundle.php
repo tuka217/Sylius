@@ -9,6 +9,13 @@
  * file that was distributed with this source code.
  */
 
-$loader = require __DIR__.'/../../../vendor/autoload.php';
+namespace AppBundle;
 
-require __DIR__.'/AppKernel.php';
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+
+/**
+ * @author Anna Walasek <anna.walasek@lakion.com>
+ */
+class AppBundle extends Bundle
+{
+}

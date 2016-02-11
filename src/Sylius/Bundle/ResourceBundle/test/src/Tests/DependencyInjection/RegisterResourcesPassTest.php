@@ -11,7 +11,7 @@
 
 namespace Sylius\Bundle\ResourceBundle\Tests\DependencyInjection;
 
-use AppBundle\Entity\Book;
+use Lakion\ApiTestCase\Test\Entity\Book;
 use AppBundle\Form\Type\BookType;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\ContainerHasParameterConstraint;

@@ -4,5 +4,6 @@ bin/
 composer.phar
 composer.lock
 
-Tests/Functional/app/cache
-Tests/Functional/app/logs
+test/app/cache
+test/app/logs
+test/app/config/parameters.yml

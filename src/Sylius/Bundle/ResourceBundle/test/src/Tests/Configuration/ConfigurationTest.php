@@ -66,7 +66,7 @@ class ConfigurationTest extends AbstractExtensionConfigurationTestCase
             ]
         ];
 
-        $sources = [ __DIR__.'/app/api.yml' ];
+        $sources = [ __DIR__.'/../../../app/api.yml' ];
 
         $this->assertProcessedConfigurationEquals($expectedConfiguration, $sources);
     }

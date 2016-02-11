@@ -25,12 +25,15 @@ class AppKernel extends Kernel
         return [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new FOS\RestBundle\FOSRestBundle(),
-            new JMS\SerializerBundle\JMSSerializerBundle($this),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
             new Sylius\Bundle\ResourceBundle\SyliusResourceBundle(),
             new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
             new Bazinga\Bundle\HateoasBundle\BazingaHateoasBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
+            new AppBundle\AppBundle(),
+            new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle(),
+
         ];
     }
 
@@ -39,6 +42,19 @@ class AppKernel extends Kernel
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(__DIR__.'/config.yml');
+        $loader->load(__DIR__.'/config/config.yml');
+
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getContainerBaseClass()
+    {
+        if ('test' === $this->environment) {
+            return '\PSS\SymfonyMockerContainer\DependencyInjection\MockerContainer';
+        }
+
+        return parent::getContainerBaseClass();
     }
 }
