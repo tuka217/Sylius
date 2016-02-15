@@ -11,7 +11,7 @@
 
 namespace Sylius\Bundle\ResourceBundle\Tests\DependencyInjection;
 
-use Lakion\ApiTestCase\Test\Entity\Book;
+use AppBundle\Entity\Book;
 use AppBundle\Form\Type\BookType;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\SyliusResourceExtension;
@@ -26,16 +26,23 @@ class SyliusResourceExtensionTest extends AbstractExtensionTestCase
     /**
      * @test
      */
-    public function it_loads_configuration_for_new_entity()
+    public function it_registers_services_and_paremeters_for_resources()
     {
         $this->load(
-            ['resources' => ['app.book' => ['classes' => [
-                        'model' => Book::class,
-                        'form' => [
-                            'default' => BookType::class,
-                            'choice' => ResourceChoiceType::class,
-
-            ], ]]]]);
+            [
+                'resources' => [
+                    'app.book' => [
+                        'classes' => [
+                            'model' => Book::class,
+                            'form' => [
+                                'default' => BookType::class,
+                                'choice' => ResourceChoiceType::class,
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        );
 
         $this->assertContainerBuilderHasService('app.factory.book');
         $this->assertContainerBuilderHasService('app.form.type.book');

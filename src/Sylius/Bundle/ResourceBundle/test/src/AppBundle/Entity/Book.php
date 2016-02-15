@@ -11,10 +11,12 @@
 
 namespace AppBundle\Entity;
 
+use Sylius\Component\Resource\Model\ResourceInterface;
+
 /**
  * @author Anna Walasek <anna.walasek@lakion.com>
  */
-class Book
+class Book implements ResourceInterface
 {
     /**
      * @var int

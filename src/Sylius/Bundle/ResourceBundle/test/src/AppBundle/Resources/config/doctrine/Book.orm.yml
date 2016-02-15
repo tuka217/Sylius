@@ -1,6 +1,6 @@
 AppBundle\Entity\Book:
     type: entity
-    table: book
+    table: app_book
     id:
         id:
             type: integer

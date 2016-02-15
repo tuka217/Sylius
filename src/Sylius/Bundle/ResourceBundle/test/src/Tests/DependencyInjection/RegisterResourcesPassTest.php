@@ -11,7 +11,7 @@
 
 namespace Sylius\Bundle\ResourceBundle\Tests\DependencyInjection;
 
-use Lakion\ApiTestCase\Test\Entity\Book;
+use AppBundle\Entity\Book;
 use AppBundle\Form\Type\BookType;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\ContainerHasParameterConstraint;
@@ -42,7 +42,10 @@ class RegisterResourcesPassTest extends AbstractCompilerPassTestCase
                     'model' => Book::class,
                     'form' => [
                         'default' => BookType::class
-        ]]]]);
+                    ]
+                ]
+            ]
+        ]);
 
         $this->compile();
 
@@ -51,34 +54,42 @@ class RegisterResourcesPassTest extends AbstractCompilerPassTestCase
             'addFromAliasAndConfiguration',
             [
                 'app.book',
-                ['classes' => [
-                    'model' => Book::class,
-                    'form' => [
-                        'default' => BookType::class
-                ]]]]
+                [
+                    'classes' => [
+                        'model' => Book::class,
+                        'form' => [
+                            'default' => BookType::class
+                        ]
+                    ]
+                ]
+            ]
         );
     }
 
     /**
      * @test
      */
-    public function it_do_not_adds_method_call_if_resources_do_not_exist()
+    public function it_does_not_add_method_call_if_resources_do_not_exist()
     {
         $resourceRegistry = new Definition(Registry::class);
         $this->setDefinition('sylius.resource_registry', $resourceRegistry);
 
         $this->compile();
 
-        $this->assertContainerBuilderNotHasServiceDefinitionWithMethodCall(
+        $this->assertContainerBuilderDoesNotHaveServiceDefinitionWithMethodCall(
             'sylius.resource_registry',
             'addFromAliasAndConfiguration',
             [
                 'app.book',
-                ['classes' => [
-                    'model' => Book::class,
-                    'form' => [
-                        'default' => BookType::class
-                    ]]]]
+                [
+                    'classes' => [
+                        'model' => Book::class,
+                        'form' => [
+                            'default' => BookType::class
+                        ]
+                    ]
+                ]
+            ]
         );
 
         $this->assertContainerBuilderNotHasParameter('sylius.resources');
@@ -97,7 +108,7 @@ class RegisterResourcesPassTest extends AbstractCompilerPassTestCase
     * @param string $method
     * @param array $arguments
     */
-    private function assertContainerBuilderNotHasServiceDefinitionWithMethodCall($serviceId, $method, $arguments)
+    private function assertContainerBuilderDoesNotHaveServiceDefinitionWithMethodCall($serviceId, $method, $arguments)
     {
         $definition = $this->container->findDefinition($serviceId);
 

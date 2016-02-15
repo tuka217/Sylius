@@ -27,11 +27,10 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
  */
 class ConfigurationTest extends AbstractExtensionConfigurationTestCase
 {
-
     /**
      * @test
      */
-    public function it_load_extension_for_sylius_resources()
+    public function it_processes_resource_configuration()
     {
         $expectedConfiguration = [
             'resources' => [
@@ -49,7 +48,8 @@ class ConfigurationTest extends AbstractExtensionConfigurationTestCase
                     'validation_groups' => [
                         'default' => []
                     ],
-                ]],
+                ]
+            ],
             'settings' => [
                 'paginate' => null,
                 'limit' => null,
@@ -66,7 +66,7 @@ class ConfigurationTest extends AbstractExtensionConfigurationTestCase
             ]
         ];
 
-        $sources = [ __DIR__.'/../../../app/api.yml' ];
+        $sources = [__DIR__.'/../../../app/config/resources.yml'];
 
         $this->assertProcessedConfigurationEquals($expectedConfiguration, $sources);
     }

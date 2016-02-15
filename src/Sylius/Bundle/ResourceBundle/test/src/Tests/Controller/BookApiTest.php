@@ -22,14 +22,15 @@ class BookApiTest extends JsonApiTestCase
     /**
      * @test
      */
-    public function shouldCreateAProduct()
+    public function it_allows_creating_a_book()
     {
         $data =
-            <<<EOT
+<<<EOT
         {
             "title": "Star Wars"
         }
 EOT;
+
         $this->client->request('POST', '/books/', [], [], ['CONTENT_TYPE' => 'application/json'], $data);
         $response = $this->client->getResponse();
         $this->assertResponse($response, 'books/create_response', Response::HTTP_CREATED);
