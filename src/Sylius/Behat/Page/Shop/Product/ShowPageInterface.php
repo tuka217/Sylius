@@ -39,6 +39,14 @@ interface ShowPageInterface extends PageInterface
     public function addToCartWithVariant($variant);
 
     /**
+     * @param string $optionName
+     * @param string $optionValue
+     *
+     * @throws ElementNotFoundException
+     */
+    public function addToCartWithOption($optionName, $optionValue);
+
+    /**
      * @return string
      */
     public function getName();

@@ -54,6 +54,20 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
     /**
      * {@inheritdoc}
      */
+    public function addToCartWithOption($optionName, $optionValue)
+    {
+        $item = $this->getDocument()->find('css', sprintf('#product-variants tbody tr:contains("%s")', $optionName));
+        $select = $item->find('css', 'select');
+
+        $this->getDocument()->selectFieldOption($select->getAttribute('name'), $optionValue);
+
+        $this->getDocument()->pressButton('Add to cart');
+
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function visit($url)
     {
         $absoluteUrl = $this->makePathAbsolute($url);

@@ -12,6 +12,7 @@
 namespace Sylius\Behat\Page\Shop\Cart;
 
 use Sylius\Behat\Page\SymfonyPage;
+use Sylius\Component\Product\Model\ProductInterface;
 
 /**
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
@@ -152,6 +153,48 @@ class CartSummaryPage extends SymfonyPage implements CartSummaryPageInterface
         $quantityElement = $this->getElement('quantity', [ '%number%' => 0]);
 
         return $quantityElement->getValue();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSingleItemOnPage()
+    {
+        $items = $this->getElement('cart items')->findAll('css', 'tbody > tr');
+
+        return 1 === count($items);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isItemWithName($name)
+    {
+        $items = $this->getElement('cart items')->findAll('css', 'tbody  tr > td > div > a > strong');
+
+        foreach($items as $item) {
+            if($name === $item->getText()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isItemWithVariant($variantName)
+    {
+        $itemsVariants = $this->getElement('cart items')->findAll('css', 'tbody  tr > td > strong');
+
+        foreach($itemsVariants as $itemVariant) {
+            if($variantName === $itemVariant->getText()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

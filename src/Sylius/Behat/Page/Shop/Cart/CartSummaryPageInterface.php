@@ -12,6 +12,7 @@
 namespace Sylius\Behat\Page\Shop\Cart;
 
 use Sylius\Behat\Page\PageInterface;
+use Sylius\Component\Product\Model\ProductInterface;
 
 /**
  * @author Łukasz Chruściel <lukasz.chrusciel@lakion.com>
@@ -89,7 +90,26 @@ interface CartSummaryPageInterface extends PageInterface
     public function getUnitPrice();
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getQuantity();
+
+    /**
+     * @return bool
+     */
+    public function isSingleItemOnPage();
+
+    /**
+     * @param $name
+     *
+     * @return bool
+     */
+    public function isItemWithName($name);
+
+    /**
+     * @param $variantName
+     *
+     * @return bool
+     */
+    public function isItemWithVariant($variantName);
 }

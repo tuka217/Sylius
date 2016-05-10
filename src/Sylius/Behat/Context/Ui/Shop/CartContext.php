@@ -197,7 +197,10 @@ final class CartContext implements Context
     {
         $this->summaryPage->open();
 
-        expect($this->summaryPage->isItemDiscounted($product->getName()))->toBe(false);
+        Assert::false(
+            $this->summaryPage->isItemDiscounted($product->getName()),
+            'The price should not be decreased, but it is.'
+        );
     }
 
 
@@ -232,6 +235,7 @@ final class CartContext implements Context
      * @Given I added :variant variant of product :product to the cart
      * @When I add :variant variant of product :product to the cart
      * @When I have :variant variant of product :product in the cart
+     * @When /^I add "([^"]+)" variant of (this product) to the cart$/
      */
     public function iAddProductToTheCartSelectingVariant($variant, ProductInterface $product)
     {
@@ -304,6 +308,58 @@ final class CartContext implements Context
     }
 
     /**
+     * @Then I should be on my cart summary page
+     */
+    public function shouldBeOnMyCartSummaryPage()
+    {
+        Assert::true(
+            $this->summaryPage->isOpen(),
+            'Cart summary page should be open, but it does not.'
+        );
+    }
+
+    /**
+     * @Then I should be notified that the product has been successfully added
+     */
+    public function iShouldBeNotifiedThatItHasBeenSuccessfullyAdded()
+    {
+        $this->notificationChecker->checkNotification('Item has been added to cart.', NotificationType::success());
+    }
+
+    /**
+     * @Then I should see one item on my product list
+     */
+    public function iShouldSeeOneItemOnMyProductList()
+    {
+        Assert::true(
+            $this->summaryPage->isSingleItemOnPage(),
+            'There should be only one item on list, but it does not.'
+        );
+    }
+
+    /**
+     * @Then this item should have name :itemName
+     */
+    public function thisProductShouldHaveName($itemName)
+    {
+        Assert::true(
+            $this->summaryPage->isItemWithName($itemName),
+            sprintf('The product with name %s should appear on the list, but it does not.', $itemName)
+        );
+    }
+
+    /**
+     * @Then this item should have variant :variantName
+     */
+    public function thisItemShouldHaveVariant($variantName)
+    {
+        Assert::true(
+            $this->summaryPage->isItemWithVariant($variantName),
+            sprintf('The product with variant %s should appear on the list, but it does not.', $variantName)
+        );
+    }
+
+    /**
      * @param string $price
      *
      * @return int
@@ -311,5 +367,23 @@ final class CartContext implements Context
     private function getPriceFromString($price)
     {
         return (int) round((str_replace(['€', '£', '$'], '', $price) * 100), 2);
+    }
+
+    /**
+     * @When /^I add (this product) with ([^"]+) "([^"]+)" to the cart$/
+     */
+    public function iAddThisProductWithSizeToTheCart(ProductInterface $product, $optionName, $optionValue)
+    {
+        $this->productShowPage->open(['slug' => $product->getSlug()]);
+
+        $this->productShowPage->addToCartWithOption($optionName, $optionValue);
+    }
+
+    /**
+     * @Given this item should have size :size
+     */
+    public function thisItemShouldHaveSize($size)
+    {
+        throw new PendingException();
     }
 }
