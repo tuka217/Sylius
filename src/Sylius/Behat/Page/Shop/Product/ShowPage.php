@@ -11,6 +11,8 @@
 
 namespace Sylius\Behat\Page\Shop\Product;
 
+use Behat\Mink\Session;
+use Sylius\Behat\Service\Accessor\TableAccessorInterface;
 use Sylius\Component\Product\Model\OptionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -22,6 +24,23 @@ use Sylius\Behat\Page\SymfonyPage;
  */
 class ShowPage extends SymfonyPage implements ShowPageInterface
 {
+    /**
+     * @param Session $session
+     * @param array $parameters
+     * @param RouterInterface $router
+     * @param TableAccessorInterface $tableAccessor
+     */
+    public function __construct(
+        Session $session,
+        array $parameters,
+        RouterInterface $router,
+        TableAccessorInterface $tableAccessor
+    ) {
+        parent::__construct($session, $parameters, $router);
+
+        $this->tableAccessor = $tableAccessor;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -83,31 +102,12 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
     /**
      * {@inheritdoc}
      */
-    public function isAttributeOnPage($name)
+    public function isAttributeWithValueOnPage($attributeName, $attributeValue)
     {
-        $rows = $this->getElement('attributes')->findAll('css', 'tbody > tr > td[id=sylius_attribute_name]');
-        foreach($rows as $row) {
-            if($name === $row->getText()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isAttributeValueOnPage($name)
-    {
-        $rows = $this->getElement('attributes')->findAll('css', 'tbody > tr > td[id=sylius_attribute_value]');
-        foreach($rows as $row) {
-            if($name === $row->getText()) {
-                return true;
-            }
-        }
-
-        return false;
+        return (
+            $this->isAttributeWith($attributeName, 'tbody > tr > td[id=sylius_attribute_name]') &&
+            $this->isAttributeWith($attributeValue, 'tbody > tr > td[id=sylius_attribute_value]')
+        );
     }
 
     /**
@@ -127,5 +127,20 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
             'name' => '#sylius_product_name',
             'attributes' => '#product-attributes'
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    private function isAttributeWith($fieldValue, $selector)
+    {
+        $rows = $this->getElement('attributes')->findAll('css', $selector);
+        foreach($rows as $row) {
+            if($fieldValue === $row->getText()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
