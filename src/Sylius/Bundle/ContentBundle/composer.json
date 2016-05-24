@@ -20,10 +20,10 @@
         }
     ],
     "require": {
-        "php": "^5.5.9|^7.0",
+        "php": "^5.6|^7.0",
 
         "jackalope/jackalope-doctrine-dbal": "^1.1.2",
-        "sylius/resource-bundle": "^0.18",
+        "sylius/resource-bundle": "^0.19",
         "symfony/framework-bundle": "^2.7.7",
         "symfony-cmf/block-bundle": "~1.2",
         "symfony-cmf/content-bundle": "~1.2",
@@ -53,7 +53,7 @@
     ],
     "extra": {
         "branch-alias": {
-            "dev-master": "0.18-dev"
+            "dev-master": "0.19-dev"
         }
     }
 }

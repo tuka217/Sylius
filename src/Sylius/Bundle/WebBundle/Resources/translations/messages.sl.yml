@@ -85,8 +85,6 @@ sylius:
         no_shipments: Za to naročilo ni na voljo nobenih pošiljk
         no_shipping_charges: Stroški pošiljanja niso uporabljeni
         no_taxes: Davki niso uporabljeni
-        state:
-            order_confimed: Naročilo potrjeno
     order_item:
         quantity: Količina
         sellable: Izdelek
@@ -526,6 +524,7 @@ sylius:
         provinces: Province
         qty_max: Največja količina
         qty_min: Najmanjša količina
+        quantity: Količina
         recent_customers: Nedavni kupci
         recent_orders: Nedavna naročila
         recent_users: Nedavni uporabniki
@@ -673,6 +672,7 @@ sylius:
         users_list_of_all_users_registered_in_store: 'Uporabniki <small>Seznam vseh registriranih uporabnikov v trgovini</small>'
         values: Vrednosti
         variant_selection_method: Način izbora variante
+        variant: Variante
         variants: Variante
         view: Pogled
         view_more: Poglejte si več

@@ -16,7 +16,7 @@ use Sylius\Behat\NotificationType;
 use Sylius\Behat\Page\Admin\Promotion\IndexPageInterface;
 use Sylius\Behat\Page\Admin\Promotion\CreatePageInterface;
 use Sylius\Behat\Page\Admin\Promotion\UpdatePageInterface;
-use Sylius\Behat\Service\CurrentPageResolverInterface;
+use Sylius\Behat\Service\Resolver\CurrentPageResolverInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
 use Sylius\Component\Core\Model\PromotionInterface;
 use Sylius\Component\Core\Test\Services\SharedStorageInterface;
@@ -335,7 +335,7 @@ final class ManagingPromotionsContext implements Context
     /**
      * @Then the :promotion promotion should be applicable for the :channelName channel
      */
-    public function thePromotionShouldBeApplicatableForTheChannel(PromotionInterface $promotion, $channelName)
+    public function thePromotionShouldBeApplicableForTheChannel(PromotionInterface $promotion, $channelName)
     {
         $this->iWantToModifyAPromotion($promotion);
 

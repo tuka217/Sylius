@@ -85,8 +85,6 @@ sylius:
         no_shipments: هیچ ارسالی برای این سفارش وجود ندارد
         no_shipping_charges: هیچ هزینه ی ارسالی روی این سفارش اعمال نشده است
         no_taxes: هیچ مالیاتی روی این سفارش اعمال نشده است
-        state:
-            order_confimed: سفارس تایید شده
     order_item:
         quantity: تعداد
         sellable: محصول
@@ -555,6 +553,7 @@ sylius:
         provinces: استان ها
         qty_max: حداکثر حجم
         qty_min: حداقل حجم
+        quantity: تعداد
         rating: امتیازدهی
         recent_customers: مشتریان اخیر
         recent_orders: سفارش های اخیر
@@ -708,6 +707,7 @@ sylius:
         users_list_of_all_users_registered_in_store: 'کاربران <small> لیست همه کاربران ثبت شده در این فروشگاه </small>'
         values: مقادیر
         variant_selection_method: انتخاب نوع ترکیب بندی
+        variant: تنوع کالا
         variants: تنوع کالا
         view: مشاهده
         view_more: مشاهده بیشتر

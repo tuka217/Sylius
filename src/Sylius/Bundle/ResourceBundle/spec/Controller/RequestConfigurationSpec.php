@@ -72,6 +72,17 @@ class RequestConfigurationSpec extends ObjectBehavior
         $this->getDefaultTemplate('custom.html')->shouldReturn('SyliusAdminBundle:Product:custom.html.twig');
     }
 
+    function it_returns_default_template_names_for_a_directory_based_templates(MetadataInterface $metadata)
+    {
+        $metadata->getTemplatesNamespace()->willReturn('book/Backend');
+
+        $this->getDefaultTemplate('index.html')->shouldReturn('book/Backend/index.html.twig');
+        $this->getDefaultTemplate('show.html')->shouldReturn('book/Backend/show.html.twig');
+        $this->getDefaultTemplate('create.html')->shouldReturn('book/Backend/create.html.twig');
+        $this->getDefaultTemplate('update.html')->shouldReturn('book/Backend/update.html.twig');
+        $this->getDefaultTemplate('custom.html')->shouldReturn('book/Backend/custom.html.twig');
+    }
+
     function it_takes_the_custom_template_if_specified(MetadataInterface $metadata, Parameters $parameters)
     {
         $metadata->getTemplatesNamespace()->willReturn('SyliusAdminBundle:Product');
@@ -502,5 +513,19 @@ class RequestConfigurationSpec extends ObjectBehavior
             ->shouldThrow(\LogicException::class)
             ->during('getGrid')
         ;
+    }
+    
+    function it_can_have_state_machine_transition(Parameters $parameters)
+    {
+        $parameters->has('state_machine')->willReturn(false);
+        $this->hasStateMachine()->shouldReturn(false);
+       
+        $parameters->has('state_machine')->willReturn(true);
+        $parameters->get('state_machine[graph]', null, true)->willReturn('sylius_product_review_state');
+        $parameters->get('state_machine[transition]', null, true)->willReturn('approve');
+
+        $this->hasStateMachine()->shouldReturn(true);
+        $this->getStateMachineGraph()->shouldReturn('sylius_product_review_state');
+        $this->getStateMachineTransition()->shouldReturn('approve');
     }
 }

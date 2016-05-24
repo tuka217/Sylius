@@ -85,8 +85,6 @@ sylius:
         no_shipments: Aucune expédition pour cette commande
         no_shipping_charges: Aucun frais de port appliqué
         no_taxes: Pas de taxe appliquée
-        state:
-            order_confimed: Commande confirmée
     order_item:
         quantity: Quantité
         sellable: Produit
@@ -557,6 +555,7 @@ sylius:
         provinces: Province
         qty_max: Qté max
         qty_min: Qté min
+        quantity: Quantité
         rating: Note
         recent_customers: Clients récents
         recent_orders: Commandes récentes
@@ -710,6 +709,7 @@ sylius:
         users_list_of_all_users_registered_in_store: Utilisateurs
         values: Valeurs
         variant_selection_method: Méthode de sélection de variante
+        variant: Variantes
         variants: Variantes
         view: Vue
         view_more: En savoir plus

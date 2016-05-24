@@ -85,8 +85,6 @@ sylius:
         no_shipments: Pre túto objednávku neexistujú žiadne zásielky
         no_shipping_charges: Nie sú uplatnené žiadne poplatky za dopravu
         no_taxes: Nie sú uplatnené žiadne dane
-        state:
-            order_confimed: Objednávka potvrdená
     order_item:
         quantity: Množstvo
         sellable: Produkt
@@ -284,6 +282,7 @@ sylius:
         customer_not_notified: Upozornenie nebolo poslané
         customer_notified: Upozornenie poslané
         customer_orders: Objednávky zákazníka
+        customer_since: Zákazník od
         customers: Zákazníci
         customers_list_of_all_customers_in_store: 'Zákazníci, <small>zoznam všetkých zakazníkov v obchode</small>'
         customize_default_metadata: Úprava predvolených metadáta
@@ -556,6 +555,7 @@ sylius:
         provinces: Provincie
         qty_max: Max. množstvo
         qty_min: Min. množstvo
+        quantity: Množstvo
         rating: Hodnotenie
         recent_customers: Najnovši zákaznici
         recent_orders: Posledné objednávky
@@ -709,6 +709,7 @@ sylius:
         users_list_of_all_users_registered_in_store: 'Používatelia <small>Zoznam všetkých používateľov zaregistrovaných v obchode</small>'
         values: Hodnoty
         variant_selection_method: Spôsob výberu produktového variantu
+        variant: Varianty
         variants: Varianty
         view: Zobraziť
         view_more: Zobraziť viac

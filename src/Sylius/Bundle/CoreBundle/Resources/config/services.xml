@@ -40,6 +40,8 @@
         <parameter key="sylius.order_processing.prices_recalculator.class">Sylius\Component\Core\OrderProcessing\PricesRecalculator</parameter>
         <parameter key="sylius.order_processing.order_recalculator.class">Sylius\Component\Core\OrderProcessing\OrderRecalculator</parameter>
 
+        <parameter key="sylius.adjustments_remover.class">Sylius\Component\Core\Remover\AdjustmentsRemover</parameter>
+
         <parameter key="sylius.taxation.order_shipment_taxes_applicator.class">Sylius\Component\Core\Taxation\Applicator\OrderShipmentTaxesApplicator</parameter>
         <parameter key="sylius.taxation.order_items_taxes_applicator.class">Sylius\Component\Core\Taxation\Applicator\OrderItemsTaxesApplicator</parameter>
         <parameter key="sylius.taxation.order_item_units_taxes_applicator.class">Sylius\Component\Core\Taxation\Applicator\OrderItemUnitsTaxesApplicator</parameter>
@@ -88,6 +90,8 @@
         <parameter key="sylius.promotion_filter.taxon.class">Sylius\Component\Core\Promotion\Filter\TaxonFilter</parameter>
         <parameter key="sylius.promotion_filter.price_range.class">Sylius\Component\Core\Promotion\Filter\PriceRangeFilter</parameter>
 
+        <parameter key="sylius.promotion.units_promotion_adjustments_applicator.class">Sylius\Component\Core\Promotion\Applicator\UnitsPromotionAdjustmentsApplicator</parameter>
+
         <parameter key="sylius.order.purger.class">Sylius\Bundle\CoreBundle\Purger\ExpiredOrdersPurger</parameter>
         <parameter key="sylius.order.releaser.class">Sylius\Bundle\CoreBundle\Releaser\ExpiredOrdersReleaser</parameter>
         <parameter key="sylius.image_uploader.class">Sylius\Component\Core\Uploader\ImageUploader</parameter>
@@ -115,7 +119,9 @@
         <parameter key="sylius.purger.orm_purger.class">Sylius\Bundle\CoreBundle\Purger\ORMPurger</parameter>
 
         <parameter key="sylius.provider.default_zone_provider.class">Sylius\Bundle\CoreBundle\Provider\DefaultTaxZoneProvider</parameter>
+
         <parameter key="sylius.integer_distributor.class">Sylius\Component\Core\Distributor\IntegerDistributor</parameter>
+        <parameter key="sylius.proportional_integer_distributor.class">Sylius\Component\Core\Distributor\ProportionalIntegerDistributor</parameter>
 
         <!-- Data fetchers -->
         <parameter key="sylius.form.type.data_fetcher.number_of_orders.class">Sylius\Bundle\CoreBundle\Form\Type\DataFetcher\NumberOfOrdersType</parameter>
@@ -128,6 +134,9 @@
         <parameter key="sylius.based_on_id_invoice_number_generator.class" >Sylius\Component\Core\Payment\IdBasedInvoiceNumberGenerator</parameter>
 
         <parameter key="sylius.form.type.product_review.class">Sylius\Bundle\CoreBundle\Form\Type\ProductReviewType</parameter>
+
+        <!-- Should be deleted after old backend deletion -->
+        <parameter key="sylius.form.type.product_legacy.class">Sylius\Bundle\CoreBundle\Form\Type\LegacyProductType</parameter>
     </parameters>
 
     <services>
@@ -223,6 +232,7 @@
             </argument>
         </service>
         <service id="sylius.integer_distributor" class="%sylius.integer_distributor.class%" />
+        <service id="sylius.proportional_integer_distributor" class="%sylius.proportional_integer_distributor.class%" />
 
         <service id="sylius.invoice_number_generator" class="%sylius.based_on_id_invoice_number_generator.class%" />
 
@@ -309,6 +319,7 @@
             <argument type="service" id="sylius.price_calculator" />
         </service>
         <service id="sylius.order_processing.order_recalculator" class="%sylius.order_processing.order_recalculator.class%">
+            <argument type="service" id="sylius.adjustments_remover" />
             <argument type="service" id="sylius.taxation.order_taxes_processor" />
             <argument type="service" id="sylius.order_processing.prices_recalculator" />
             <argument type="service" id="sylius.promotion_processor" />
@@ -326,6 +337,8 @@
             <argument type="service" id="sylius.repository.order" />
             <argument type="service" id="sm.factory" />
         </service>
+
+        <service id="sylius.adjustments_remover" class="%sylius.adjustments_remover.class%" />
 
         <!-- listeners -->
         <service id="sylius.listener.cart_blamer" class="%sylius.listener.cart_blamer.class%">
@@ -481,8 +494,9 @@
             <tag name="sylius.promotion_rule_checker" type="total_of_items_from_taxon" label="Total of items from taxon" />
         </service>
         <service id="sylius.promotion_action.fixed_discount" class="%sylius.promotion_action.fixed_discount.class%">
-            <argument type="service" id="sylius.factory.adjustment" />
             <argument type="service" id="sylius.originator" />
+            <argument type="service" id="sylius.proportional_integer_distributor" />
+            <argument type="service" id="sylius.promotion.units_promotion_adjustments_applicator" />
             <tag name="sylius.promotion_action" type="order_fixed_discount" label="Order fixed discount" />
         </service>
         <service id="sylius.promotion_action.item_fixed_discount" class="%sylius.promotion_action.item_fixed_discount.class%">
@@ -493,8 +507,9 @@
             <tag name="sylius.promotion_action" type="item_fixed_discount" label="Item fixed discount" />
         </service>
         <service id="sylius.promotion_action.percentage_discount" class="%sylius.promotion_action.percentage_discount.class%">
-            <argument type="service" id="sylius.factory.adjustment" />
             <argument type="service" id="sylius.originator" />
+            <argument type="service" id="sylius.integer_distributor" />
+            <argument type="service" id="sylius.promotion.units_promotion_adjustments_applicator" />
             <tag name="sylius.promotion_action" type="order_percentage_discount" label="Order percentage discount" />
         </service>
         <service id="sylius.promotion_action.item_percentage_discount" class="%sylius.promotion_action.item_percentage_discount.class%">
@@ -524,6 +539,12 @@
 
         <service id="sylius.promotion_filter.taxon" class="%sylius.promotion_filter.taxon.class%" />
         <service id="sylius.promotion_filter.price_range" class="%sylius.promotion_filter.price_range.class%" />
+
+        <service id="sylius.promotion.units_promotion_adjustments_applicator" class="%sylius.promotion.units_promotion_adjustments_applicator.class%">
+            <argument type="service" id="sylius.factory.adjustment" />
+            <argument type="service" id="sylius.integer_distributor" />
+            <argument type="service" id="sylius.originator" />
+        </service>
 
         <service id="sylius.price_calculator.channel_based" class="%sylius.price_calculator.channel_based.class%" lazy="true">
             <argument type="service" id="sylius.context.channel" />

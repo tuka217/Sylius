@@ -98,7 +98,13 @@ class RequestConfiguration
      */
     public function getDefaultTemplate($name)
     {
-        return sprintf('%s:%s.%s', $this->metadata->getTemplatesNamespace() ?: ':', $name, 'twig');
+        $templatesNamespace = $this->metadata->getTemplatesNamespace();
+
+        if (false !== strpos($templatesNamespace, ':')) {
+            return sprintf('%s:%s.%s', $templatesNamespace ?: ':', $name, 'twig');
+        }
+
+        return sprintf('%s/%s.%s', $templatesNamespace, $name, 'twig');
     }
 
     /**
@@ -556,5 +562,29 @@ class RequestConfiguration
         }
 
         return $this->parameters->get('grid');
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasStateMachine()
+    {
+        return $this->parameters->has('state_machine');
+    }
+
+    /**
+     * @return string
+     */
+    public function getStateMachineGraph()
+    {
+        return $this->parameters->get('state_machine[graph]', null, true);
+    }
+
+    /**
+     * @return string
+     */
+    public function getStateMachineTransition()
+    {
+        return $this->parameters->get('state_machine[transition]', null, true);
     }
 }

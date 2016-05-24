@@ -15,7 +15,7 @@ use Behat\Behat\Context\Context;
 use Sylius\Behat\Page\Admin\Crud\IndexPageInterface;
 use Sylius\Behat\Page\Admin\ProductOption\CreatePageInterface;
 use Sylius\Behat\Page\Admin\ProductOption\UpdatePageInterface;
-use Sylius\Behat\Service\CurrentPageResolverInterface;
+use Sylius\Behat\Service\Resolver\CurrentPageResolverInterface;
 use Sylius\Component\Product\Model\OptionInterface;
 use Webmozart\Assert\Assert;
 
@@ -205,7 +205,7 @@ final class ManagingProductOptionsContext implements Context
     /**
      * @Then the product option with :element :value should not be added
      */
-    public function theProductoptionWithElementValueShouldNotBeAdded($element, $value)
+    public function theProductOptionWithElementValueShouldNotBeAdded($element, $value)
     {
         $this->iBrowseProductOptions();
 

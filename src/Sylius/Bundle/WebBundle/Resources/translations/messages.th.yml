@@ -85,8 +85,6 @@ sylius:
         no_shipments: ไม่มีการจัดส่งสำหรับใบสั่งซื้อนี้
         no_shipping_charges: ไม่มีค่าธรรมเนียมการจัดส่ง
         no_taxes: ไม่รวมภาษี
-        state:
-            order_confimed: ยืนยันการสั่งซื้อ
     order_item:
         quantity: ปริมาณ
         sellable: สินค้า
@@ -556,6 +554,7 @@ sylius:
         provinces: จังหวัด
         qty_max: ปริมาณสูงสุด
         qty_min: ปริมาณต่ำสุด
+        quantity: จำนวน
         rating: การจัดอันดับ
         recent_customers: ลูกค้าล่าสุด
         recent_orders: ใบสั่งซื้อล่าสุด
@@ -709,6 +708,7 @@ sylius:
         users_list_of_all_users_registered_in_store: 'ผู้ใช้ <small>รายชื่อผู้ใช้ทั้งหมด</small>'
         values: ค่า
         variant_selection_method: Variant selection method
+        variant: ตัวแปร
         variants: ตัวแปร
         view: มุมมอง
         view_more: ดูเพิ่มเติม
