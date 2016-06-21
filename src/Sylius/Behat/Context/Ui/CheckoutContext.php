@@ -461,6 +461,7 @@ final class CheckoutContext implements Context
         Assert::true(
             $this->addressingPage->canSignIn(),
             'I should be able to login, but I am not.'
+        );
     }
 
     /**
@@ -482,10 +483,11 @@ final class CheckoutContext implements Context
         Assert::true(
             $this->addressingPage->checkInvalidCredentialsValidation(),
             'I should see validation error, but I do not.'
+        );
     }
 
     /**
-     * @Then /^I should see (this shipping address) as shipping address$/
+     * @Then /^I should see (this shipping address) on order summary$/
      */
     public function iShouldSeeThisShippingAddressAsShippingAddress(AddressInterface $address)
     {
@@ -496,7 +498,7 @@ final class CheckoutContext implements Context
     }
 
     /**
-     * @Then /^I should see (this billing address) as billing address$/
+     * @Then /^I should see (this billing address) on order summary$/
      */
     public function iShouldSeeThisBillingAddressAsBillingAddress(AddressInterface $address)
     {
