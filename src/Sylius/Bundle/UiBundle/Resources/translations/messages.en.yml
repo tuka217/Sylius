@@ -176,6 +176,7 @@ sylius:
         pay: Pay
         pay_again: In order to try again please click Pay.
         per_customer_usage_limit: Per customer usage limit
+        place_order: Place order
         placed_an_order: You have successfully placed na order.
         powered_by: Powered by
         price: Price
