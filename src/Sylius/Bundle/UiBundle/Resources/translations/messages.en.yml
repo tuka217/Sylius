@@ -173,6 +173,7 @@ sylius:
         order_history: Order history
         order_total: Order total
         partially_shipped: Partially shipped
+        payment_ready_to_pay: Your payment is ready to pay
         pay: Pay
         pay_again: In order to try again please click Pay.
         per_customer_usage_limit: Per customer usage limit
