@@ -12,12 +12,9 @@
 namespace Sylius\Behat\Context\Ui;
 
 use Behat\Behat\Context\Context;
-use Sylius\Behat\Page\Shop\Checkout\CanceledPaymentPageInterface;
 use Sylius\Behat\Page\Shop\Checkout\FinalizeStepInterface;
 use Sylius\Behat\Page\External\PaypalExpressCheckoutPageInterface;
-use Sylius\Behat\Page\Shop\Checkout\SummaryPageInterface;
 use Sylius\Behat\Page\Shop\Checkout\ThankYouPageInterface;
-use Sylius\Behat\Service\Mocker\PaypalApiMocker;
 use Sylius\Behat\Service\Mocker\PaypalApiMockerInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Core\Test\Services\SharedStorageInterface;
@@ -62,7 +59,7 @@ final class PaypalContext implements Context
      * @param PaypalExpressCheckoutPageInterface $paypalExpressCheckoutPage
      * @param ThankYouPageInterface $thankYouPage
      * @param FinalizeStepInterface $checkoutFinalizeStep
-     * @param PaypalApiMocker $paypalApiMocker
+     * @param PaypalApiMockerInterface $paypalApiMocker
      * @param OrderRepositoryInterface $orderRepository
      */
     public function __construct(
@@ -70,7 +67,7 @@ final class PaypalContext implements Context
         PaypalExpressCheckoutPageInterface $paypalExpressCheckoutPage,
         ThankYouPageInterface $thankYouPage,
         FinalizeStepInterface $checkoutFinalizeStep,
-        PaypalApiMocker $paypalApiMocker,
+        PaypalApiMockerInterface $paypalApiMocker,
         OrderRepositoryInterface $orderRepository
     ) {
         $this->sharedStorage = $sharedStorage;
@@ -99,7 +96,7 @@ final class PaypalContext implements Context
     }
 
     /**
-     * @Given I cancel my PayPal payment
+     * @Given /^I(?: have|) cancel(?:ed|) (?:|my )PayPal payment$/
      */
     public function iCancelMyPaypalPayment()
     {
@@ -107,7 +104,7 @@ final class PaypalContext implements Context
     }
 
     /**
-     * @When /^I try to pay(?: again|)$/
+     * @When /^I tr(?:ied|y) to pay(?: again|)$/
      */
     public function iTryToPayAgain()
     {

@@ -20,7 +20,7 @@ use Sylius\Behat\Service\ResponseLoaderInterface;
 /**
  * @author Arkadiusz Krakowiak <arkadiusz.krakowiak@lakion.com>
  */
-class PaypalApiMocker implements PaypalApiMockerInterface
+final class PaypalApiMocker implements PaypalApiMockerInterface
 {
     /**
      * @var MockerInterface

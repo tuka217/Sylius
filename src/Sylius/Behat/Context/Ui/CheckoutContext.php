@@ -472,7 +472,7 @@ final class CheckoutContext implements Context
     }
 
     /**
-     * @When I confirm my order
+     * @When /^I(?: have|) confirm(?:ed|) my order$/
      */
     public function iConfirmMyOrder()
     {
@@ -502,7 +502,7 @@ final class CheckoutContext implements Context
     {
         Assert::true(
             $this->thankYouPage->hasThankYouMessage(),
-            'I should see thank you message, but i do not'
+            'I should see thank you message, but I do not'
         );
     }
 
@@ -822,7 +822,7 @@ final class CheckoutContext implements Context
     {
         Assert::true(
             $this->thankYouPage->isOpen(),
-            'I should be on thank you page, but i am not.'
+            'I should be on thank you page, but I am not.'
         );
 
         Assert::true(
