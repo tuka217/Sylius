@@ -16,39 +16,41 @@ Feature: Paying with paypal during checkout
         Given I am logged in as "john@example.com"
         And I added product "PHP T-Shirt" to the cart
         And I proceed selecting "PayPal Express Checkout" payment method
-        And I confirm my order with paypal payment
-        When I sign in to PayPal and pay successfully
+        When I confirm my order
+        And I try to pay
+        And I sign in to PayPal and pay successfully
         Then I should be redirected back to the thank you page
 
     @ui
     Scenario: Cancelling the payment
         Given I am logged in as "john@example.com"
         And I added product "PHP T-Shirt" to the cart
-        When I proceed selecting "PayPal Express Checkout" payment method
-        And I confirm my order with paypal payment
+        And I proceed selecting "PayPal Express Checkout" payment method
+        When I confirm my order
+        And I try to pay
         And I cancel my PayPal payment
-        Then I should be redirected back to the canceled payment page
+        Then I should be able to pay again
 
-    @todo
+    @ui
     Scenario: Retrying the payment with success
         Given I am logged in as "john@example.com"
         And I added product "PHP T-Shirt" to the cart
         And I proceed selecting "PayPal Express Checkout" payment method
-        And I confirm my order with paypal payment
-        But I cancel my PayPal payment
-        And I should be redirected back to the canceled payment page
+        And I have confirmed my order
+        And I tried to pay
+        But I have canceled PayPal payment
         When I try to pay again
         And I sign in to PayPal and pay successfully
         Then I should be redirected back to the thank you page
 
-    @todo
+    @ui
     Scenario: Retrying the payment and failing
         Given I am logged in as "john@example.com"
         And I added product "PHP T-Shirt" to the cart
         And I proceed selecting "PayPal Express Checkout" payment method
-        And I confirm my order with paypal payment
-        But I cancel my PayPal payment
-        And I should be redirected back to the canceled payment page
+        And I have confirmed my order
+        And I tried to pay
+        But I have canceled PayPal payment
         When I try to pay again
         And I cancel my PayPal payment
-        And I should be redirected back to the canceled payment page
+        And I should be able to pay again
