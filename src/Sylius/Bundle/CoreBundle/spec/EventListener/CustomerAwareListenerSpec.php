@@ -15,9 +15,9 @@ use PhpSpec\ObjectBehavior;
 use Sylius\Bundle\CoreBundle\EventListener\CustomerAwareListener;
 use Sylius\Bundle\UserBundle\EventListener\CustomerAwareListener as BaseCustomerAwareListener;
 use Sylius\Component\Cart\Event\CartEvent;
-use Sylius\Component\User\Context\CustomerContextInterface;
-use Sylius\Component\User\Model\CustomerAwareInterface;
-use Sylius\Component\User\Model\CustomerInterface;
+use Sylius\Component\Customer\Context\CustomerContextInterface;
+use Sylius\Component\Customer\Model\CustomerAwareInterface;
+use Sylius\Component\Customer\Model\CustomerInterface;
 
 /**
  * @author Michał Marcinkowski <michal.marcinkowski@lakion.com>
