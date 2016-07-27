@@ -14,7 +14,7 @@ namespace Sylius\Behat\Context\Domain;
 use Behat\Behat\Context\Context;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Sylius\Component\Core\Model\PromotionInterface;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Promotion\Model\CouponInterface;
 use Sylius\Component\Promotion\Repository\CouponRepositoryInterface;
 use Webmozart\Assert\Assert;
@@ -85,9 +85,7 @@ final class PromotionCouponContext implements Context
      */
     public function iShouldBeNotifiedOfFailure()
     {
-        expect($this->sharedStorage->get('last_exception'))
-            ->toBeAnInstanceOf(ForeignKeyConstraintViolationException::class)
-        ;
+        Assert::isInstanceOf($this->sharedStorage->get('last_exception'), ForeignKeyConstraintViolationException::class);
     }
 
     /**
@@ -99,21 +97,5 @@ final class PromotionCouponContext implements Context
             $this->couponRepository->find($coupon->getId()),
             sprintf('The coupon with id %s should exist', $coupon->getId())
         );
-    }
-
-    /**
-     * @Then I should be notified that it has been successfully deleted
-     */
-    public function iShouldBeNotifiedOfSuccess()
-    {
-        // Not applicable in the domain scope
-    }
-
-    /**
-     * @Given I am logged in as an administrator
-     */
-    public function iAmLoggedInAsAnAdministrator()
-    {
-        // Not applicable in the domain scope
     }
 }

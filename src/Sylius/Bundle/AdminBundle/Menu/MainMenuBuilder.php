@@ -29,9 +29,10 @@ final class MainMenuBuilder extends AbstractAdminMenuBuilder
         $menu = $this->factory->createItem('root');
 
         $this->configureCatalogSubMenu($menu);
+        $this->configureSalesMenu($menu);
         $this->configureCustomersSubMenu($menu);
         $this->configureMarketingSubMenu($menu);
-        $this->configureSalesMenu($menu);
+        $this->configureContentMenu($menu);
         $this->configureConfigurationSubMenu($menu);
 
         $this->eventDispatcher->dispatch(self::EVENT_NAME, new MenuBuilderEvent($this->factory, $menu));
@@ -54,11 +55,19 @@ final class MainMenuBuilder extends AbstractAdminMenuBuilder
             ->setLabel('sylius.menu.admin.main.catalog.taxons')
             ->setLabelAttribute('icon', 'folder')
         ;
+
+        $catalogSubMenu
+            ->addChild('products', ['route' => 'sylius_admin_product_index'])
+            ->setLabel('sylius.menu.admin.main.catalog.products')
+            ->setLabelAttribute('icon', 'cube')
+        ;
+
         $catalogSubMenu
             ->addChild('attributes', ['route' => 'sylius_admin_product_attribute_index'])
             ->setLabel('sylius.menu.admin.main.catalog.attributes')
             ->setLabelAttribute('icon', 'cubes')
         ;
+
         $catalogSubMenu
             ->addChild('options', ['route' => 'sylius_admin_product_option_index'])
             ->setLabel('sylius.menu.admin.main.catalog.options')
@@ -97,6 +106,29 @@ final class MainMenuBuilder extends AbstractAdminMenuBuilder
             ->addChild('promotions', ['route' => 'sylius_admin_promotion_index'])
             ->setLabel('sylius.menu.admin.main.marketing.promotions')
             ->setLabelAttribute('icon', 'in cart')
+        ;
+    }
+
+    /**
+     * @param ItemInterface $menu
+     */
+    private function configureContentMenu(ItemInterface $menu)
+    {
+        $child = $menu
+            ->addChild('content')
+            ->setLabel('sylius.menu.admin.main.content.header')
+        ;
+
+        $child
+            ->addChild('static_contents', ['route' => 'sylius_admin_static_content_index'])
+            ->setLabel('sylius.menu.admin.main.content.static_contents')
+            ->setLabelAttribute('icon', 'file')
+        ;
+
+        $child
+            ->addChild('routes', ['route' => 'sylius_admin_route_index'])
+            ->setLabel('sylius.menu.admin.main.content.routes')
+            ->setLabelAttribute('icon', 'sitemap')
         ;
     }
 

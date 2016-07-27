@@ -15,8 +15,9 @@ use Behat\Behat\Context\Context;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Łukasz Chruściel <lukasz.chrusciel@lakion.com>
@@ -70,14 +71,14 @@ final class OrderContext implements Context
     }
 
     /**
-     * @When I delete the order :orderNumber
+     * @When I delete the order :order
      */
-    public function iDeleteTheOrder($orderNumber)
+    public function iDeleteTheOrder(OrderInterface $order)
     {
         /** @var OrderInterface $order */
-        $order = $this->orderRepository->findOneBy(['number' => $orderNumber]);
+        $order = $this->orderRepository->findOneBy(['number' => $order->getNumber()]);
         if (null === $order) {
-            throw new \InvalidArgumentException(sprintf('Order with %s number was not found in an order repository', $orderNumber));
+            throw new \InvalidArgumentException(sprintf('Order with %s number was not found in an order repository', $order->getNumber()));
         }
 
         $adjustmentsId = [];
@@ -102,7 +103,7 @@ final class OrderContext implements Context
         /** @var OrderInterface $order */
         $order = $this->orderRepository->findOneBy(['number' => $order->getNumber()]);
 
-        expect($order)->toBe(null);
+        Assert::null($order);
     }
 
     /**
@@ -110,9 +111,9 @@ final class OrderContext implements Context
      */
     public function orderItemShouldNotExistInTheRegistry(ProductInterface $product)
     {
-        $orderItems = $this->orderItemRepository->findBy(['variant' => $product->getMasterVariant()]);
+        $orderItems = $this->orderItemRepository->findBy(['variant' => $product->getFirstVariant()]);
 
-        expect($orderItems)->toBe([]);
+        Assert::same($orderItems, []);
     }
 
     /**
@@ -124,7 +125,7 @@ final class OrderContext implements Context
 
         $addresses = $this->addressRepository->findBy(['id' => $addresses]);
 
-        expect($addresses)->toBe([]);
+        Assert::same($addresses, []);
     }
 
     /**
@@ -135,22 +136,7 @@ final class OrderContext implements Context
         $adjustments = $this->sharedStorage->get('deleted_adjustments');
 
         $adjustments = $this->adjustmentRepository->findBy(['id' => $adjustments]);
-        expect($adjustments)->toBe([]);
-    }
 
-    /**
-     * @Given I am logged in as an administrator
-     */
-    public function iAmLoggedInAsAnAdministrator()
-    {
-        // Not applicable in the domain scope
-    }
-
-    /**
-     * @Then I should be notified that it has been successfully deleted
-     */
-    public function iShouldBeNotified()
-    {
-        // Not applicable in the domain scope
+        Assert::same($adjustments, []);
     }
 }

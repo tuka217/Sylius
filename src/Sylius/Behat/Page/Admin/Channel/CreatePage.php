@@ -46,9 +46,9 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
     /**
      * {@inheritdoc}
      */
-    public function chooseCurrency($currency)
+    public function chooseCurrency($currencyCode)
     {
-        $this->getDocument()->selectFieldOption('Currencies', $currency);
+        $this->getDocument()->selectFieldOption('Currencies', $currencyCode);
     }
 
     /**
@@ -78,6 +78,32 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
     /**
      * {@inheritdoc}
      */
+    public function chooseDefaultTaxZone($taxZone)
+    {
+        $this->getDocument()->selectFieldOption('Default tax zone', $taxZone);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function chooseDefaultCurrency($currency)
+    {
+        if (null !== $currency) {
+            $this->getElement('default_currency')->selectOption($currency);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function chooseTaxCalculationStrategy($taxZone)
+    {
+        $this->getDocument()->selectFieldOption('Tax calculation strategy', $taxZone);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getToggleableElement()
     {
         return $this->getElement('enabled');
@@ -92,6 +118,7 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
             'code' => '#sylius_channel_code',
             'enabled' => '#sylius_channel_enabled',
             'name' => '#sylius_channel_name',
+            'default_currency' => '#sylius_channel_defaultCurrency',
         ]);
     }
 }

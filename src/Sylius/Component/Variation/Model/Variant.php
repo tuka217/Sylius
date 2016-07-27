@@ -28,14 +28,14 @@ class Variant implements VariantInterface
     protected $id;
 
     /**
-     * @var bool
+     * @var string
      */
-    protected $master = false;
+    protected $code;
 
     /**
      * @var string
      */
-    protected $presentation;
+    protected $name;
 
     /**
      * @var VariableInterface
@@ -62,35 +62,35 @@ class Variant implements VariantInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function isMaster()
+    public function getCode()
     {
-        return $this->master;
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setMaster($master)
+    public function getName()
     {
-        $this->master = (bool) $master;
+        return $this->name;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getPresentation()
+    public function setName($name)
     {
-        return $this->presentation;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setPresentation($presentation)
-    {
-        $this->presentation = $presentation;
+        $this->name = $name;
     }
 
     /**
@@ -151,19 +151,5 @@ class Variant implements VariantInterface
     public function hasOption(OptionValueInterface $option)
     {
         return $this->options->contains($option);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setDefaults(VariantInterface $masterVariant)
-    {
-        if (!$masterVariant->isMaster()) {
-            throw new \InvalidArgumentException('Cannot inherit values from non master variant.');
-        }
-
-        if ($this->isMaster()) {
-            throw new \LogicException('Master variant cannot inherit from another master variant.');
-        }
     }
 }

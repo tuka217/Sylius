@@ -17,7 +17,7 @@ use Sylius\Component\Addressing\Converter\CountryNameConverterInterface;
 /**
  * @author Łukasz Chruściel <lukasz.chrusciel@lakion.com>
  */
-class CountryNameConverterSpec extends ObjectBehavior
+final class CountryNameConverterSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
@@ -43,7 +43,7 @@ class CountryNameConverterSpec extends ObjectBehavior
         $this->convertToCode('Francia', 'es')->shouldReturn('FR');
     }
 
-    function it_throws_an_exception_if_cauntry_name_cannot_be_converted_to_code()
+    function it_throws_an_exception_if_country_name_cannot_be_converted_to_code()
     {
         $this->shouldThrow(\InvalidArgumentException::class)->during('convertToCode', ['Atlantis']);
     }

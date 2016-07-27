@@ -164,6 +164,22 @@ class ShippingMethod implements ShippingMethodInterface
     /**
      * {@inheritdoc}
      */
+    public function getDescription()
+    {
+        return $this->translate()->getDescription();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setDescription($description)
+    {
+        $this->translate()->setDescription($description);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getCalculator()
     {
         return $this->calculator;
@@ -239,15 +255,5 @@ class ShippingMethod implements ShippingMethodInterface
             ShippingMethodInterface::CATEGORY_REQUIREMENT_MATCH_ANY => 'At least 1 unit has to match the method category',
             ShippingMethodInterface::CATEGORY_REQUIREMENT_MATCH_ALL => 'All units has to match the method category',
         ];
-    }
-
-    public function enable()
-    {
-        $this->enabled = true;
-    }
-
-    public function disable()
-    {
-        $this->enabled = false;
     }
 }

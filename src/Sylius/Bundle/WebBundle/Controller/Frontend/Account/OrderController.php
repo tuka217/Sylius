@@ -128,79 +128,12 @@ class OrderController extends FOSRestController
 
         return new Response(
             $generator->getOutputFromHtml($html),
-            200,
+            Response::HTTP_OK,
             [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="'.$order->getNumber().'.pdf"',
             ]
         );
-    }
-
-    /**
-     * @param string $number
-     *
-     * @return Response
-     */
-    public function showPaymentsAction($number)
-    {
-        $order = $this->findOrderOr404($number);
-        $this->checkAccessToOrder($order);
-
-        if ($order->getLastPayment(PaymentInterface::STATE_COMPLETED)) {
-            return $this->redirectToRoute('sylius_checkout_thank_you', ['id' => $order->getId()]);
-        }
-
-        $this->get('sylius.order_processing.payment_processor')->processOrderPayments($order);
-        $this->getOrderManager()->flush();
-
-        return $this->render('SyliusWebBundle:Frontend/Account/Order:showPayments.html.twig', ['order' => $order]);
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function afterPurchaseAction(Request $request)
-    {
-        $token = $this->getHttpRequestVerifier()->verify($request);
-        $this->getHttpRequestVerifier()->invalidate($token);
-
-        $status = new GetStatus($token);
-        $this->getPayum()->getGateway($token->getGatewayName())->execute($status);
-        $payment = $status->getFirstModel();
-        $order = $payment->getOrder();
-        $this->checkAccessToOrder($order);
-
-        $orderStateResolver = $this->get('sylius.order_processing.state_resolver');
-        $orderStateResolver->resolvePaymentState($order);
-        $orderStateResolver->resolveShippingState($order);
-
-        $this->getOrderManager()->flush();
-        if ($status->isCanceled() || $status->isFailed()) {
-            return $this->redirectToRoute('sylius_order_payment_index', ['number' => $order->getNumber()]);
-        }
-
-        return $this->redirectToRoute('sylius_checkout_thank_you');
-    }
-
-    /**
-     * @param mixed $paymentId
-     *
-     * @return Response
-     */
-    public function purchaseAction($paymentId)
-    {
-        $paymentRepository = $this->get('sylius.repository.payment');
-        $payment = $paymentRepository->find($paymentId);
-
-        $captureToken = $this->getTokenFactory()->createCaptureToken(
-            $payment->getMethod()->getGateway(),
-            $payment,
-            'sylius_order_after_purchase'
-        );
-
-        return $this->redirect($captureToken->getTargetUrl());
     }
 
     /**
@@ -271,7 +204,7 @@ class OrderController extends FOSRestController
      */
     protected function getTokenFactory()
     {
-        return $this->get('payum.security.token_factory');
+        return $this->get('payum')->getTokenFactory();
     }
 
     /**
@@ -279,7 +212,7 @@ class OrderController extends FOSRestController
      */
     protected function getHttpRequestVerifier()
     {
-        return $this->get('payum.security.http_request_verifier');
+        return $this->get('payum')->getHttpRequestVerifier();
     }
 
     /**

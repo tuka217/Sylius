@@ -9,12 +9,11 @@
  * file that was distributed with this source code.
  */
 
-use Sylius\Bundle\CoreBundle\Kernel\Kernel;
+use Sylius\Bundle\CoreBundle\Application\Kernel;
 
 /**
- * Sylius application kernel.
- *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
+ * @author Gonzalo Vilaseca <gvilaseca@reiss.co.uk>
  */
 class AppKernel extends Kernel
 {
@@ -23,14 +22,9 @@ class AppKernel extends Kernel
      */
     public function registerBundles()
     {
-        $bundles = array(
-            // Put here your own bundles!
-        );
+        $bundles = [
 
-        if (in_array($this->environment, array('dev', 'test'))) {
-            $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
-            $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
-        }
+        ];
 
         return array_merge(parent::registerBundles(), $bundles);
     }

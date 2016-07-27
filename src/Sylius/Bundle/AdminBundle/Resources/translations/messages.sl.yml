@@ -6,9 +6,11 @@ sylius:
         admin:
             main:
                 catalog:
-                    taxons: Taksoni
-                    options: Možnosti
                     attributes: Atributi
+                    header: Katalog
+                    options: Možnosti
+                    products: Izdelki
+                    taxons: Taksoni
                 configuration:
                     channels: Kanali
                     countries: Države
@@ -17,14 +19,18 @@ sylius:
                     locales: Področne nastavitve
                     payment_methods: Načini plačila
                     shipping_methods: Načini dostave
+                    tax_categories: Davčne stopnje
                     tax_rates: Davčne stopnje
                     zones: Cone
                 marketing:
                     header: Oglaševanje
                     promotions: Promocije
                 customers:
-                    header: Kupec
                     customers: Kupci
+                    header: Kupec
                 sales:
                     header: Prodaja
                     orders: Naročila
+                content:
+                    header: Vsebina
+                    routes: Poti

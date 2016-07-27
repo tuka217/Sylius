@@ -18,7 +18,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Simple static content type.
  *
- * @author Paweł Jędrzejewski <pjedrzejewski@diweb.pl>
+ * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
 class StaticContentType extends AbstractResourceType
 {
@@ -33,9 +33,6 @@ class StaticContentType extends AbstractResourceType
             ])
             ->add('id', 'text', [
                 'label' => 'sylius.form.static_content.id',
-            ])
-            ->add('parent', null, [
-                'label' => 'sylius.form.static_content.parent',
             ])
             ->add('name', 'text', [
                 'label' => 'sylius.form.static_content.internal_name',

@@ -47,16 +47,6 @@ interface ProductInterface extends
     /**
      * @return string
      */
-    public function getSku();
-
-    /**
-     * @param string $sku
-     */
-    public function setSku($sku);
-
-    /**
-     * @return string
-     */
     public function getVariantSelectionMethod();
 
     /**
@@ -95,40 +85,6 @@ interface ProductInterface extends
     public function setShippingCategory(ShippingCategoryInterface $category = null);
 
     /**
-     * Get master variant price.
-     *
-     * @return int
-     */
-    public function getPrice();
-
-    /**
-     * Set master variant price.
-     *
-     * @param int $price
-     */
-    public function setPrice($price);
-
-    /**
-     * @return ZoneInterface
-     */
-    public function getRestrictedZone();
-
-    /**
-     * @param ZoneInterface $zone
-     */
-    public function setRestrictedZone(ZoneInterface $zone = null);
-
-    /**
-     * @return Collection|ImageInterface[]
-     */
-    public function getImages();
-
-    /**
-     * @return ImageInterface
-     */
-    public function getImage();
-
-    /**
      * @return TaxonInterface
      */
     public function getMainTaxon();
@@ -137,4 +93,24 @@ interface ProductInterface extends
      * @param TaxonInterface $mainTaxon
      */
     public function setMainTaxon(TaxonInterface $mainTaxon = null);
+
+    /**
+     * @return ProductVariantInterface
+     */
+    public function getFirstVariant();
+
+    /**
+     * @return int
+     */
+    public function getPrice();
+
+    /**
+     * @return ImageInterface
+     */
+    public function getImage();
+
+    /**
+     * @return ImageInterface[]
+     */
+    public function getImages();
 }

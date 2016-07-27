@@ -18,19 +18,38 @@ use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
 class PaymentRepository extends EntityRepository implements PaymentRepositoryInterface
 {
     /**
+     * {@inheritdoc}
+     */
+    public function findByOrderIdAndId($orderId, $id)
+    {
+        $queryBuilder = $this->createQueryBuilder('o');
+
+        return $queryBuilder
+            ->where('o.order = :orderId')
+            ->andWhere('o.id = :id')
+            ->setParameter('orderId', $orderId)
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+    /**
      * @param array $criteria
      * @param array $sorting
      *
      * @return Pagerfanta
      */
-    public function createFilterPaginator(array $criteria = [], array $sorting = [])
+    public function createFilterPaginator(array $criteria = null, array $sorting = null)
     {
-        $queryBuilder = $this->getCollectionQueryBuilder();
-        $queryBuilder
-            ->leftJoin($this->getPropertyName('order'), 'paymentOrder')
-            ->leftJoin('paymentOrder.billingAddress', 'address')
+        $queryBuilder = $this->createQueryBuilder('o')
             ->addSelect('paymentOrder')
+            ->leftJoin('o.order', 'paymentOrder')
             ->addSelect('address')
+            ->leftJoin('paymentOrder.billingAddress', 'address')
+            ->addSelect('method')
+            ->leftJoin('o.method', 'method')
+            ->leftJoin('method.translations', 'method_translation')
         ;
 
         if (!empty($criteria['number'])) {

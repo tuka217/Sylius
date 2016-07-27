@@ -41,10 +41,7 @@ class PaypalApiMocker
         $this->mocker = $mocker;
         $this->responseLoader = $responseLoader;
     }
-
-    /**
-     * {@inheritdoc}
-     */
+   
     public function mockApiSuccessfulPaymentResponse()
     {
         $mockedResponse = $this->responseLoader->getMockedResponse('Paypal/paypal_api_successful_payment.json');
@@ -60,16 +57,13 @@ class PaypalApiMocker
         $getTransactionDetailsStream = $this->mockStream($mockedResponse['getTransactionDetails']);
         $getTransactionDetailsResponse = $this->mockHttpResponse(200, $getTransactionDetailsStream);
 
-        $this->mocker->mockService('payum.http_client', HttpClient::class)
+        $this->mocker->mockService('sylius.payum.http_client', HttpClient::class)
             ->shouldReceive('send')
             ->times(4)
             ->andReturn($firstGetExpressCheckoutDetailsResponse, $doExpressCheckoutPaymentResponse, $secondGetExpressCheckoutDetailsResponse, $getTransactionDetailsResponse)
         ;
     }
-
-    /**
-     * {@inheritdoc}
-     */
+    
     public function mockApiPaymentInitializeResponse()
     {
         $mockedResponse = $this->responseLoader->getMockedResponse('Paypal/paypal_api_initialize_payment.json');
@@ -79,7 +73,7 @@ class PaypalApiMocker
         $getExpressCheckoutDetailsStream = $this->mockStream($mockedResponse['getExpressCheckoutDetails']);
         $getExpressCheckoutDetailsResponse = $this->mockHttpResponse(200, $getExpressCheckoutDetailsStream);
 
-        $this->mocker->mockService('payum.http_client', HttpClient::class)
+        $this->mocker->mockService('sylius.payum.http_client', HttpClient::class)
             ->shouldReceive('send')
             ->twice()
             ->andReturn($setExpressCheckoutResponse, $getExpressCheckoutDetailsResponse)

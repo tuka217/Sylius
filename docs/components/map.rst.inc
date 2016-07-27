@@ -20,11 +20,9 @@
 * :doc:`/components/Registry/index`
 * :doc:`/components/Report/index`
 * :doc:`/components/Resource/index`
-* :doc:`/components/Sequence/index`
 * :doc:`/components/Shipping/index`
 * :doc:`/components/Storage/index`
 * :doc:`/components/Taxation/index`
 * :doc:`/components/Taxonomy/index`
-* :doc:`/components/Translation/index`
 * :doc:`/components/User/index`
 * :doc:`/components/Variation/index`

@@ -19,14 +19,14 @@ use Sylius\Component\Review\Model\ReviewInterface;
 /**
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
  */
-class ReviewSpec extends ObjectBehavior
+final class ReviewSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
         $this->shouldHaveType('Sylius\Component\Review\Model\Review');
     }
 
-    function it_implements_review_interace()
+    function it_implements_review_interface()
     {
         $this->shouldImplement(ReviewInterface::class);
     }

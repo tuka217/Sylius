@@ -22,3 +22,8 @@ sylius:
         code:
             not_blank: Introduzca el código de método de envío.
             unique: Ya existe un método de envío con ese código.
+        zone:
+            not_blank: Por favor introduzca la zona del método de envío.
+    shipment:
+        shipping_method:
+            not_blank: Por favor seleccione el método de envío.

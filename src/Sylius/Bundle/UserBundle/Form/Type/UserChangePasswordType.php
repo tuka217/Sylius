@@ -22,18 +22,38 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class UserChangePasswordType extends AbstractType
 {
     /**
+     * @var string
+     */
+    protected $dataClass = null;
+
+    /**
+     * @var string[]
+     */
+    protected $validationGroups = [];
+
+    /**
+     * @param string $dataClass
+     * @param string[] $validationGroups
+     */
+    public function __construct($dataClass, array $validationGroups = [])
+    {
+        $this->dataClass = $dataClass;
+        $this->validationGroups = $validationGroups;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('currentPassword', 'password', [
-                'label' => 'sylius.form.user.password.current',
+                'label' => 'sylius.form.user_change_password.current',
             ])
             ->add('newPassword', 'repeated', [
                 'type' => 'password',
-                'first_options' => ['label' => 'sylius.form.user.password.label'],
-                'second_options' => ['label' => 'sylius.form.user.password.confirmation'],
+                'first_options' => ['label' => 'sylius.form.user_change_password.new'],
+                'second_options' => ['label' => 'sylius.form.user_change_password.confirmation'],
                 'invalid_message' => 'sylius.user.plainPassword.mismatch',
             ])
         ;
@@ -45,8 +65,8 @@ class UserChangePasswordType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => ChangePassword::class,
-            'validation_groups' => ['sylius'],
+            'data_class' => $this->dataClass,
+            'validation_groups' => $this->validationGroups,
         ]);
     }
 

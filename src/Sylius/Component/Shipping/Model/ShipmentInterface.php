@@ -21,13 +21,9 @@ use Sylius\Component\Resource\Model\TimestampableInterface;
 interface ShipmentInterface extends ResourceInterface, ShippingSubjectInterface, TimestampableInterface
 {
     // Shipment default states.
-    const STATE_CHECKOUT = 'checkout';
-    const STATE_ONHOLD = 'onhold';
-    const STATE_PENDING = 'pending';
+    const STATE_CART = 'cart';
     const STATE_READY = 'ready';
-    const STATE_BACKORDERED = 'backordered';
     const STATE_SHIPPED = 'shipped';
-    const STATE_RETURNED = 'returned';
     const STATE_CANCELLED = 'cancelled';
 
     /**
@@ -48,7 +44,7 @@ interface ShipmentInterface extends ResourceInterface, ShippingSubjectInterface,
     /**
      * @param ShippingMethodInterface $method
      */
-    public function setMethod(ShippingMethodInterface $method);
+    public function setMethod(ShippingMethodInterface $method = null);
 
     /**
      * @return Collection|ShipmentUnitInterface[]

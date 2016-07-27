@@ -4,6 +4,10 @@
 sylius:
     form:
         variant:
-            presentation: Presentation
+            name: Namn
         option:
             name: Namn
+            values: Möjliga värden
+        option_value:
+            add_value: Lägg till värde
+            value: Värde

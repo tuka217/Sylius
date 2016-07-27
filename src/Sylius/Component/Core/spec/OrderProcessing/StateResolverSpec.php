@@ -23,7 +23,7 @@ use Sylius\Component\Core\OrderProcessing\StateResolverInterface;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class StateResolverSpec extends ObjectBehavior
+final class StateResolverSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
@@ -70,21 +70,6 @@ class StateResolverSpec extends ObjectBehavior
         $shipment2->getState()->willReturn(ShipmentInterface::STATE_READY);
 
         $order->setShippingState(OrderShippingStates::PARTIALLY_SHIPPED)->shouldBeCalled();
-        $this->resolveShippingState($order);
-    }
-
-    function it_marks_order_as_returned_if_all_shipments_were_returned(
-        OrderInterface $order,
-        ShipmentInterface $shipment1,
-        ShipmentInterface $shipment2
-    ) {
-        $order->isBackorder()->shouldBeCalled()->willReturn(false);
-        $order->getShipments()->willReturn([$shipment1, $shipment2]);
-
-        $shipment1->getState()->willReturn(ShipmentInterface::STATE_RETURNED);
-        $shipment2->getState()->willReturn(ShipmentInterface::STATE_RETURNED);
-
-        $order->setShippingState(OrderShippingStates::RETURNED)->shouldBeCalled();
         $this->resolveShippingState($order);
     }
 

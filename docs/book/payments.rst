@@ -32,7 +32,7 @@ All these properties are easily accessible through simple API:
 
     <?php
 
-    echo $payment->getAmount() . $payment->getCurrency();
+    echo $payment->getAmount() . $payment->getCurrencyCode();
 
     $order = $payment->getOrder(); // Get the order.
 
@@ -53,7 +53,7 @@ We are using [StateMachine] library to manage all payment states, here is the fu
 * void
 * refunded
 
-Of course, you can define your own states and transitions to create a workflow, that perfectly matches your business. Full configuration can be seen `here <https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/PaymentBundle/Resources/config/state-machine.yml>`_.
+Of course, you can define your own states and transitions to create a workflow, that perfectly matches your business. Full configuration can be seen `here <https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/PaymentBundle/Resources/config/app/state_machine.yml>`_.
 
 Changes to payment happen mostly through applying appropriate transitions.
 
@@ -99,8 +99,8 @@ Learn more
 
 * ...
 
-Troubleshoooting
-================
+Troubleshooting
+===============
 
 Sylius stores payment output inside the **details** column of the **sylius_payment** table. It can provide valuable info when debugging the payment process.
 

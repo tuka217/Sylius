@@ -20,7 +20,7 @@ use Sylius\Bundle\CoreBundle\Purger\QueryLoggerInterface;
  *
  * @author Kamil Kokot <kamil.kokot@lakion.com>
  */
-class QueryLoggerSpec extends ObjectBehavior
+final class QueryLoggerSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
@@ -37,7 +37,7 @@ class QueryLoggerSpec extends ObjectBehavior
         $this->shouldImplement(SQLLogger::class);
     }
 
-    function it_saves_runned_queries()
+    function it_saves_ran_queries()
     {
         $this->startQuery('SQL QUERY', ['param' => 'value'], ['types?']);
 

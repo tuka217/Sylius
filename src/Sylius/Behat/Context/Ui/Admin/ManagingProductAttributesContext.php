@@ -15,7 +15,7 @@ use Behat\Behat\Context\Context;
 use Sylius\Behat\Page\Admin\Crud\IndexPageInterface;
 use Sylius\Behat\Page\Admin\ProductAttribute\CreatePageInterface;
 use Sylius\Behat\Page\Admin\ProductAttribute\UpdatePageInterface;
-use Sylius\Behat\Service\CurrentPageResolverInterface;
+use Sylius\Behat\Service\Resolver\CurrentPageResolverInterface;
 use Sylius\Component\Product\Model\AttributeInterface;
 use Webmozart\Assert\Assert;
 
@@ -97,16 +97,31 @@ final class ManagingProductAttributesContext implements Context
     }
 
     /**
-     * @Then the attribute :name should appear in the store
      * @Then I should see the product attribute :name in the list
      */
-    public function theAttributeShouldAppearInTheStore($name)
+    public function iShouldSeeTheProductAttributeInTheList($name)
     {
         $this->indexPage->open();
 
         Assert::true(
             $this->indexPage->isSingleResourceOnPage(['name' => $name]),
             sprintf('The product attribute with name %s should appear on page, but it does not.', $name)
+        );
+    }
+
+    /**
+     * @Then the :type attribute :name should appear in the store
+     */
+    public function theAttributeShouldAppearInTheStore($type, $name)
+    {
+        $this->indexPage->open();
+
+        Assert::true(
+            $this->indexPage->isSingleResourceWithSpecificElementOnPage(
+                ['name' => $name],
+                sprintf('td span.ui.label:contains("%s")', $type)
+            ),
+            sprintf('The product attribute with name %s and type %s should appear on page, but it does not.', $name, $type)
         );
     }
 
@@ -164,10 +179,7 @@ final class ManagingProductAttributesContext implements Context
      */
     public function iShouldBeNotifiedThatProductAttributeWithThisCodeAlreadyExists()
     {
-        Assert::true(
-            $this->updatePage->checkValidationMessageFor('code', 'This code is already in use.'),
-            'Unique code violation message should appear on page, but it does not.'
-        );
+        Assert::same($this->updatePage->getValidationMessage('code'), 'This code is already in use.');
     }
 
     /**
@@ -266,11 +278,9 @@ final class ManagingProductAttributesContext implements Context
      */
     private function assertFieldValidationMessage($element, $expectedMessage)
     {
+        /** @var CreatePageInterface|UpdatePageInterface $currentPage */
         $currentPage = $this->currentPageResolver->getCurrentPageWithForm([$this->createPage, $this->updatePage]);
 
-        Assert::true(
-            $currentPage->checkValidationMessageFor($element, $expectedMessage),
-            sprintf('Product attribute %s should be required.', $element)
-        );
+        Assert::same($currentPage->getValidationMessage($element), $expectedMessage);
     }
 }

@@ -12,9 +12,11 @@
 namespace Sylius\Behat\Context\Ui\Admin;
 
 use Behat\Behat\Context\Context;
-use Sylius\Behat\Page\Admin\Crud\UpdatePageInterface;
 use Sylius\Behat\Page\Admin\Crud\IndexPageInterface;
 use Sylius\Behat\Page\Admin\Customer\CreatePageInterface;
+use Sylius\Behat\Page\Admin\Customer\ShowPageInterface;
+use Sylius\Behat\Page\Admin\Customer\UpdatePageInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\User\Model\CustomerInterface;
 use Webmozart\Assert\Assert;
 
@@ -23,6 +25,11 @@ use Webmozart\Assert\Assert;
  */
 final class ManagingCustomersContext implements Context
 {
+    /**
+     * @var SharedStorageInterface
+     */
+    private $sharedStorage;
+    
     /**
      * @var IndexPageInterface
      */
@@ -39,18 +46,29 @@ final class ManagingCustomersContext implements Context
     private $updatePage;
 
     /**
+     * @var ShowPageInterface
+     */
+    private $showPage;
+
+    /**
+     * @param SharedStorageInterface $sharedStorage
      * @param CreatePageInterface $createPage
      * @param IndexPageInterface $indexPage
      * @param UpdatePageInterface $updatePage
+     * @param ShowPageInterface $showPage
      */
     public function __construct(
+        SharedStorageInterface $sharedStorage,
         CreatePageInterface $createPage,
         IndexPageInterface $indexPage,
-        UpdatePageInterface $updatePage
+        UpdatePageInterface $updatePage,
+        ShowPageInterface $showPage
     ) {
+        $this->sharedStorage = $sharedStorage;
         $this->createPage = $createPage;
         $this->indexPage = $indexPage;
         $this->updatePage = $updatePage;
+        $this->showPage = $showPage;
     }
 
     /**
@@ -126,10 +144,21 @@ final class ManagingCustomersContext implements Context
     }
 
     /**
+     * @Given /^I want to edit (this customer)$/
      * @Given I want to edit the customer :customer
      */
     public function iWantToEditThisCustomer(CustomerInterface $customer)
     {
+        $this->updatePage->open(['id' => $customer->getId()]);
+    }
+
+    /**
+     * @Given I want to change my password
+     */
+    public function iWantToChangeMyPassword()
+    {
+        $customer = $this->sharedStorage->get('customer');
+        
         $this->updatePage->open(['id' => $customer->getId()]);
     }
 
@@ -192,9 +221,17 @@ final class ManagingCustomersContext implements Context
      */
     public function iShouldBeNotifiedThatFirstNameIsRequired($elementName)
     {
-        Assert::true(
-            $this->createPage->checkValidationMessageFor($elementName, sprintf('Please enter your %s.', $elementName)),
-            sprintf('Customer % should be required.', $elementName)
+        Assert::same($this->createPage->getValidationMessage($elementName), sprintf('Please enter your %s.', $elementName));
+    }
+
+    /**
+     * @Then /^I should be notified that ([^"]+) should be ([^"]+)$/
+     */
+    public function iShouldBeNotifiedThatTheElementShouldBe($elementName, $validationMessage)
+    {
+        Assert::same(
+            $this->updatePage->getValidationMessage($elementName),
+            sprintf('%s must be %s.', ucfirst($elementName), $validationMessage)
         );
     }
 
@@ -220,16 +257,17 @@ final class ManagingCustomersContext implements Context
     }
 
     /**
-     * @Then the customer :customer should still have first name :firstName
+     * @Then /^(this customer) should have an empty first name$/
+     * @Then the customer :customer should still have an empty first name
      */
-    public function theCustomerShouldStillHaveFirstName(CustomerInterface $customer, $firstName)
+    public function theCustomerShouldStillHaveAnEmptyFirstName(CustomerInterface $customer)
     {
         $this->updatePage->open(['id' => $customer->getId()]);
 
         Assert::eq(
-            $firstName,
+            '',
             $this->updatePage->getFirstName(),
-            sprintf('Customer should have first name %s, but it does not.', $firstName)
+            'Customer should have an empty first name, but it does not.'
         );
     }
 
@@ -242,16 +280,17 @@ final class ManagingCustomersContext implements Context
     }
 
     /**
-     * @Then the customer :customer should still have last name :lastName
+     * @Then /^(this customer) should have an empty last name$/
+     * @Then the customer :customer should still have an empty last name
      */
-    public function theCustomerShouldStillHaveLastName(CustomerInterface $customer, $lastName)
+    public function theCustomerShouldStillHaveAnEmptyLastName(CustomerInterface $customer)
     {
         $this->updatePage->open(['id' => $customer->getId()]);
 
         Assert::eq(
-            $lastName,
+            '',
             $this->updatePage->getLastName(),
-            sprintf('Customer should have last name %s, but it does not.', $lastName)
+            'Customer should have an empty last name, but it does not.'
         );
     }
 
@@ -268,10 +307,7 @@ final class ManagingCustomersContext implements Context
      */
     public function iShouldBeNotifiedThatEmailIsNotValid()
     {
-        Assert::true(
-            $this->createPage->checkValidationMessageFor('email', 'This email is invalid.'),
-            sprintf('Customer should have required form of email.')
-        );
+        Assert::same($this->createPage->getValidationMessage('email'), 'This email is invalid.');
     }
 
     /**
@@ -279,10 +315,7 @@ final class ManagingCustomersContext implements Context
      */
     public function iShouldBeNotifiedThatEmailMustBeUnique()
     {
-        Assert::true(
-            $this->createPage->checkValidationMessageFor('email', 'This email is already used.'),
-            sprintf('Unique email violation message should appear on page, but it does not.')
-        );
+        Assert::same($this->createPage->getValidationMessage('email'), 'This email is already used.');
     }
 
     /**
@@ -360,6 +393,14 @@ final class ManagingCustomersContext implements Context
     }
 
     /**
+     * @When I change my password to :password
+     */
+    public function iSpecifyMyPasswordAs($password)
+    {
+        $this->updatePage->changePassword($password);
+    }
+
+    /**
      * @When I choose create account option
      */
     public function iChooseCreateAccountOption()
@@ -376,6 +417,74 @@ final class ManagingCustomersContext implements Context
         Assert::notNull(
             $customer->getUser()->getPassword(),
             'Customer should have an account, but they do not.'
+        );
+    }
+
+    /**
+     * @When I view details of the customer :customer
+     */
+    public function iViewDetailsOfTheCustomer(CustomerInterface $customer)
+    {
+        $this->showPage->open(['id' => $customer->getId()]);
+    }
+
+    /**
+     * @Then his name should be :name
+     */
+    public function hisNameShouldBe($name)
+    {
+        Assert::same(
+            $name,
+            $this->showPage->getCustomerName(),
+            'Customer name should be "%s", but it is not.'
+        );
+    }
+
+    /**
+     * @Given he should be registered since :registrationDate
+     */
+    public function hisRegistrationDateShouldBe($registrationDate)
+    {
+        Assert::eq(
+            new \DateTime($registrationDate),
+            $this->showPage->getRegistrationDate(),
+            'Customer registration date should be "%s", but it is not.'
+        );
+    }
+
+    /**
+     * @Given his email should be :email
+     */
+    public function hisEmailShouldBe($email)
+    {
+        Assert::same(
+            $email,
+            $this->showPage->getCustomerEmail(),
+            'Customer email should be "%s", but it is not'
+        );
+    }
+
+    /**
+     * @Then his shipping address should be :shippingAddress
+     */
+    public function hisShippingAddressShouldBe($shippingAddress)
+    {
+        Assert::same(
+            str_replace(',', '', $shippingAddress),
+            $this->showPage->getShippingAddress(),
+            'Customer shipping address should be "%s", but it is not.'
+        );
+    }
+
+    /**
+     * @Then his billing address should be :billingAddress
+     */
+    public function hisBillingAddressShouldBe($billingAddress)
+    {
+        Assert::same(
+            str_replace(',', '', $billingAddress),
+            $this->showPage->getBillingAddress(),
+            'Customer billing address should be "%s", but it is not.'
         );
     }
 }

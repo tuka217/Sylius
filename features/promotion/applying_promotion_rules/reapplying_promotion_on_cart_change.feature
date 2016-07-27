@@ -8,7 +8,7 @@ Feature: Reapplying promotion on cart change
         Given the store operates on a single channel in "France"
         And the store has a product "PHP T-Shirt" priced at "€100.00"
         And there is a promotion "Holiday promotion"
-        And I am logged in customer
+        And I am a logged in customer
 
     @ui
     Scenario: Not receiving discount on shipping after removing last item from cart
@@ -21,7 +21,7 @@ Feature: Reapplying promotion on cart change
         And there should be no shipping fee
         And there should be no discount
 
-    @ui
+    @ui @javascript
     Scenario: Receiving discount on shipping after shipping method change
         Given the store has "DHL" shipping method with "€10.00" fee
         And the store has "FedEx" shipping method with "€30.00" fee
@@ -30,8 +30,7 @@ Feature: Reapplying promotion on cart change
         And I chose "DHL" shipping method
         When I change shipping method to "FedEx"
         Then my cart total should be "€100.00"
-        And my cart shipping fee should be "€30.00"
-        And my discount should be "-€30.00"
+        And my cart shipping should be for free
 
     @ui
     Scenario: Receiving discount after removing an item from the cart and then adding another one

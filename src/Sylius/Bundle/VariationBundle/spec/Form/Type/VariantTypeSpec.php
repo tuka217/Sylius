@@ -18,7 +18,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class VariantTypeSpec extends ObjectBehavior
+final class VariantTypeSpec extends ObjectBehavior
 {
     function let()
     {
@@ -33,24 +33,6 @@ class VariantTypeSpec extends ObjectBehavior
     function it_is_a_form_type()
     {
         $this->shouldImplement(FormTypeInterface::class);
-    }
-
-    function it_defines_assigned_data_class_and_validation_groups(OptionsResolver $resolver)
-    {
-        $resolver
-            ->setDefaults([
-                'data_class' => 'Variant',
-                'validation_groups' => [],
-            ])
-            ->shouldBeCalled();
-
-        $resolver
-            ->setDefaults([
-                'master' => false,
-            ])
-            ->shouldBeCalled();
-
-        $this->configureOptions($resolver);
     }
 
     function it_has_valid_name()

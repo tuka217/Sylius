@@ -21,7 +21,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 /**
  * @author Manuel Gonalez <mgonyan@gmail.com>
  */
-class OrderChannelListenerSpec extends ObjectBehavior
+final class OrderChannelListenerSpec extends ObjectBehavior
 {
     function let(ChannelContextInterface $channelContext)
     {
@@ -46,7 +46,7 @@ class OrderChannelListenerSpec extends ObjectBehavior
         $this->shouldThrow($exception)->duringProcessOrderChannel($event);
     }
 
-    function it_proccess_order_channel_successfully(
+    function it_processes_order_channel_successfully(
         GenericEvent $event,
         OrderInterface $order,
         ChannelContextInterface $channelContext,

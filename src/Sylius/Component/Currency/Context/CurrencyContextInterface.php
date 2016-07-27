@@ -16,21 +16,10 @@ namespace Sylius\Component\Currency\Context;
  */
 interface CurrencyContextInterface
 {
-    // Key used to store the currency in storage.
-    const STORAGE_KEY = '_sylius_currency';
-
     /**
      * @return string
+     *
+     * @throws CurrencyNotFoundException
      */
-    public function getDefaultCurrency();
-
-    /**
-     * @return string
-     */
-    public function getCurrency();
-
-    /**
-     * @param string $currency
-     */
-    public function setCurrency($currency);
+    public function getCurrencyCode();
 }

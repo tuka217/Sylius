@@ -20,6 +20,7 @@ sylius:
                 exclude: ไม่รวม
             cart_quantity_configuration:
                 count: จำนวน
+                equal: เท่ากับ
             item_total_configuration:
                 amount: ยอดรวม
             nth_order_configuration:
@@ -43,6 +44,7 @@ sylius:
             amount: ยอดรวม
             usage_limit: ขีดจำกัดการใช้งาน
             expires_at: หมดอายุวันที่
+            code_length: ความยาวของรหัส
         promotion:
             actions: ดำเนินการ
             add_action: เพิ่มการดำเนินการ

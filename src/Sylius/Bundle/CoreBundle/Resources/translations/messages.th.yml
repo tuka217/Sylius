@@ -35,6 +35,7 @@ sylius:
             currencies: สกุลเงิน
             shipping_methods: วิธีการจัดส่ง
             payment_methods: วิธีการชำระเงิน
+            tax_zone_default: เขตภาษีเริ่มต้น
             theme: ธีม
             hostname: Hostname
         image:
@@ -60,9 +61,11 @@ sylius:
             short_description: คำอธิบายโดยย่อ
             variant_selection_method: วิธีการเลือกตัวแปร
             main_taxon: หมวดหมู่หลัก
+            channels: ช่องทางการจัดจำหน่าย
+            enabled: เปิดใช้งานแล้ว
         product_filter:
             name: ชื่อ
-            sku: SKU
+            code: รหัส
         product_variant:
             tax_category: ประเภทภาษี
         settings:
@@ -147,7 +150,11 @@ sylius:
             name: ความเห็นเกี่ยวกับการสั่งซื้อ
         shipment_confirmation:
             name: ยืนยันการจัดส่ง
+            content: 'การสั่งซื้อของคุณถูกส่งไปยังเจ้าหน้าที่แล้ว <br/> ขอขอบคุณที่ใช้บริการ'
         user_confirmation:
             name: ยืนยันการสั่งซื้อ
+            subject: ยินดีต้อนรับสู่ร้านของเรา
         password_reset:
             name: ตั้งรหัสผ่านใหม่
+    shipping_method_resolver:
+        by_zones_and_channel: โดยพื้นที่และช่องทาง

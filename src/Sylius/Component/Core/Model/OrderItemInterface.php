@@ -32,4 +32,19 @@ interface OrderItemInterface extends CartItemInterface
      * @param ProductVariantInterface $variant
      */
     public function setVariant(ProductVariantInterface $variant);
+
+    /**
+     * @return int
+     */
+    public function getTaxTotal();
+
+    /**
+     * @return int
+     */
+    public function getDiscountedUnitPrice();
+
+    /**
+     * @return int
+     */
+    public function getSubtotal();
 }

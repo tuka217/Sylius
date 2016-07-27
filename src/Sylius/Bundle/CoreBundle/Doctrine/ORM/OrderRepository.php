@@ -23,9 +23,41 @@ class OrderRepository extends CartRepository implements OrderRepositoryInterface
     /**
      * {@inheritdoc}
      */
+    public function createListQueryBuilder()
+    {
+        $queryBuilder = $this->createQueryBuilder('o');
+
+        return $queryBuilder
+            ->addSelect('customer')
+            ->leftJoin('o.customer', 'customer')
+            ->andWhere($queryBuilder->expr()->isNotNull('o.completedAt'))
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createByCustomerQueryBuilder(CustomerInterface $customer)
+    {
+        $queryBuilder = $this->createQueryBuilder('o');
+
+        $queryBuilder
+            ->andWhere($queryBuilder->expr()->isNotNull('o.completedAt'))
+            ->innerJoin('o.customer', 'customer')
+            ->andWhere('customer = :customer')
+            ->setParameter('customer', $customer)
+        ;
+
+        return $queryBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function createPaginatorByCustomer(CustomerInterface $customer, array $sorting = [])
     {
-        $queryBuilder = $this->createQueryBuilderWithCustomer($customer, $sorting);
+        $queryBuilder = $this->createByCustomerQueryBuilder($customer);
+        $this->applySorting($queryBuilder, $sorting);
 
         return $this->getPaginator($queryBuilder);
     }
@@ -35,7 +67,8 @@ class OrderRepository extends CartRepository implements OrderRepositoryInterface
      */
     public function findByCustomer(CustomerInterface $customer, array $sorting = [])
     {
-        $queryBuilder = $this->createQueryBuilderWithCustomer($customer, $sorting);
+        $queryBuilder = $this->createByCustomerQueryBuilder($customer);
+        $this->applySorting($queryBuilder, $sorting);
 
         return $queryBuilder
             ->getQuery()
@@ -85,6 +118,23 @@ class OrderRepository extends CartRepository implements OrderRepositoryInterface
         ;
 
         return $queryBuilder
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneForPayment($id)
+    {
+        return $this->createQueryBuilder('o')
+            ->leftJoin('o.payments', 'payments')
+            ->leftJoin('payments.method', 'paymentMethods')
+            ->addSelect('payments')
+            ->addSelect('paymentMethods')
+            ->andWhere('o.id = :id')
+            ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult()
         ;
@@ -166,7 +216,7 @@ class OrderRepository extends CartRepository implements OrderRepositoryInterface
         $queryBuilder = $this->createQueryBuilder('o')
             ->select('count(o.id)')
             ->leftJoin('o.items', 'item')
-            ->innerJoin('o.promotionCoupons', 'coupons')
+            ->innerJoin('o.promotionCoupon', 'coupon')
             ->andWhere('o.customer = :customer')
             ->andWhere('o.completedAt IS NOT NULL')
             ->andWhere('coupon = :coupon')
@@ -224,17 +274,10 @@ class OrderRepository extends CartRepository implements OrderRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function countByCustomerAndPaymentState(CustomerInterface $customer, $state)
+    public function countByCustomer(CustomerInterface $customer)
     {
-        $queryBuilder = $this->createQueryBuilderWithCustomer($customer);
-
-        $queryBuilder
+       return (int) $this->createByCustomerQueryBuilder($customer)
             ->select('count(o.id)')
-            ->andWhere('o.paymentState = :state')
-            ->setParameter('state', $state)
-        ;
-
-        return (int) $queryBuilder
             ->getQuery()
             ->getSingleScalarResult()
         ;
@@ -353,7 +396,7 @@ class OrderRepository extends CartRepository implements OrderRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function findExpired(\DateTime $expiresAt, $state = OrderInterface::STATE_PENDING)
+    public function findExpired(\DateTime $expiresAt, $state = OrderInterface::STATE_NEW)
     {
         $queryBuilder = $this->createQueryBuilder('o')
             ->leftJoin('o.items', 'item')
@@ -371,25 +414,36 @@ class OrderRepository extends CartRepository implements OrderRepositoryInterface
     }
 
     /**
-     * @param CustomerInterface $customer
-     * @param array $sorting
-     *
-     * @return QueryBuilder
+     * {@inheritdoc}
      */
-    private function createQueryBuilderWithCustomer(CustomerInterface $customer, array $sorting = [])
+    public function findCompleted(array $sorting = [], $limit = 5)
     {
         $queryBuilder = $this->createQueryBuilder('o');
-
-        $queryBuilder
-            ->andWhere($queryBuilder->expr()->isNotNull('o.completedAt'))
-            ->innerJoin('o.customer', 'customer')
-            ->andWhere('customer = :customer')
-            ->setParameter('customer', $customer)
-        ;
+        $queryBuilder->andWhere($queryBuilder->expr()->isNotNull('o.completedAt'));
 
         $this->applySorting($queryBuilder, $sorting);
 
-        return $queryBuilder;
+        return $queryBuilder
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneByNumberAndCustomer($number, CustomerInterface $customer)
+    {
+        return $this->createQueryBuilder('o')
+            ->leftJoin('o.customer', 'customer')
+            ->andWhere('customer = :customer')
+            ->andWhere('o.number = :number')
+            ->setParameter('customer', $customer)
+            ->setParameter('number', $number)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 
     /**

@@ -12,6 +12,7 @@
 namespace Sylius\Component\Product\Factory;
 
 use Sylius\Component\Archetype\Builder\ArchetypeBuilderInterface;
+use Sylius\Component\Product\Model\ProductInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
@@ -47,8 +48,12 @@ class ProductFactory implements ProductFactoryInterface
      * @param ArchetypeBuilderInterface $archetypeBuilder
      * @param FactoryInterface $variantFactory
      */
-    public function __construct(FactoryInterface $factory, RepositoryInterface $archetypeRepository, ArchetypeBuilderInterface $archetypeBuilder, FactoryInterface $variantFactory)
-    {
+    public function __construct(
+        FactoryInterface $factory,
+        RepositoryInterface $archetypeRepository,
+        ArchetypeBuilderInterface $archetypeBuilder,
+        FactoryInterface $variantFactory
+    ) {
         $this->factory = $factory;
         $this->archetypeRepository = $archetypeRepository;
         $this->archetypeBuilder = $archetypeBuilder;
@@ -60,11 +65,18 @@ class ProductFactory implements ProductFactoryInterface
      */
     public function createNew()
     {
+        return $this->factory->createNew();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createWithVariant()
+    {
         $variant = $this->variantFactory->createNew();
-        $variant->setMaster(true);
 
         $product = $this->factory->createNew();
-        $product->setMasterVariant($variant);
+        $product->addVariant($variant);
 
         return $product;
     }

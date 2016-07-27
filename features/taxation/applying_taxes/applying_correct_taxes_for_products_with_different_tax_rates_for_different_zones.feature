@@ -9,8 +9,8 @@ Feature: Apply correct taxes for products with different tax rates for different
         And the store ships to "Australia" and "France"
         And there is a zone "EU" containing all members of the European Union
         And there is a zone "The Rest of the World" containing all other countries
-        And default currency is "EUR"
         And default tax zone is "EU"
+        And the store ships everywhere for free
         And the store has "EU VAT" tax rate of 23% for "Clothes" within "EU" zone
         And the store has "No tax" tax rate of 0% for "Clothes" for the rest of the world
         And the store has "Low VAT" tax rate of 5% for "Mugs" for the rest of the world
@@ -18,7 +18,7 @@ Feature: Apply correct taxes for products with different tax rates for different
         And it belongs to "Clothes" tax category
         And the store has a product "Symfony Mug" priced at "€50.00"
         And it belongs to "Mugs" tax category
-        And I am logged in customer
+        And I am a logged in customer
 
     @ui
     Scenario: Displaying correct tax before specifying shipping address

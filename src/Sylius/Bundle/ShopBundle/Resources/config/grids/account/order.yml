@@ -1,0 +1,46 @@
+# This file is part of the Sylius package.
+# (c) Paweł Jędrzejewski
+
+sylius_grid:
+    grids:
+        sylius_shop_account_order:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: "%sylius.model.order.class%"
+                    repository:
+                        method: createByCustomerQueryBuilder
+                        arguments: [expr:service('sylius.context.customer').getCustomer()]
+            sorting:
+                completedAt: desc
+            fields:
+                number:
+                    type: twig
+                    label: sylius.ui.number
+                    options:
+                        template: SyliusShopBundle:Account/Order/Field:number.html.twig
+                completedAt:
+                    type: datetime
+                    label: sylius.ui.date
+                    options:
+                        format: m/d/Y
+                shippingAddress:
+                    type: twig
+                    label: sylius.ui.ship_to
+                    options:
+                        template: SyliusShopBundle:Account/Order/Field:shippingAddress.html.twig
+                total:
+                    type: twig
+                    label: sylius.ui.total
+                    path: .
+                    options:
+                        template: SyliusShopBundle:Account/Order/Field:total.html.twig
+                state:
+                    type: twig
+                    label: sylius.ui.state
+                    options:
+                        template: SyliusShopBundle:Account/Order/Field:state.html.twig
+            actions:
+                item:
+                    show:
+                        type: show_order

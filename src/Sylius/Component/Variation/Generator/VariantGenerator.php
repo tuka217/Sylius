@@ -17,7 +17,7 @@ use Sylius\Component\Variation\Model\VariantInterface;
 use Sylius\Component\Variation\SetBuilder\SetBuilderInterface;
 
 /**
- * Abstract variant generator service implementation.
+ * Variant generator service implementation.
  *
  * It is used to create all possible combinations of object options
  * and create Variant models from them.
@@ -33,8 +33,6 @@ use Sylius\Component\Variation\SetBuilder\SetBuilderInterface;
 class VariantGenerator implements VariantGeneratorInterface
 {
     /**
-     * Variant manager.
-     *
      * @var FactoryInterface
      */
     protected $variantFactory;
@@ -45,8 +43,6 @@ class VariantGenerator implements VariantGeneratorInterface
     private $setBuilder;
 
     /**
-     * Constructor.
-     *
      * @param FactoryInterface $variantFactory
      * @param SetBuilderInterface $setBuilder
      */
@@ -68,9 +64,9 @@ class VariantGenerator implements VariantGeneratorInterface
         $optionSet = [];
         $optionMap = [];
 
-        foreach ($variable->getOptions() as $k => $option) {
+        foreach ($variable->getOptions() as $key => $option) {
             foreach ($option->getValues() as $value) {
-                $optionSet[$k][] = $value->getId();
+                $optionSet[$key][] = $value->getId();
                 $optionMap[$value->getId()] = $value;
             }
         }
@@ -78,31 +74,31 @@ class VariantGenerator implements VariantGeneratorInterface
         $permutations = $this->setBuilder->build($optionSet);
 
         foreach ($permutations as $permutation) {
-            $variant = $this->variantFactory->createNew();
-            $variant->setObject($variable);
-            $variant->setDefaults($variable->getMasterVariant());
-
-            if (is_array($permutation)) {
-                foreach ($permutation as $id) {
-                    $variant->addOption($optionMap[$id]);
-                }
-            } else {
-                $variant->addOption($optionMap[$permutation]);
-            }
-
+            $variant = $this->createVariant($variable, $optionMap, $permutation);
             $variable->addVariant($variant);
-
-            $this->process($variable, $variant);
         }
     }
 
     /**
-     * Override if needed.
-     *
      * @param VariableInterface $variable
-     * @param VariantInterface  $variant
+     * @param array $optionMap
+     * @param mixed $permutation
+     *
+     * @return VariantInterface
      */
-    protected function process(VariableInterface $variable, VariantInterface $variant)
+    protected function createVariant(VariableInterface $variable, array $optionMap, $permutation)
     {
+        $variant = $this->variantFactory->createNew();
+        $variant->setObject($variable);
+
+        if (is_array($permutation)) {
+            foreach ($permutation as $id) {
+                $variant->addOption($optionMap[$id]);
+            }
+        } else {
+            $variant->addOption($optionMap[$permutation]);
+        }
+
+        return $variant;
     }
 }

@@ -9,7 +9,7 @@
             <tr>
                 <th>{{ sylius_resource_sort('id', '#id') }}</th>
                 <th>{{ sylius_resource_sort('code', 'sylius.ui.code'|trans) }}</th>
-                <th>{{ sylius_resource_sort('name', 'sylius.ui.name'|trans) }}</th>
+                <th>{{ sylius_resource_sort('translation.name', 'sylius.ui.name'|trans) }}</th>
                 <th>{{ sylius_resource_sort('type', 'sylius.ui.type'|trans) }}</th>
                 <th>{{ sylius_resource_sort('updatedAt', 'sylius.ui.last_update'|trans) }}</th>
                 <th></th>
@@ -22,7 +22,7 @@
                 <td>{{ attribute.code }}</td>
                 <td>{{ attribute.name }}</td>
                 <td><span class="label label-primary">{{ attribute.type|upper }}</span></td>
-                <td>{{ attribute.updatedAt|date }}</td>
+                <td>{{ attribute.updatedAt|format_date }}</td>
                 <td>
                     <div class="pull-right">
                     {{ buttons.edit(path('sylius_backend_product_attribute_update', {'id': attribute.id})) }}

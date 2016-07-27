@@ -5,6 +5,8 @@ sylius:
     menu:
         admin:
             main:
+                catalog:
+                    products: Пороизводи
                 configuration:
                     countries: Земље
                     header: Подешавања
@@ -19,3 +21,5 @@ sylius:
                 sales:
                     header: Продаје
                     orders: Наруџбине
+                content:
+                    header: Садржај

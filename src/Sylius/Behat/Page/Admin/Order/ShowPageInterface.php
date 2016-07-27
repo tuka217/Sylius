@@ -12,6 +12,7 @@
 namespace Sylius\Behat\Page\Admin\Order;
 
 use Sylius\Behat\Page\SymfonyPageInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
@@ -30,6 +31,8 @@ interface ShowPageInterface extends SymfonyPageInterface
      * @param string $postcode
      * @param string $city
      * @param string $countryName
+     *
+     * @return bool
      */
     public function hasShippingAddress($customerName, $street, $postcode, $city, $countryName);
 
@@ -39,18 +42,53 @@ interface ShowPageInterface extends SymfonyPageInterface
      * @param string $postcode
      * @param string $city
      * @param string $countryName
+     *
+     * @return bool
      */
     public function hasBillingAddress($customerName, $street, $postcode, $city, $countryName);
 
     /**
      * @param string $shippingMethodName
+     *
+     * @return bool
      */
     public function hasShipment($shippingMethodName);
 
     /**
+     * @param string $code
+     */
+    public function specifyTrackingCode($code);
+
+    /**
+     * @param OrderInterface $order
+     *
+     * @return bool
+     */
+    public function canShipOrder(OrderInterface $order);
+
+    /**
+     * @param OrderInterface $order
+     */
+    public function shipOrder(OrderInterface $order);
+
+    /**
      * @param string $paymentMethodName
+     *
+     * @return bool
      */
     public function hasPayment($paymentMethodName);
+
+    /**
+     * @param OrderInterface $order
+     *
+     * @return bool
+     */
+    public function canCompleteOrderLastPayment(OrderInterface $order);
+
+    /**
+     * @param OrderInterface $order
+     */
+    public function completeOrderLastPayment(OrderInterface $order);
 
     /**
      * @return int
@@ -104,9 +142,79 @@ interface ShowPageInterface extends SymfonyPageInterface
     public function hasPromotionDiscount($promotionDiscount);
 
     /**
+     * @param string $tax
+     *
+     * @return bool
+     */
+    public function hasTax($tax);
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemUnitPrice($itemName);
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemDiscountedUnitPrice($itemName);
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemQuantity($itemName);
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemSubtotal($itemName);
+
+    /**
      * @param string $itemName
      *
      * @return string
      */
     public function getItemDiscount($itemName);
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemTax($itemName);
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemTotal($itemName);
+    
+    /**
+     * @return bool
+     */
+    public function hasCancelButton();
+
+    /**
+     * @return string
+     */
+    public function getOrderState();
+
+    public function cancelOrder();
+
+    public function deleteOrder();
+
+    /**
+     * @param string $note
+     * 
+     * @return bool
+     */
+    public function hasNote($note);
 }

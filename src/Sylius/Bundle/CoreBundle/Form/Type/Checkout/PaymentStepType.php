@@ -11,30 +11,26 @@
 
 namespace Sylius\Bundle\CoreBundle\Form\Type\Checkout;
 
-use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
-use Sylius\Component\Channel\Context\ChannelContextInterface;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class PaymentStepType extends AbstractResourceType
+class PaymentStepType extends AbstractType
 {
     /**
-     * @var ChannelContextInterface
-     */
-    protected $channelContext;
+    * @var string[]
+    */
+    private $validationGroups;
 
     /**
-     * @param string $dataClass
      * @param array $validationGroups
-     * @param ChannelContextInterface $channelContext
      */
-    public function __construct($dataClass, array $validationGroups = [], ChannelContextInterface $channelContext)
+    public function __construct(array $validationGroups = [])
     {
-        parent::__construct($dataClass, $validationGroups);
-        $this->channelContext = $channelContext;
+        $this->validationGroups = $validationGroups;
     }
 
     /**
@@ -42,18 +38,10 @@ class PaymentStepType extends AbstractResourceType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $notBlank = new NotBlank();
-        $notBlank->message = 'sylius.checkout.payment_method.not_blank';
-
         $builder
-            ->add('paymentMethod', 'sylius_payment_method_choice', [
-                'label' => 'sylius.form.checkout.payment_method',
-                'expanded' => true,
-                'property_path' => 'lastPayment.method',
-                'channel' => $this->channelContext->getChannel(),
-                'constraints' => [
-                    $notBlank,
-                ],
+            ->add('payments', 'collection', [
+                'type' => 'sylius_checkout_payment',
+                'label' => false,
             ])
         ;
     }
@@ -61,8 +49,16 @@ class PaymentStepType extends AbstractResourceType
     /**
      * {@inheritdoc}
      */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefault('validation_groups', $this->validationGroups);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
-        return 'sylius_checkout_payment';
+        return 'sylius_checkout_payment_step';
     }
 }

@@ -34,6 +34,7 @@ sylius:
             currencies: Valiutos
             shipping_methods: Pristatymo būdai
             payment_methods: Mokėjimo būdai
+            tax_zone_default: Numatyta mokesčių zona
         image:
             file: Paveikslėlis
         locale:
@@ -56,9 +57,11 @@ sylius:
             shipping_category: Pristatymo kategorija
             short_description: Trumpas aprašymas
             variant_selection_method: Varianto pasirinkimo būdas
+            channels: Kanalai
+            enabled: Įjungta
         product_filter:
             name: Pavadinimas
-            sku: Kodas
+            code: Kodas
         product_variant:
             tax_category: Mokesčių kategorija
         settings:

@@ -17,7 +17,7 @@ use Sylius\Behat\Page\Admin\PromotionCoupon\CreatePageInterface;
 use Sylius\Behat\Page\Admin\Crud\IndexPageInterface;
 use Sylius\Behat\Page\Admin\PromotionCoupon\GeneratePageInterface;
 use Sylius\Behat\Page\Admin\PromotionCoupon\UpdatePageInterface;
-use Sylius\Behat\Service\CurrentPageResolverInterface;
+use Sylius\Behat\Service\Resolver\CurrentPageResolverInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
 use Sylius\Component\Core\Model\CouponInterface;
 use Sylius\Component\Promotion\Model\PromotionInterface;
@@ -116,6 +116,15 @@ final class ManagingPromotionCouponsContext implements Context
     }
 
     /**
+     * @When /^I specify its code length as (\d+)$/
+     * @When I do not specify its code length
+     */
+    public function iSpecifyItsCodeLengthAs($codeLength = null)
+    {
+        $this->generatePage->specifyCodeLength($codeLength);
+    }
+
+    /**
      * @When /^I limit generated coupons usage to (\d+) times$/
      */
     public function iSetGeneratedCouponsUsageLimitTo($limit)
@@ -133,26 +142,11 @@ final class ManagingPromotionCouponsContext implements Context
 
     /**
      * @When I specify its code as :code
-     */
-    public function iSpecifyItsCodeAs($code)
-    {
-        $this->createPage->specifyCode($code);
-    }
-
-    /**
      * @When I do not specify its code
      */
-    public function iDoNotSpecifyItsCode()
+    public function iSpecifyItsCodeAs($code = null)
     {
-        // Intentionally left blank to fulfill context expectation
-    }
-
-    /**
-     * @When I do not specify its amount
-     */
-    public function iDoNotSpecifyItsAmount()
-    {
-        // Intentionally left blank to fulfill context expectation
+        $this->createPage->specifyCode($code);
     }
 
     /**
@@ -173,8 +167,9 @@ final class ManagingPromotionCouponsContext implements Context
 
     /**
      * @When I specify its amount as :amount
+     * @When I do not specify its amount
      */
-    public function iSpecifyItsAmountAs($amount)
+    public function iSpecifyItsAmountAs($amount = null)
     {
         $this->generatePage->specifyAmount($amount);
     }
@@ -321,12 +316,10 @@ final class ManagingPromotionCouponsContext implements Context
      */
     public function iShouldBeNotifiedThatCouponWithThisCodeAlreadyExists()
     {
+        /** @var CreatePageInterface|UpdatePageInterface $currentPage */
         $currentPage = $this->currentPageResolver->getCurrentPageWithForm([$this->createPage, $this->updatePage]);
 
-        Assert::true(
-            $currentPage->checkValidationMessageFor('code', 'This coupon already exists.'),
-            'Unique code violation message should appear on page, but it does not.'
-        );
+        Assert::same($currentPage->getValidationMessage('code'), 'This coupon already exists.');
     }
 
     /**
@@ -334,12 +327,10 @@ final class ManagingPromotionCouponsContext implements Context
      */
     public function iShouldBeNotifiedThatIsRequired($element)
     {
+        /** @var CreatePageInterface|UpdatePageInterface $currentPage */
         $currentPage = $this->currentPageResolver->getCurrentPageWithForm([$this->createPage, $this->updatePage]);
 
-        Assert::true(
-            $currentPage->checkValidationMessageFor($element, sprintf('Please enter coupon %s.', $element)),
-            sprintf('I should be notified that coupon %s should be required.', $element)
-        );
+        Assert::same($currentPage->getValidationMessage($element), sprintf('Please enter coupon %s.', $element));
     }
 
     /**
@@ -350,6 +341,17 @@ final class ManagingPromotionCouponsContext implements Context
         Assert::true(
             $this->generatePage->checkAmountValidation('Please enter amount of coupons to generate.'),
             'Generate amount violation message should appear on page, but it does not.'
+        );
+    }
+
+    /**
+     * @Then I should be notified that generate code length is required
+     */
+    public function iShouldBeNotifiedThatCodeLengthIsRequired()
+    {
+        Assert::true(
+            $this->generatePage->checkCodeLengthValidation('Please enter coupon code length.'),
+            'Generate code length violation message should appear on page, but it does not.'
         );
     }
 
@@ -371,12 +373,10 @@ final class ManagingPromotionCouponsContext implements Context
      */
     public function iShouldBeNotifiedThatCouponUsageLimitMustBeAtLeast()
     {
+        /** @var CreatePageInterface|UpdatePageInterface $currentPage */
         $currentPage = $this->currentPageResolver->getCurrentPageWithForm([$this->createPage, $this->updatePage]);
 
-        Assert::true(
-            $currentPage->checkValidationMessageFor('usage_limit', 'Coupon usage limit must be at least 1.'),
-            'Min usage limit violation message should appear on page, but it did not.'
-        );
+        Assert::same($currentPage->getValidationMessage('usage_limit'), 'Coupon usage limit must be at least 1.');
     }
 
     /**
@@ -417,6 +417,19 @@ final class ManagingPromotionCouponsContext implements Context
         Assert::true(
             $this->indexPage->isSingleResourceOnPage(['code' => $coupon->getCode()]),
             sprintf('Coupon with code %s should exist.', $coupon->getCode())
+        );
+    }
+
+    /**
+     * @Then /^I should be notified that generating (\d+) coupons with code length equal to (\d+) is not possible$/
+     */
+    public function iShouldBeNotifiedThatGeneratingCouponsWithCodeLengthIsNotPossible($amount, $codeLength)
+    {
+        $message = sprintf('Invalid coupons code length or coupons amount. It is not possible to generate %d unique coupons with code length equals %d. Possible generate amount is 8.', $amount, $codeLength);
+
+        Assert::true(
+            $this->generatePage->checkGenerationValidation($message),
+            'Generate violation message should appear on page, but it does not.'
         );
     }
 }

@@ -15,9 +15,9 @@ use PhpSpec\ObjectBehavior;
 use Sylius\Bundle\LocaleBundle\Templating\Helper\LocaleHelperInterface;
 
 /**
- * @author Paweł Jędrzejewski <pjedrzejewski@diweb.pl>
+ * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class LocaleExtensionSpec extends ObjectBehavior
+final class LocaleExtensionSpec extends ObjectBehavior
 {
     function let(LocaleHelperInterface $localeHelper)
     {

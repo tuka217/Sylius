@@ -49,17 +49,20 @@ class UpdatePage extends SymfonyPage implements UpdatePageInterface
 
     /**
      * {@inheritdoc}
-     * 
-     * @throws ElementNotFoundException
      */
-    public function checkValidationMessageFor($element, $message)
+    public function getValidationMessage($element)
     {
-        $foundedElement = $this->getFieldElement($element);
-        if (null === $foundedElement) {
+        $foundElement = $this->getFieldElement($element);
+        if (null === $foundElement) {
+            throw new ElementNotFoundException($this->getSession(), 'Field element');
+        }
+
+        $validationMessage = $foundElement->find('css', '.pointing');
+        if (null === $validationMessage) {
             throw new ElementNotFoundException($this->getSession(), 'Validation message', 'css', '.pointing');
         }
 
-        return $message === $foundedElement->find('css', '.pointing')->getText();
+        return $validationMessage->getText();
     }
 
     /**

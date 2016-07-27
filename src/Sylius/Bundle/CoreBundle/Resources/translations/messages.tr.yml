@@ -34,6 +34,7 @@ sylius:
             currencies: Para birimi
             shipping_methods: Kargolama Yöntemleri
             payment_methods: Ödeme Yöntemleri
+            tax_zone_default: Varsayılan vergi bölgesi
         image:
             file: Resim
         locale:
@@ -56,9 +57,11 @@ sylius:
             shipping_category: Teslimat kategorisi
             short_description: Kısa açıklama
             variant_selection_method: Varyant seçme yöntemi
+            channels: Kanallar
+            enabled: Etkin
         product_filter:
             name: Ad
-            sku: Stok Kodu
+            code: Kod
         product_variant:
             tax_category: Vergi kategorisi
         settings:

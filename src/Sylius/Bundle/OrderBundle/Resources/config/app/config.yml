@@ -1,0 +1,12 @@
+# This file is part of the Sylius package.
+# (c) Paweł Jędrzejewski
+
+imports:
+    - { resource: "state_machine.yml" }
+
+jms_serializer:
+    metadata:
+        directories:
+            sylius-order:
+                namespace_prefix: "Sylius\\Component\\Order"
+                path: "@SyliusOrderBundle/Resources/config/serializer"

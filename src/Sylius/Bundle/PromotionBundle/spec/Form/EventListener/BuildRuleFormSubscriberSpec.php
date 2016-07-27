@@ -28,7 +28,7 @@ use Symfony\Component\Form\FormFactoryInterface;
  * @author Saša Stamenković <umpirsky@gmail.com>
  * @author Arnaud Langlade <arn0d.dev@gmail.com>
  */
-class BuildRuleFormSubscriberSpec extends ObjectBehavior
+final class BuildRuleFormSubscriberSpec extends ObjectBehavior
 {
     function let(
         ServiceRegistryInterface $registry,
@@ -41,7 +41,7 @@ class BuildRuleFormSubscriberSpec extends ObjectBehavior
         $this->beConstructedWith($registry, $factory);
     }
 
-    function it_is_initializabled()
+    function it_is_initializable()
     {
         $this->shouldHaveType(BuildRuleFormSubscriber::class);
     }
@@ -51,7 +51,7 @@ class BuildRuleFormSubscriberSpec extends ObjectBehavior
         $this->shouldImplement(AbstractConfigurationSubscriber::class);
     }
 
-    function it_subscribes_evetns()
+    function it_subscribes_to_events()
     {
         $this::getSubscribedEvents()->shouldReturn([
             FormEvents::PRE_SET_DATA => 'preSetData',

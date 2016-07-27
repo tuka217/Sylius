@@ -15,7 +15,7 @@ use Behat\Behat\Context\Context;
 use Sylius\Behat\Page\Admin\Crud\IndexPageInterface;
 use Sylius\Behat\Page\Admin\TaxCategory\UpdatePageInterface;
 use Sylius\Behat\Page\Admin\TaxCategory\CreatePageInterface;
-use Sylius\Behat\Service\CurrentPageResolverInterface;
+use Sylius\Behat\Service\Resolver\CurrentPageResolverInterface;
 use Sylius\Component\Taxation\Model\TaxCategoryInterface;
 use Webmozart\Assert\Assert;
 
@@ -186,10 +186,7 @@ final class ManagingTaxCategoriesContext implements Context
      */
     public function iShouldBeNotifiedThatTaxCategoryWithThisCodeAlreadyExists()
     {
-        Assert::true(
-            $this->createPage->checkValidationMessageFor('code', 'The tax category with given code already exists.'),
-            'Unique code violation message should appear on page, but it does not.'
-        );
+        Assert::same($this->createPage->getValidationMessage('code'), 'The tax category with given code already exists.');
     }
 
     /**
@@ -200,7 +197,7 @@ final class ManagingTaxCategoriesContext implements Context
         $this->indexPage->open();
         Assert::true(
             $this->indexPage->isSingleResourceOnPage([$element => $code]),
-            sprintf('Tax category with %s %s cannot be founded.', $element, $code)
+            sprintf('Tax category with %s %s cannot be found.', $element, $code)
         );
     }
 
@@ -209,12 +206,10 @@ final class ManagingTaxCategoriesContext implements Context
      */
     public function iShouldBeNotifiedThatIsRequired($element)
     {
+        /** @var CreatePageInterface|UpdatePageInterface $currentPage */
         $currentPage = $this->currentPageResolver->getCurrentPageWithForm([$this->createPage, $this->updatePage]);
 
-        Assert::true(
-            $currentPage->checkValidationMessageFor($element, sprintf('Please enter tax category %s.', $element)),
-            sprintf('Tax category %s should be required.', $element)
-        );
+        Assert::same($currentPage->getValidationMessage($element), sprintf('Please enter tax category %s.', $element));
     }
 
     /**

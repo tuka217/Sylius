@@ -1,14 +1,14 @@
 {
     "name": "sylius/fixtures-bundle",
     "type": "symfony-bundle",
-    "description": "Sylius fixtures bundle. It contains the fixtures from the core bundle so a user can install the core without the fixtures.",
-    "keywords": ["shop", "ecommerce", "store", "webshop", "sylius"],
+    "description": "Configurable fixtures for Symfony2 applications.",
+    "keywords": ["sylius", "fixtures", "symfony"],
     "homepage": "http://sylius.org",
     "license": "MIT",
     "authors": [
         {
-            "name": "Paweł Jędrzejewski",
-            "homepage": "http://pjedrzejewski.com"
+            "name": "Kamil Kokot",
+            "homepage": "http://kamil.kokot.me"
         },
         {
             "name": "Sylius project",
@@ -20,13 +20,21 @@
         }
     ],
     "require": {
-        "php": "^5.5.9|^7.0",
+        "php": "^5.6|^7.0",
 
-        "sylius/core-bundle": "^0.18"
+        "doctrine/data-fixtures": "^1.1",
+        "monolog/monolog": "^1.8",
+        "symfony/framework-bundle": "^2.8",
+        "symfony/monolog-bridge": "^2.8",
+        "webmozart/assert": "^1.0",
+        "zendframework/zend-stdlib": "^3.0"
     },
     "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "2.2.*",
-        "fzaninotto/faker": "1.2.*"
+        "matthiasnoback/symfony-config-test": "^2.0",
+        "matthiasnoback/symfony-dependency-injection-test": "^1.0",
+        "pamil/phpspec-generator-extension": "^0.4",
+        "phpspec/phpspec": "^3.0",
+        "phpunit/phpunit": "^5.3"
     },
     "config": {
         "bin-dir": "bin"
@@ -44,7 +52,7 @@
     ],
     "extra": {
         "branch-alias": {
-            "dev-master": "0.18-dev"
+            "dev-master": "1.0-dev"
         }
     }
 }

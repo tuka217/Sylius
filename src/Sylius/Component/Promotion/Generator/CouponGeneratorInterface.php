@@ -22,19 +22,10 @@ use Sylius\Component\Promotion\Model\PromotionInterface;
 interface CouponGeneratorInterface
 {
     /**
-     * Generate coupons for the promotion based on the instruction.
-     *
      * @param PromotionInterface $promotion
-     * @param Instruction        $instruction
-     *
-     * @return CouponInterface[] $coupons
+     * @param InstructionInterface $instruction
+     * 
+     * @return array of generated coupons with coupon code as a key
      */
-    public function generate(PromotionInterface $promotion, Instruction $instruction);
-
-    /**
-     * Generate unique code.
-     *
-     * @return string
-     */
-    public function generateUniqueCode();
+    public function generate(PromotionInterface $promotion, InstructionInterface $instruction);
 }

@@ -11,10 +11,11 @@
 
 namespace Sylius\Behat\Page\Admin\Order;
 
-use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Session;
 use Sylius\Behat\Page\SymfonyPage;
 use Sylius\Behat\Service\Accessor\TableAccessorInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -78,21 +79,52 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
     /**
      * {@inheritdoc}
      */
-    public function hasShipment($shippingMethodName)
+    public function hasShipment($shippingDetails)
     {
         $shipmentsText = $this->getElement('shipments')->getText();
 
-        return stripos($shipmentsText, $shippingMethodName) !== false;
+        return stripos($shipmentsText, $shippingDetails) !== false;
+    }
+
+    public function specifyTrackingCode($code)
+    {
+        $this->getDocument()->fillField('sylius_shipment_ship_tracking', $code);
+    }
+
+    public function canShipOrder(OrderInterface $order)
+    {
+        return $this->getLastOrderShipmentElement($order)->hasButton('Ship');
+    }
+
+    public function shipOrder(OrderInterface $order)
+    {
+        $this->getLastOrderShipmentElement($order)->pressButton('Ship');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hasPayment($paymentMethodName)
+    public function hasPayment($paymentDetails)
     {
         $paymentsText = $this->getElement('payments')->getText();
 
-        return stripos($paymentsText, $paymentMethodName) !== false;
+        return stripos($paymentsText, $paymentDetails) !== false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canCompleteOrderLastPayment(OrderInterface $order)
+    {
+        return $this->getLastOrderPaymentElement($order)->hasButton('Complete');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function completeOrderLastPayment(OrderInterface $order)
+    {
+        $this->getLastOrderPaymentElement($order)->pressButton('Complete');
     }
 
     /**
@@ -128,7 +160,7 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
     {
         $itemsTotalElement = $this->getElement('items_total');
 
-        return trim(str_replace('Items total:', '', $itemsTotalElement->getText()));
+        return trim(str_replace('Subtotal:', '', $itemsTotalElement->getText()));
     }
 
     /**
@@ -192,20 +224,119 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function hasTax($tax)
+    {
+        $taxesText = $this->getElement('taxes')->getText();
+
+        return stripos($taxesText, $tax) !== false;
+    }
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemUnitPrice($itemName)
+    {
+        return $this->getItemProperty($itemName, 'unit-price');
+    }
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemDiscountedUnitPrice($itemName)
+    {
+        return $this->getItemProperty($itemName, 'discounted-unit-price');
+    }
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemQuantity($itemName)
+    {
+        return $this->getItemProperty($itemName, 'quantity');
+    }
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemSubtotal($itemName)
+    {
+        return $this->getItemProperty($itemName, 'subtotal');
+    }
+
+    /**
      * @param string $itemName
      *
      * @return string
      */
     public function getItemDiscount($itemName)
     {
-        $rows = $this->tableAccessor->getRowsWithFields(
-            $this->getElement('table'),
-            ['item' => $itemName]
-        );
+        return $this->getItemProperty($itemName, 'discount');
+    }
 
-        $discount = $rows[0]->find('css', '.discount')->getText();
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemTax($itemName)
+    {
+        return $this->getItemProperty($itemName, 'tax');
+    }
 
-        return $discount;
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemTotal($itemName)
+    {
+        return $this->getItemProperty($itemName, 'total');
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function hasCancelButton()
+    {
+        return $this->getDocument()->hasButton('Cancel');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOrderState()
+    {
+        return $this->getElement('order_state')->getText();
+    }
+
+    public function cancelOrder()
+    {
+        $this->getDocument()->pressButton('Cancel');
+    }
+
+    public function deleteOrder()
+    {
+        $this->getDocument()->pressButton('Delete');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasNote($note)
+    {
+        $orderNotesElement = $this->getElement('order_notes');
+
+        return $orderNotesElement->getText() === $note;
     }
 
     /**
@@ -222,19 +353,22 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
     protected function getDefinedElements()
     {
         return array_merge(parent::getDefinedElements(), [
-            'customer' => '#customer',
-            'shipping_address' => '#shipping-address',
             'billing_address' => '#billing-address',
-            'payments' => '#payments',
-            'shipments' => '#shipments',
-            'table' => '.table',
+            'customer' => '#customer',
             'items_total' => '#items-total',
-            'total' => '#total',
-            'shipping_total' => '#shipping-total',
-            'shipping_charges' => '#shipping-charges',
-            'tax_total' => '#tax-total',
-            'promotion_total' => '#promotion-total',
+            'payments' => '#payments',
             'promotion_discounts' => '#promotion-discounts',
+            'promotion_total' => '#promotion-total',
+            'shipments' => '#shipments',
+            'shipping_address' => '#shipping-address',
+            'shipping_charges' => '#shipping-charges',
+            'shipping_total' => '#shipping-total',
+            'table' => '.table',
+            'tax_total' => '#tax-total',
+            'taxes' => '#taxes',
+            'total' => '#total',
+            'order_state' => 'div.sub.header > span.ui.label',
+            'order_notes' => '#sylius-order-notes',
         ]);
     }
 
@@ -264,5 +398,51 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
             (stripos($elementText, $city) !== false) &&
             (stripos($elementText, $countryName.' '.$postcode) !== false)
         ;
+    }
+
+    /**
+     * @param string $itemName
+     * @param string $property
+     *
+     * @return string
+     */
+    private function getItemProperty($itemName, $property)
+    {
+        $rows = $this->tableAccessor->getRowsWithFields(
+            $this->getElement('table'),
+            ['item' => $itemName]
+        );
+
+        return $rows[0]->find('css', '.'.$property)->getText();
+    }
+
+    /**
+     * @param OrderInterface $order
+     *
+     * @return NodeElement|null
+     */
+    private function getLastOrderPaymentElement(OrderInterface $order)
+    {
+        $payment = $order->getPayments()->last();
+
+        $paymentStateElements = $this->getElement('payments')->findAll('css', sprintf('span.ui.label:contains(\'%s\')', ucfirst($payment->getState())));
+        $paymentStateElement = end($paymentStateElements);
+
+        return $paymentStateElement->getParent()->getParent();
+    }
+
+    /**
+     * @param OrderInterface $order
+     *
+     * @return NodeElement|null
+     */
+    private function getLastOrderShipmentElement(OrderInterface $order)
+    {
+        $shipment = $order->getShipments()->last();
+
+        $shipmentStateElements = $this->getElement('shipments')->findAll('css', sprintf('span.ui.label:contains(\'%s\')', ucfirst($shipment->getState())));
+        $shipmentStateElement = end($shipmentStateElements);
+
+        return $shipmentStateElement->getParent()->getParent();
     }
 }

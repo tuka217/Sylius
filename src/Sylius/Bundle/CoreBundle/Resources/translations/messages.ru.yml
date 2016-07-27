@@ -35,6 +35,9 @@ sylius:
             currencies: Валюты
             shipping_methods: Список способов доставки
             payment_methods: Список методов оплаты
+            tax_zone_default: Налоговая зона по умолчанию
+            theme: Тема оформления
+            hostname: Хост
         image:
             file: Изображение
         locale:
@@ -58,9 +61,11 @@ sylius:
             short_description: Короткое описание
             variant_selection_method: Метод выбора вариантов
             main_taxon: Основной таксон
+            channels: Каналы
+            enabled: Активен
         product_filter:
             name: Название
-            sku: Идентификатор товарной позиции
+            code: Код
         product_variant:
             tax_category: Категория налогов
         settings:
@@ -130,10 +135,12 @@ sylius:
             name: Название
         promotion_rule:
             contains_taxon:
+                taxon: Налог
                 count: Кол-во
             taxon:
                 taxons: Налоги
             total_of_items_from_taxon:
+                taxon: Налог
                 amount: Сумма
     email:
         order_confirmation:
@@ -144,3 +151,4 @@ sylius:
             name: Подтверждение посылки
         user_confirmation:
             name: Подтверждение пользователя
+            subject: Добро пожаловать в наш магазин

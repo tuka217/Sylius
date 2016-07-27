@@ -34,6 +34,7 @@ sylius:
             currencies: Měny
             shipping_methods: Způsoby dopravy
             payment_methods: Způsoby platby
+            tax_zone_default: Výchozí sazba DPH
         image:
             file: Obrázek
         locale:
@@ -56,9 +57,11 @@ sylius:
             shipping_category: Typ dopravy
             short_description: Stručný popis
             variant_selection_method: Metoda výběru varianty
+            channels: Kanály
+            enabled: Povoleno
         product_filter:
             name: Název
-            sku: SKU
+            code: Kód
         product_variant:
             tax_category: Typ daně
         settings:

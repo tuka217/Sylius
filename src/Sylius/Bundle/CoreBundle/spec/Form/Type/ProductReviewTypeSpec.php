@@ -12,16 +12,24 @@
 namespace spec\Sylius\Bundle\CoreBundle\Form\Type;
 
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
+use Sylius\Bundle\CoreBundle\Form\EventSubscriber\AddAuthorGuestTypeFormSubscriber;
+use Sylius\Bundle\CoreBundle\Form\Type\ProductReviewType;
+use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Sylius\Bundle\ReviewBundle\Form\Type\ReviewType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
+ * @mixin ProductReviewType
+ *
+ * @author Arkadiusz Krakowiak <arkadiusz.krakowiak@lakion.com>
  */
-class ProductReviewTypeSpec extends ObjectBehavior
+final class ProductReviewTypeSpec extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith('dataClass', ['validation_group'], 'product');
+        $this->beConstructedWith('ProductReview', ['sylius'], 'product');
     }
 
     function it_is_initializable()
@@ -29,7 +37,12 @@ class ProductReviewTypeSpec extends ObjectBehavior
         $this->shouldHaveType('Sylius\Bundle\CoreBundle\Form\Type\ProductReviewType');
     }
 
-    function it_extends_review_type()
+    function it_is_a_form_type()
+    {
+        $this->shouldHaveType(AbstractResourceType::class);
+    }
+
+    function it_is_a_review_form_type()
     {
         $this->shouldHaveType(ReviewType::class);
     }
@@ -37,5 +50,53 @@ class ProductReviewTypeSpec extends ObjectBehavior
     function it_has_name()
     {
         $this->getName()->shouldReturn('sylius_product_review');
+    }
+
+    function it_has_author_in_configuration(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => 'ProductReview',
+            'validation_groups' => ['sylius'],
+        ])->shouldBeCalled();
+
+        $resolver->setDefaults([
+            'rating_steps' => 5,
+            'cascade_validation' => true,
+        ])->shouldBeCalled();
+
+        $resolver->setDefaults([
+            'author' => null,
+        ])->shouldBeCalled();
+
+        $this->configureOptions($resolver);
+    }
+
+    function it_builds_form(FormBuilderInterface $builder)
+    {
+        $builder
+            ->add('rating', 'choice', Argument::type('array'))
+            ->shouldBeCalled()
+            ->willReturn($builder)
+        ;
+
+        $builder
+            ->add('title', 'text', Argument::type('array'))
+            ->shouldBeCalled()
+            ->willReturn($builder)
+        ;
+
+        $builder
+            ->add('comment', 'textarea', Argument::type('array'))
+            ->shouldBeCalled()
+            ->willReturn($builder)
+        ;
+
+        $builder
+            ->addEventSubscriber(new AddAuthorGuestTypeFormSubscriber())
+            ->shouldBeCalled()
+            ->willReturn($builder)
+        ;
+
+        $this->buildForm($builder, ['rating_steps' => 5]);
     }
 }

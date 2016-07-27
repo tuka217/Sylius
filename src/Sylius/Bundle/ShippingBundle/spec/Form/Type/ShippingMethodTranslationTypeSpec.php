@@ -20,7 +20,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * @author Gonzalo Vilaseca <gvilaseca@reiss.co.uk>
  */
-class ShippingMethodTranslationTypeSpec extends ObjectBehavior
+final class ShippingMethodTranslationTypeSpec extends ObjectBehavior
 {
     function let()
     {
@@ -37,6 +37,11 @@ class ShippingMethodTranslationTypeSpec extends ObjectBehavior
         $builder->addEventSubscriber(Argument::any())->willReturn($builder);
         $builder
             ->add('name', 'text', Argument::any())
+            ->willReturn($builder)
+        ;
+        $builder
+            ->add('description', 'textarea', Argument::any())
+            ->shouldBeCalled()
             ->willReturn($builder)
         ;
 

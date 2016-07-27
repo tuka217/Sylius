@@ -155,16 +155,16 @@ class UpdatePage extends BaseUpdatePage implements UpdatePageInterface
     /**
      * {@inheritdoc}
      */
-    public function checkValidationMessageFor($element, $message)
+    public function getValidationMessage($element)
     {
         $provinceForm = $this->getLastProvinceElement();
 
-        $foundedElement = $provinceForm->find('css', '.pointing');
-        if (null === $foundedElement) {
+        $foundElement = $provinceForm->find('css', '.pointing');
+        if (null === $foundElement) {
             throw new ElementNotFoundException($this->getSession(), 'Tag', 'css', '.pointing');
         }
 
-        return $message === $foundedElement->getText();
+        return $foundElement->getText();
     }
 
     /**

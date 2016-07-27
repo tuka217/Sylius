@@ -24,7 +24,7 @@ use Symfony\Component\Templating\TemplateReferenceInterface;
  *
  * @author Kamil Kokot <kamil.kokot@lakion.com>
  */
-class TemplateLocatorSpec extends ObjectBehavior
+final class TemplateLocatorSpec extends ObjectBehavior
 {
     function let(ResourceLocatorInterface $resourceLocator)
     {
@@ -53,7 +53,7 @@ class TemplateLocatorSpec extends ObjectBehavior
         $this->locateTemplate($template, $theme)->shouldReturn('/acme/index.html.twig');
     }
 
-    function it_does_not_catch_exceptions_throwed_while_locating_template_to_resource_locator_even(
+    function it_does_not_catch_exceptions_thrown_while_locating_template_to_resource_locator_even(
         ResourceLocatorInterface $resourceLocator,
         TemplateReferenceInterface $template,
         ThemeInterface $theme

@@ -11,9 +11,9 @@
 
 namespace Sylius\Bundle\LocaleBundle\DependencyInjection;
 
-use Sylius\Bundle\LocaleBundle\Controller\LocaleController;
 use Sylius\Bundle\LocaleBundle\Form\Type\LocaleChoiceType;
 use Sylius\Bundle\LocaleBundle\Form\Type\LocaleType;
+use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 use Sylius\Component\Locale\Model\Locale;
 use Sylius\Component\Locale\Model\LocaleInterface;
@@ -28,9 +28,9 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * This information is solely responsible for how the different configuration
  * sections are normalized, and merged.
  *
- * @author Paweł Jędrzejewski <pjedrzejewski@diweb.pl>
+ * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
     /**
      * {@inheritdoc}
@@ -43,7 +43,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('driver')->defaultValue(SyliusResourceBundle::DRIVER_DOCTRINE_ORM)->end()
-                ->scalarNode('storage')->defaultValue('sylius.storage.session')->end()
+                ->scalarNode('locale')->defaultValue('en')->cannotBeEmpty()->end()
             ->end()
         ;
 
@@ -71,7 +71,7 @@ class Configuration implements ConfigurationInterface
                                     ->children()
                                         ->scalarNode('model')->defaultValue(Locale::class)->cannotBeEmpty()->end()
                                         ->scalarNode('interface')->defaultValue(LocaleInterface::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('controller')->defaultValue(LocaleController::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
                                         ->scalarNode('repository')->cannotBeEmpty()->end()
                                         ->scalarNode('factory')->defaultValue(Factory::class)->end()
                                         ->arrayNode('form')

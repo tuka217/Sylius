@@ -13,11 +13,13 @@ namespace Sylius\Behat\Context\Setup;
 
 use Behat\Behat\Context\Context;
 use Doctrine\Common\Persistence\ObjectManager;
+use Sylius\Component\Addressing\Model\ZoneInterface;
 use Sylius\Component\Channel\Factory\ChannelFactoryInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Test\Services\DefaultChannelFactoryInterface;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
+use Sylius\Component\Currency\Model\CurrencyInterface;
 
 /**
  * @author Arkadiusz Krakowiak <arkadiusz.krakowiak@lakion.com>
@@ -85,7 +87,9 @@ final class ChannelContext implements Context
     public function storeOperatesOnASingleChannelInFrance()
     {
         $defaultData = $this->franceChannelFactory->create();
+
         $this->sharedStorage->setClipboard($defaultData);
+        $this->sharedStorage->set('channel', $defaultData['channel']);
     }
 
     /**
@@ -94,7 +98,9 @@ final class ChannelContext implements Context
     public function storeOperatesOnASingleChannel()
     {
         $defaultData = $this->defaultChannelFactory->create();
+
         $this->sharedStorage->setClipboard($defaultData);
+        $this->sharedStorage->set('channel', $defaultData['channel']);
     }
 
     /**
@@ -103,11 +109,10 @@ final class ChannelContext implements Context
      */
     public function theStoreOperatesOnAChannelNamed($channelIdentifier)
     {
-        $channel = $this->channelFactory->createNamed($channelIdentifier);
-        $channel->setCode($channelIdentifier);
+        $defaultData = $this->defaultChannelFactory->create($channelIdentifier, $channelIdentifier);
 
-        $this->channelRepository->add($channel);
-        $this->sharedStorage->set('channel', $channel);
+        $this->sharedStorage->setClipboard($defaultData);
+        $this->sharedStorage->set('channel', $defaultData['channel']);
     }
 
     /**
@@ -124,6 +129,15 @@ final class ChannelContext implements Context
     public function theChannelIsDisabled(ChannelInterface $channel)
     {
         $this->changeChannelState($channel, false);
+    }
+
+    /**
+     * @Given /^(its) default tax zone is (zone "([^"]+)")$/
+     */
+    public function itsDefaultTaxRateIs(ChannelInterface $channel, ZoneInterface $defaultTaxZone)
+    {
+        $channel->setDefaultTaxZone($defaultTaxZone);
+        $this->channelManager->flush();
     }
 
     /**

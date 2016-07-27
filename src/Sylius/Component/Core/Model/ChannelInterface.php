@@ -12,7 +12,9 @@
 namespace Sylius\Component\Core\Model;
 
 use Sylius\Bundle\ThemeBundle\Model\ThemeInterface;
+use Sylius\Component\Addressing\Model\ZoneInterface;
 use Sylius\Component\Channel\Model\ChannelInterface as BaseChannelInterface;
+use Sylius\Component\Core\Taxation\Strategy\TaxCalculationStrategyInterface;
 use Sylius\Component\Currency\Model\CurrenciesAwareInterface;
 use Sylius\Component\Currency\Model\CurrencyInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
@@ -29,7 +31,7 @@ use Sylius\Component\Taxonomy\Model\TaxonsAwareInterface;
  *   - Shipping methods;
  *   - Taxons.
  *
- * @author Paweł Jędrzejewski <pjedrzejewski@diweb.pl>
+ * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
 interface ChannelInterface extends
     BaseChannelInterface,
@@ -68,4 +70,24 @@ interface ChannelInterface extends
      * @return CurrencyInterface
      */
     public function getDefaultCurrency();
+
+    /**
+     * @return ZoneInterface
+     */
+    public function getDefaultTaxZone();
+
+    /**
+     * @param ZoneInterface $defaultTaxZone
+     */
+    public function setDefaultTaxZone(ZoneInterface $defaultTaxZone);
+
+    /**
+     * @return string
+     */
+    public function getTaxCalculationStrategy();
+
+    /**
+     * @param string $taxCalculationStrategy
+     */
+    public function setTaxCalculationStrategy($taxCalculationStrategy);
 }

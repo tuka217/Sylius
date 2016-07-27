@@ -24,6 +24,7 @@ sylius:
             roles: Peran
         channel:
             currency_default: Mata uang default
+            tax_zone_default: Standar Zona Pajak
         image:
             file: Gambar
         locale:
@@ -42,9 +43,10 @@ sylius:
             shipping_category: Kategori Pengiriman
             short_description: Deskripsi singkat
             variant_selection_method: Metode Pilih Varian
+            enabled: Diaktifkan
         product_filter:
             name: Nama
-            sku: SKU
+            code: Kode
         product_variant:
             tax_category: Kategori Pajak
         settings:

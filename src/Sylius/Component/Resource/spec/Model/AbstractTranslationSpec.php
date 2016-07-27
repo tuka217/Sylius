@@ -17,7 +17,7 @@ use Sylius\Component\Resource\Model\AbstractTranslation;
 use Sylius\Component\Resource\Model\TranslatableInterface;
 use Sylius\Component\Resource\Model\TranslationInterface;
 
-class AbstractTranslationSpec extends ObjectBehavior
+final class AbstractTranslationSpec extends ObjectBehavior
 {
     function let()
     {
@@ -29,7 +29,7 @@ class AbstractTranslationSpec extends ObjectBehavior
         $this->shouldImplement(TranslationInterface::class);
     }
 
-    function its_translatable_is_mutabale(TranslatableInterface $translatable)
+    function its_translatable_is_mutable(TranslatableInterface $translatable)
     {
         $this->setTranslatable($translatable);
         $this->getTranslatable()->shouldReturn($translatable);

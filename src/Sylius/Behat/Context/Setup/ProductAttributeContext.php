@@ -14,7 +14,7 @@ namespace Sylius\Behat\Context\Setup;
 use Behat\Behat\Context\Context;
 use Sylius\Component\Attribute\Factory\AttributeFactoryInterface;
 use Sylius\Component\Attribute\Repository\AttributeRepositoryInterface;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 
 /**
  * @author Anna Walasek <anna.walasek@lakion.com>
@@ -70,11 +70,16 @@ final class ProductAttributeContext implements Context
     /**
      * @param string $type
      * @param string $name
-     * @param string $code
+     * @param string|null $code
      */
-    private function createProductAttribute($type, $name, $code = 'PA112')
+    private function createProductAttribute($type, $name, $code = null)
     {
         $productAttribute = $this->productAttributeFactory->createTyped($type);
+
+        if (null === $code) {
+            $code = str_replace(' ', '_', strtoupper($name));
+        }
+
         $productAttribute->setCode($code);
         $productAttribute->setName($name);
 

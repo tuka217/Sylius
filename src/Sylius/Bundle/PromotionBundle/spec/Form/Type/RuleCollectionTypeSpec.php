@@ -25,14 +25,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * @author Arnaud Langlade <arn0d.dev@gmail.com>
  * @author Arnaud Langlade <arn0d.dev@gmail.com>
  */
-class RuleCollectionTypeSpec extends ObjectBehavior
+final class RuleCollectionTypeSpec extends ObjectBehavior
 {
     function let(ServiceRegistryInterface $registry)
     {
         $this->beConstructedWith($registry);
     }
 
-    function it_is_initializabled()
+    function it_is_initializable()
     {
         $this->shouldHaveType(RuleCollectionType::class);
     }

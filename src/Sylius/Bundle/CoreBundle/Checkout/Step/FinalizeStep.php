@@ -70,18 +70,15 @@ class FinalizeStep extends CheckoutStep
     {
         $this->get('session')->set('sylius_order_id', $order->getId());
 
-        $currencyProvider = $this->get('sylius.currency_provider');
-
         $this->dispatchCheckoutEvent(SyliusOrderEvents::PRE_CREATE, $order);
         $this->dispatchCheckoutEvent(SyliusCheckoutEvents::FINALIZE_PRE_COMPLETE, $order);
 
         $this->applyTransition(OrderCheckoutTransitions::TRANSITION_COMPLETE, $order);
-        $this->get('sm.factory')->get($order, OrderTransitions::GRAPH)->apply(OrderTransitions::SYLIUS_CREATE, true);
-        if ($order->getCurrency() !== $currencyProvider->getBaseCurrency()) {
-            $currencyRepository = $this->get('sylius.repository.currency');
-            $currency = $currencyRepository->findOneBy(['code' => $order->getCurrency()]);
-            $order->setExchangeRate($currency->getExchangeRate());
-        }
+        $this->get('sm.factory')->get($order, OrderTransitions::GRAPH)->apply(OrderTransitions::TRANSITION_CREATE, true);
+
+        $currencyRepository = $this->get('sylius.repository.currency');
+        $currency = $currencyRepository->findOneBy(['code' => $order->getCurrencyCode()]);
+        $order->setExchangeRate($currency->getExchangeRate());
 
         $manager = $this->get('sylius.manager.order');
         $manager->persist($order);

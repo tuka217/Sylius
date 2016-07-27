@@ -23,7 +23,7 @@ use Sylius\Component\Core\Model\PaymentInterface;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class CheckoutProcessScenarioSpec extends ObjectBehavior
+final class CheckoutProcessScenarioSpec extends ObjectBehavior
 {
     function let(CartProviderInterface $cartProvider, OrderInterface $cart)
     {
@@ -52,8 +52,7 @@ class CheckoutProcessScenarioSpec extends ObjectBehavior
         $builder->add('shipping', 'sylius_checkout_shipping')->willReturn($builder)->shouldBeCalled();
         $builder->add('payment', 'sylius_checkout_payment')->willReturn($builder)->shouldBeCalled();
         $builder->add('finalize', 'sylius_checkout_finalize')->willReturn($builder)->shouldBeCalled();
-        $builder->setRedirect('sylius_order_purchase')->willReturn($builder)->shouldBeCalled();
-        $builder->setRedirectParams(['paymentId' => 1])->willReturn($builder)->shouldBeCalled();;
+        $builder->setRedirect('sylius_shop_checkout_thank_you')->willReturn($builder)->shouldBeCalled();
 
         $cart->getId()->willReturn(1);
 

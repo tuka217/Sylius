@@ -19,7 +19,7 @@ use Sylius\Component\Payment\Model\PaymentMethodInterface;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class PaymentSpec extends ObjectBehavior
+final class PaymentSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
@@ -65,15 +65,15 @@ class PaymentSpec extends ObjectBehavior
         $this->getSource()->shouldReturn(null);
     }
 
-    function it_has_no_currency_by_default()
+    function it_has_no_currency_code_by_default()
     {
-        $this->getCurrency()->shouldReturn(null);
+        $this->getCurrencyCode()->shouldReturn(null);
     }
 
-    function its_currency_is_mutable()
+    function its_currency_code_is_mutable()
     {
-        $this->setCurrency('EUR');
-        $this->getCurrency()->shouldReturn('EUR');
+        $this->setCurrencyCode('EUR');
+        $this->getCurrencyCode()->shouldReturn('EUR');
     }
 
     function it_has_amount_equal_to_0_by_default()

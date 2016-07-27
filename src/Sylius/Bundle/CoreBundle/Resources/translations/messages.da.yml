@@ -28,6 +28,7 @@ sylius:
             currency_default: Standard valuta
             shipping_methods: Fragtmetoder
             payment_methods: Betalingsmetoder
+            tax_zone_default: Standard moms zone
         image:
             file: Billede
         locale:
@@ -49,9 +50,10 @@ sylius:
             shipping_category: Fragt kategori
             short_description: Kort beskrivelse
             variant_selection_method: Variant udvælgelsesmetode
+            enabled: Aktiveret
         product_filter:
             name: Navn
-            sku: SKU
+            code: Kode
         product_variant:
             tax_category: Momskategori
         settings:

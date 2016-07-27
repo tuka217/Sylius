@@ -14,7 +14,9 @@ namespace Sylius\Behat\Context\Setup;
 use Behat\Behat\Context\Context;
 use Sylius\Component\Addressing\Model\ZoneInterface;
 use Sylius\Component\Addressing\Repository\ZoneRepositoryInterface;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Component\Core\Formatter\StringInflector;
+use Sylius\Component\Core\Model\TaxRateInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Taxation\Model\TaxCategoryInterface;
@@ -84,14 +86,21 @@ final class TaxationContext implements Context
      * @Given the store has :taxRateName tax rate of :taxRateAmount% for :taxCategoryName within :zone zone identified by :taxRateCode code 
      * @Given /^the store has "([^"]+)" tax rate of ([^"]+)% for "([^"]+)" for (the rest of the world)$/
      */
-    public function storeHasTaxRateWithinZone($taxRateName, $taxRateAmount, $taxCategoryName, ZoneInterface $zone, $taxRateCode = null)
-    {
+    public function storeHasTaxRateWithinZone(
+        $taxRateName,
+        $taxRateAmount,
+        $taxCategoryName,
+        ZoneInterface $zone,
+        $taxRateCode = null,
+        $includedInPrice = false
+    ) {
         $taxCategory = $this->getOrCreateTaxCategory($taxCategoryName);
 
         if (null === $taxRateCode) {
             $taxRateCode = $this->getCodeFromNameAndZoneCode($taxRateName, $zone->getCode());
         }
 
+        /** @var TaxRateInterface $taxRate */
         $taxRate = $this->taxRateFactory->createNew();
         $taxRate->setName($taxRateName);
         $taxRate->setCode($taxRateCode);
@@ -99,10 +108,19 @@ final class TaxationContext implements Context
         $taxRate->setAmount($this->getAmountFromString($taxRateAmount));
         $taxRate->setCategory($taxCategory);
         $taxRate->setCalculator('default');
+        $taxRate->setIncludedInPrice($includedInPrice);
 
         $this->taxRateRepository->add($taxRate);
 
         $this->sharedStorage->set('tax_rate', $taxRate);
+    }
+
+    /**
+     * @Given the store has included in price :taxRateName tax rate of :taxRateAmount% for :taxCategoryName within :zone zone
+     */
+    public function storeHasIncludedInPriceTaxRateWithinZone($taxRateName, $taxRateAmount, $taxCategoryName, ZoneInterface $zone)
+    {
+        $this->storeHasTaxRateWithinZone($taxRateName, $taxRateAmount, $taxCategoryName, $zone, null, true);
     }
 
     /**
@@ -183,7 +201,7 @@ final class TaxationContext implements Context
      */
     private function getCodeFromName($taxRateName)
     {
-        return str_replace(' ', '_', strtolower($taxRateName));
+        return StringInflector::nameToLowercaseCode($taxRateName);
     }
 
     /**

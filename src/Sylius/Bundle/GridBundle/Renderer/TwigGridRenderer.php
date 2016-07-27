@@ -18,6 +18,7 @@ use Sylius\Component\Grid\Renderer\GridRendererInterface;
 use Sylius\Component\Grid\View\GridView;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
@@ -92,7 +93,12 @@ class TwigGridRenderer implements GridRendererInterface
      */
     public function renderField(GridView $gridView, Field $field, $data)
     {
-        return $this->fieldsRegistry->get($field->getType())->render($field, $data);
+        $fieldType = $this->fieldsRegistry->get($field->getType());
+        $resolver = new OptionsResolver();
+        $fieldType->configureOptions($resolver);
+        $options = $resolver->resolve($field->getOptions());
+
+        return $fieldType->render($field, $data, $options);
     }
 
     /**
@@ -120,10 +126,11 @@ class TwigGridRenderer implements GridRendererInterface
             throw new \InvalidArgumentException(sprintf('Missing template for filter type "%s".', $type));
         }
 
-        $criteria = $gridView->getParameters()->get('criteria', []);
-
-        $form = $this->formFactory->createNamed('criteria', 'form', $criteria, ['csrf_protection' => false, 'required' => false]);
+        $form = $this->formFactory->createNamed('criteria', 'form', [], ['csrf_protection' => false, 'required' => false]);
         $form->add($filter->getName(), sprintf('sylius_grid_filter_%s', $filter->getType()), $filter->getOptions());
+
+        $criteria = $gridView->getParameters()->get('criteria', []);
+        $form->submit($criteria);
 
         return $this->twig->render($this->filterTemplates[$type], [
             'grid' => $gridView,

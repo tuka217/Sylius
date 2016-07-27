@@ -37,10 +37,38 @@ class TemplatingTest extends ThemeBundleTestCase
     {
         return [
             ['TestBundle:Templating:vanillaTemplate.txt.twig', 'TestBundle:Templating:vanillaTemplate.txt.twig'],
-            ['TestBundle:Templating:vanillaOverridedTemplate.txt.twig', 'TestBundle:Templating:vanillaOverridedTemplate.txt.twig (app overrided)'],
-            ['TestBundle:Templating:vanillaOverridedThemeTemplate.txt.twig', 'TestBundle:Templating:vanillaOverridedThemeTemplate.txt.twig|sylius/first-test-theme'],
+            ['TestBundle:Templating:vanillaOverriddenTemplate.txt.twig', 'TestBundle:Templating:vanillaOverriddenTemplate.txt.twig (app overridden)'],
+            ['TestBundle:Templating:vanillaOverriddenThemeTemplate.txt.twig', 'TestBundle:Templating:vanillaOverriddenThemeTemplate.txt.twig|sylius/first-test-theme'],
             ['TestBundle:Templating:bothThemesTemplate.txt.twig', 'TestBundle:Templating:bothThemesTemplate.txt.twig|sylius/first-test-theme'],
             ['TestBundle:Templating:lastThemeTemplate.txt.twig', 'TestBundle:Templating:lastThemeTemplate.txt.twig|sylius/second-test-theme'],
+        ];
+    }
+
+    /**
+     * @dataProvider getBundleTemplatesUsingNamespacedPaths
+     *
+     * @param string $templateName
+     * @param string $contents
+     */
+    public function testRenderBundleTemplatesUsingNamespacedPaths($templateName, $contents)
+    {
+        $client = $this->getClient();
+
+        $crawler = $client->request('GET', '/template/'.$templateName);
+        $this->assertEquals($contents, trim($crawler->text()));
+    }
+
+    /**
+     * @return array
+     */
+    public function getBundleTemplatesUsingNamespacedPaths()
+    {
+        return [
+            ['@Test/Templating/vanillaTemplate.txt.twig', 'TestBundle:Templating:vanillaTemplate.txt.twig'],
+            ['@Test/Templating/vanillaOverriddenTemplate.txt.twig', 'TestBundle:Templating:vanillaOverriddenTemplate.txt.twig (app overridden)'],
+            ['@Test/Templating/vanillaOverriddenThemeTemplate.txt.twig', 'TestBundle:Templating:vanillaOverriddenThemeTemplate.txt.twig|sylius/first-test-theme'],
+            ['@Test/Templating/bothThemesTemplate.txt.twig', 'TestBundle:Templating:bothThemesTemplate.txt.twig|sylius/first-test-theme'],
+            ['@Test/Templating/lastThemeTemplate.txt.twig', 'TestBundle:Templating:lastThemeTemplate.txt.twig|sylius/second-test-theme'],
         ];
     }
 
@@ -67,6 +95,32 @@ class TemplatingTest extends ThemeBundleTestCase
             [':Templating:vanillaTemplate.txt.twig', ':Templating:vanillaTemplate.txt.twig'],
             [':Templating:bothThemesTemplate.txt.twig', ':Templating:bothThemesTemplate.txt.twig|sylius/first-test-theme'],
             [':Templating:lastThemeTemplate.txt.twig', ':Templating:lastThemeTemplate.txt.twig|sylius/second-test-theme'],
+        ];
+    }
+
+    /**
+     * @dataProvider getAppTemplatesUsingNamespacedPaths
+     *
+     * @param string $templateName
+     * @param string $contents
+     */
+    public function testRenderAppTemplatesUsingNamespacedPaths($templateName, $contents)
+    {
+        $client = $this->getClient();
+
+        $crawler = $client->request('GET', '/template/'.$templateName);
+        $this->assertEquals($contents, trim($crawler->text()));
+    }
+
+    /**
+     * @return array
+     */
+    public function getAppTemplatesUsingNamespacedPaths()
+    {
+        return [
+            ['/Templating/vanillaTemplate.txt.twig', ':Templating:vanillaTemplate.txt.twig'],
+            ['/Templating/bothThemesTemplate.txt.twig', ':Templating:bothThemesTemplate.txt.twig|sylius/first-test-theme'],
+            ['/Templating/lastThemeTemplate.txt.twig', ':Templating:lastThemeTemplate.txt.twig|sylius/second-test-theme'],
         ];
     }
 }

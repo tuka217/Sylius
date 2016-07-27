@@ -13,9 +13,10 @@ namespace Sylius\Behat\Context\Domain;
 
 use Behat\Behat\Context\Context;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Promotion\Model\PromotionInterface;
 use Sylius\Component\Promotion\Repository\PromotionRepositoryInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Jan Góralski <jan.goralski@lakion.com>
@@ -72,7 +73,7 @@ final class PromotionContext implements Context
      */
     public function promotionShouldNotExistInTheRegistry(PromotionInterface $promotion)
     {
-        expect($this->promotionRepository->findOneBy(['code' => $promotion->getCode()]))->toBe(null);
+        Assert::null($this->promotionRepository->findOneBy(['code' => $promotion->getCode()]));
     }
 
     /**
@@ -80,7 +81,7 @@ final class PromotionContext implements Context
      */
     public function promotionShouldStillExistInTheRegistry(PromotionInterface $promotion)
     {
-        expect($this->promotionRepository->find($promotion->getId()))->toNotBe(null);
+        Assert::notNull($this->promotionRepository->find($promotion->getId()));
     }
 
     /**
@@ -88,24 +89,6 @@ final class PromotionContext implements Context
      */
     public function iShouldBeNotifiedOfFailure()
     {
-        expect($this->sharedStorage->get('last_exception'))
-            ->toBeAnInstanceOf(ForeignKeyConstraintViolationException::class)
-        ;
-    }
-
-    /**
-     * @Then I should be notified that it has been successfully deleted
-     */
-    public function iShouldBeNotifiedOfSuccess()
-    {
-        // Not applicable in the domain scope
-    }
-
-    /**
-     * @Given I am logged in as an administrator
-     */
-    public function iAmLoggedInAsAnAdministrator()
-    {
-        // Not applicable in the domain scope
+        Assert::isInstanceOf($this->sharedStorage->get('last_exception'), ForeignKeyConstraintViolationException::class);
     }
 }

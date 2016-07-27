@@ -12,103 +12,62 @@
 namespace Sylius\Component\Variation\Model;
 
 use Doctrine\Common\Collections\Collection;
+use Sylius\Component\Resource\Model\CodeAwareInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\TimestampableInterface;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-interface VariantInterface extends TimestampableInterface, ResourceInterface
+interface VariantInterface extends TimestampableInterface, ResourceInterface, CodeAwareInterface
 {
     /**
-     * Checks whether variant is master.
-     *
-     * @return bool
-     */
-    public function isMaster();
-
-    /**
-     * Defines whether variant is master.
-     *
-     * @param bool $master
-     */
-    public function setMaster($master);
-
-    /**
-     * Get presentation.
-     *
      * This should be generated from option values
      * when no other is set.
      *
      * @return string
      */
-    public function getPresentation();
+    public function getName();
 
     /**
-     * Set custom presentation.
-     *
-     * @param string $presentation
+     * @param string $name
      */
-    public function setPresentation($presentation);
+    public function setName($name);
 
     /**
-     * Get product.
-     *
      * @return VariableInterface
      */
     public function getObject();
 
     /**
-     * Set product.
-     *
      * @param VariableInterface|null $object
      */
     public function setObject(VariableInterface $object = null);
 
     /**
-     * Returns all option values.
-     *
      * @return Collection|OptionValueInterface[]
      */
     public function getOptions();
 
     /**
-     * Sets all variant options.
-     *
      * @param Collection $options
      */
     public function setOptions(Collection $options);
 
     /**
-     * Adds option value.
-     *
      * @param OptionValueInterface $option
      */
     public function addOption(OptionValueInterface $option);
 
     /**
-     * Removes option from variant.
-     *
      * @param OptionValueInterface $option
      */
     public function removeOption(OptionValueInterface $option);
 
     /**
-     * Checks whether variant has given option.
-     *
      * @param OptionValueInterface $option
      *
      * @return bool
      */
     public function hasOption(OptionValueInterface $option);
-
-    /**
-     * This method is used by product variants to inherit values
-     * from a master variant, which is treated as a "template" for them.
-     *
-     * This is usable only when product has options.
-     *
-     * @param VariantInterface $masterVariant
-     */
-    public function setDefaults(VariantInterface $masterVariant);
 }

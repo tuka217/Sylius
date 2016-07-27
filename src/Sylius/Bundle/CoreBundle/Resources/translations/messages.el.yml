@@ -23,6 +23,7 @@ sylius:
             roles: Ρόλοι
         channel:
             currency_default: Προεπιλεγμένο νόμισμα
+            tax_zone_default: Προεπιλεγμένη φορολογική ζώνη
         image:
             file: Εικόνα
         locale:
@@ -41,9 +42,10 @@ sylius:
             shipping_category: Κατηγορία αποστολής
             short_description: Σύντομη περιγραφή
             variant_selection_method: Μέθοδος επιλογής παραλλαγής
+            enabled: Ενεργοποιημένο
         product_filter:
             name: Ονομασία
-            sku: ΚΩΔΙΚΟΣ ΠΡΟΪΟΝΤΟΣ
+            code: Κώδικος
         product_variant:
             tax_category: Φορολογική κατηγορία
         settings:

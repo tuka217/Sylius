@@ -8,12 +8,14 @@ sylius_backend_payment_index:
         _controller: sylius.controller.payment:indexAction
         _sylius:
             template: SyliusWebBundle:Backend/Payment:index.html.twig
-            method: createFilterPaginator
-            arguments: [$criteria, $sorting]
+            repository:
+                method: createFilterPaginator
+                arguments: [$criteria, $sorting]
             paginate: 20
             sortable: true
             sorting:
                 updatedAt: desc
+            permission: true
 
 sylius_backend_payment_create:
     path: /new
@@ -23,6 +25,7 @@ sylius_backend_payment_create:
         _sylius:
             template: SyliusWebBundle:Backend/Payment:create.html.twig
             redirect: sylius_backend_payment_index
+            permission: true
 
 sylius_backend_payment_update:
     path: /{id}/edit
@@ -32,6 +35,7 @@ sylius_backend_payment_update:
         _sylius:
             template: SyliusWebBundle:Backend/Payment:update.html.twig
             redirect: sylius_backend_payment_index
+            permission: true
 
 sylius_backend_payment_delete:
     path: /{id}
@@ -41,6 +45,7 @@ sylius_backend_payment_delete:
         _sylius:
             template: SyliusWebBundle:Backend/Misc:delete.html.twig
             redirect: sylius_backend_payment_index
+            permission: true
 
 sylius_backend_payment_history:
     path: /{id}/history
@@ -49,10 +54,16 @@ sylius_backend_payment_history:
         _controller: sylius.controller.payment:historyAction
         _sylius:
             template: SyliusWebBundle:Backend/Payment:history.html.twig
+            permission: true
 
 sylius_backend_payment_update_state:
     path: /update-state/{id}/{transition}
     methods: [PUT]
     defaults:
-        _controller: sylius.controller.payment:updateStateAction
-        graph: sylius_payment
+        _controller: sylius.controller.payment:applyStateMachineTransitionAction
+        _sylius:
+            state_machine:
+                graph: sylius_payment
+                transition: $transition
+            redirect: referer
+            permission: true

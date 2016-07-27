@@ -28,7 +28,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * This information is solely responsible for how the different configuration
  * sections are normalized, and merged.
  *
- * @author Paweł Jędrzejewski <pjedrzejewski@diweb.pl>
+ * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
 class Configuration implements ConfigurationInterface
 {
@@ -43,7 +43,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('driver')->defaultValue(SyliusResourceBundle::DRIVER_DOCTRINE_ORM)->end()
-                ->booleanNode('fake_channel_support')->defaultFalse()->cannotBeEmpty()->end()
+                ->booleanNode('debug')->defaultValue('%kernel.debug%')->cannotBeEmpty()->end()
             ->end()
         ;
 

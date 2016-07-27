@@ -28,6 +28,7 @@ sylius:
             currency_default: Moneda implicită
             shipping_methods: Metode de livrare
             payment_methods: Metode de plată
+            tax_zone_default: Zona de taxă implicită
         image:
             file: Imagine
         locale:
@@ -49,9 +50,10 @@ sylius:
             shipping_category: Categoria de livrare
             short_description: Descriere scurtă
             variant_selection_method: Metoda de selectare a variantei
+            enabled: Activat
         product_filter:
             name: Nume
-            sku: SKU
+            code: Cod
         product_variant:
             tax_category: Categoria de taxă
         settings:

@@ -35,6 +35,7 @@ sylius:
             currencies: Monedhat
             shipping_methods: Mënyrat e dërgesës
             payment_methods: Mënyrat e pagesës
+            tax_zone_default: Zona e paracakruar e taksimit
             theme: Tema
             hostname: Emri i hostit
         image:
@@ -60,9 +61,11 @@ sylius:
             short_description: Përshkrim i shkurtër
             variant_selection_method: Metoda rezervë e përzgjedhjes
             main_taxon: Tipologjia kryesore
+            channels: Kanalet
+            enabled: E aktivizuar
         product_filter:
             name: Emri
-            sku: SKU
+            code: Kodi
         product_variant:
             tax_category: Kategoria e taksimit
         settings:
@@ -149,5 +152,6 @@ sylius:
             name: Konfirmimi i dërgesës
         user_confirmation:
             name: Konfirmimi i përdoruesit
+            subject: Mirë se erdhët në arkivin tone
         password_reset:
             name: Ricakto Fjalëkalimin

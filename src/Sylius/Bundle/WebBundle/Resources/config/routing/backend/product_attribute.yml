@@ -8,7 +8,14 @@ sylius_backend_product_attribute_index:
         _controller: sylius.controller.product_attribute:indexAction
         _sylius:
             template: SyliusWebBundle:Backend/ProductAttribute:index.html.twig
+            repository:
+                method: createFilterPaginator
+                arguments: [$criteria, $sorting]
+            paginate: 20
             sortable: true
+            sorting:
+                updatedAt: desc
+            permission: true
 
 sylius_backend_product_attribute_create:
     path: /new/{type}
@@ -22,6 +29,7 @@ sylius_backend_product_attribute_create:
             factory:
                 method: createTyped
                 arguments: [$type]
+            permission: true
 
 sylius_backend_product_attribute_update:
     path: /{id}/edit
@@ -31,6 +39,7 @@ sylius_backend_product_attribute_update:
         _sylius:
             template: SyliusWebBundle:Backend/ProductAttribute:update.html.twig
             redirect: sylius_backend_product_attribute_index
+            permission: true
 
 sylius_backend_product_attribute_delete:
     path: /{id}
@@ -40,6 +49,7 @@ sylius_backend_product_attribute_delete:
         _sylius:
             template: SyliusWebBundle:Backend/Misc:delete.html.twig
             redirect: sylius_backend_product_attribute_index
+            permission: true
 
 sylius_backend_get_attribute_types:
     path: /attribute-types

@@ -18,14 +18,14 @@ use Symfony\Component\Validator\Constraint;
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
  * @author Grzegorz Sadowski <grzegorz.sadowski@lakion.com>
  */
-class UniqueReviewerEmailSpec extends ObjectBehavior
+final class UniqueReviewerEmailSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
         $this->shouldHaveType('Sylius\Bundle\ReviewBundle\Validator\Constraints\UniqueReviewerEmail');
     }
 
-    function it_extends_contraint_class()
+    function it_extends_constraint_class()
     {
         $this->shouldHaveType(Constraint::class);
     }

@@ -30,7 +30,7 @@ class Shipment implements ShipmentInterface
     /**
      * @var string
      */
-    protected $state = ShipmentInterface::STATE_CHECKOUT;
+    protected $state = ShipmentInterface::STATE_CART;
 
     /**
      * @var ShippingMethodInterface
@@ -96,7 +96,7 @@ class Shipment implements ShipmentInterface
     /**
      * {@inheritdoc}
      */
-    public function setMethod(ShippingMethodInterface $method)
+    public function setMethod(ShippingMethodInterface $method = null)
     {
         $this->method = $method;
     }

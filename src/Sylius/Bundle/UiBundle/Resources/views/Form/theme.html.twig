@@ -11,7 +11,7 @@
 {%- block form_errors -%}
     {%- if errors|length > 0 -%}
         {%- for error in errors -%}
-            <div class="ui red pointing label">
+            <div class="ui red pointing label sylius-validation-error">
             {{ error.message }}
             </div>
         {%- endfor -%}
@@ -28,9 +28,19 @@
     </div>
 {%- endblock checkbox_row %}
 
+{% block radio_row -%}
+    <div class="field{% if (not compound or force_error|default(false)) and not valid %} error{% endif %}">
+        <div class="ui radio checkbox">
+            {{- form_label(form) -}}
+            {{- form_widget(form) -}}
+            {{- form_errors(form) -}}
+        </div>
+    </div>
+{%- endblock radio_row %}
+
 {% block money_widget -%}
     <div class="ui labeled input">
-        <div class="ui label">{{ sylius_currency_symbol() }}</div>
+        <div class="ui label">{{ currency|sylius_currency_symbol }}</div>
         {{- form_widget(form) -}}
     </div>
 {%- endblock money_widget %}
@@ -38,7 +48,8 @@
 {% block choice_row -%}
     <div class="{% if required %}required {% endif %}field{% if (not compound or force_error|default(false)) and not valid %} error{% endif %}">
         {{- form_label(form) -}}
-        {{- form_widget(form, {'attr': {'class': 'ui dropdown'}}) -}}
+        {% set attr = attr|merge({'class': attr.class|default ~ ' ui dropdown'}) %}
+        {{- form_widget(form, {'attr': attr}) -}}
         {{- form_errors(form) -}}
     </div>
 {%- endblock choice_row %}
@@ -155,6 +166,19 @@
                 {% endif %}
             {% endfor %}
             </div>
+    </div>
+{% endblock %}
+
+{% block sylius_image_widget %}
+    <div class="ui upload box segment">
+        {% if form.vars.value.path|default(null) is null %}
+            <label for="{{ form.file.vars.id }}" class="ui icon labeled button"><i class="cloud upload icon"></i> {{ 'sylius.ui.choose_file'|trans }}</label>
+        {% else %}
+            <img class="ui small bordered image" src="{{ form.vars.value.path|imagine_filter('sylius_small') }}" alt="" />
+        {% endif %}
+        <div class="ui hidden element">
+            {{ form_widget(form.file) }}
+        </div>
     </div>
 {% endblock %}
 

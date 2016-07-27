@@ -13,17 +13,13 @@ namespace Sylius\Component\Core\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Sylius\Component\User\Model\Customer as BaseCustomer;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Michał Marcinkowski <michal.marcinkowski@lakion.com>
  */
 class Customer extends BaseCustomer implements CustomerInterface, ProductReviewerInterface
 {
-    /**
-     * @var string
-     */
-    protected $currency;
-
     /**
      * @var ArrayCollection
      */
@@ -50,22 +46,6 @@ class Customer extends BaseCustomer implements CustomerInterface, ProductReviewe
 
         $this->orders = new ArrayCollection();
         $this->addresses = new ArrayCollection();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setCurrency($currency)
-    {
-        $this->currency = $currency;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCurrency()
-    {
-        return $this->currency;
     }
 
     /**

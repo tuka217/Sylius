@@ -15,24 +15,22 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Sylius\Component\Shipping\Model\ShippingSubjectInterface;
 use Sylius\Component\Shipping\Resolver\MethodsResolverInterface;
 use Symfony\Bridge\Doctrine\Form\DataTransformer\CollectionToArrayTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @author Arnaud Langlade <arn0d.dev@gamil.com>
  */
-class ShippingMethodChoiceTypeSpec extends ObjectBehavior
+final class ShippingMethodChoiceTypeSpec extends ObjectBehavior
 {
     function let(
-        MethodsResolverInterface $resolver,
+        MethodsResolverInterface $methodsResolver,
         ServiceRegistryInterface $calculators,
         RepositoryInterface $repository
     ) {
-        $this->beConstructedWith($resolver, $calculators, $repository);
+        $this->beConstructedWith($methodsResolver, $calculators, $repository);
     }
 
     function it_is_initializable()
@@ -50,19 +48,6 @@ class ShippingMethodChoiceTypeSpec extends ObjectBehavior
         $builder->addModelTransformer(Argument::type(CollectionToArrayTransformer::class))->shouldBeCalled();
 
         $this->buildForm($builder, ['multiple' => true]);
-    }
-
-    function it_has_options(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults(Argument::withKey('choice_list'))->shouldBeCalled()->willReturn($resolver);
-        $resolver->setDefined([
-            'subject',
-        ])->shouldBeCalled()->willReturn($resolver);
-
-        $resolver->setAllowedTypes('subject', ShippingSubjectInterface::class)->shouldBeCalled()->willReturn($resolver);
-        $resolver->setAllowedTypes('criteria', 'array')->shouldBeCalled()->willReturn($resolver);
-
-        $this->configureOptions($resolver);
     }
 
     function it_has_a_parent()

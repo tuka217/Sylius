@@ -20,9 +20,9 @@ use Sylius\Component\Rbac\Provider\PermissionProviderInterface;
 use Sylius\Component\Rbac\Resolver\PermissionsResolverInterface;
 
 /**
- * @author Paweł Jędrzejewski <pjedrzejewski@diweb.pl>
+ * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class PermissionMapSpec extends ObjectBehavior
+final class PermissionMapSpec extends ObjectBehavior
 {
     function let(PermissionProviderInterface $permissionProvider, PermissionsResolverInterface $permissionResolver)
     {

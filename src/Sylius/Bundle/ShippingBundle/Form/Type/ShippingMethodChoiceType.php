@@ -11,10 +11,8 @@
 
 namespace Sylius\Bundle\ShippingBundle\Form\Type;
 
-use Sylius\Bundle\ResourceBundle\Form\DataTransformer\ObjectToIdentifierTransformer;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Sylius\Component\Shipping\Model\ShippingMethod;
 use Sylius\Component\Shipping\Model\ShippingMethodInterface;
 use Sylius\Component\Shipping\Model\ShippingSubjectInterface;
 use Sylius\Component\Shipping\Resolver\MethodsResolverInterface;
@@ -37,11 +35,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ShippingMethodChoiceType extends AbstractType
 {
     /**
-     * Supported methods resolver.
-     *
      * @var MethodsResolverInterface
      */
-    protected $resolver;
+    protected $shippingMethodsResolver;
 
     /**
      * @var ServiceRegistryInterface
@@ -54,16 +50,16 @@ class ShippingMethodChoiceType extends AbstractType
     protected $repository;
 
     /**
-     * @param MethodsResolverInterface    $resolver
-     * @param ServiceRegistryInterface    $calculators
-     * @param RepositoryInterface         $repository
+     * @param MethodsResolverInterface $shippingMethodsResolver
+     * @param ServiceRegistryInterface $calculators
+     * @param RepositoryInterface $repository
      */
     public function __construct(
-        MethodsResolverInterface $resolver,
+        MethodsResolverInterface $shippingMethodsResolver,
         ServiceRegistryInterface $calculators,
         RepositoryInterface $repository
     ) {
-        $this->resolver = $resolver;
+        $this->shippingMethodsResolver = $shippingMethodsResolver;
         $this->calculators = $calculators;
         $this->repository = $repository;
     }
@@ -84,34 +80,23 @@ class ShippingMethodChoiceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $choiceList = function (Options $options) {
-            if (isset($options['subject'])) {
-                $methods = $this->resolver->getSupportedMethods($options['subject'], $options['criteria']);
+            if (isset($options['subject']) && $this->shippingMethodsResolver->supports($options['subject'])) {
+                $methods = $this->shippingMethodsResolver->getSupportedMethods($options['subject']);
             } else {
-                $methods = $this->repository->findBy($options['criteria']);
+                $methods = $this->repository->findAll();
             }
 
             return new ObjectChoiceList($methods, null, [], null, 'id');
         };
 
-        $dataClass = function (Options $options) {
-            if ($options['multiple']) {
-                return null;
-            }
-
-            return ShippingMethodInterface::class;
-        };
-
         $resolver
             ->setDefaults([
                 'choice_list' => $choiceList,
-                'criteria' => [],
-                'data_class' => $dataClass,
             ])
             ->setDefined([
                 'subject',
             ])
             ->setAllowedTypes('subject', ShippingSubjectInterface::class)
-            ->setAllowedTypes('criteria', 'array')
         ;
     }
 
@@ -155,19 +140,5 @@ class ShippingMethodChoiceType extends AbstractType
     public function getName()
     {
         return 'sylius_shipping_method_choice';
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return ObjectToIdentifierTransformer|CollectionToArrayTransformer
-     */
-    private function getProperTransformer(array $options)
-    {
-        if ($options['multiple']) {
-            return new CollectionToArrayTransformer();
-        }
-
-        return new ObjectToIdentifierTransformer($this->repository);
     }
 }

@@ -3,8 +3,8 @@
     <td class="col-md-1">{{ loop.index }}</td>
     <td>
         {{ include(
-        'SyliusWebBundle:Frontend/Product:_variant.html.twig',
-        {'variant': item.vars.value.variant}
+            'SyliusWebBundle:Frontend/Product:_variant.html.twig',
+            {'variant': item.vars.value.variant}
         ) }}
     </td>
     <td class="col-md-2">
@@ -17,9 +17,8 @@
         {{ item.vars.value.unitPrice|sylius_price }}
     </td>
     <td class="col-md-1" style="text-align: right">
-        {% set regularPrice = item.vars.value|sylius_regular_price %}
-        {% if regularPrice != item.vars.value.total %}
-            <span class="regular-price" style="text-decoration: line-through">{{ regularPrice|sylius_price }}</span>
+        {% if 0 != item.vars.value.getAdjustmentsTotalRecursively('order_item_promotion') %}
+            <span class="regular-price" style="text-decoration: line-through">{{ item.vars.value.subtotal|sylius_price }}</span>
             <span class="discount-price">{{ item.vars.value.total|sylius_price }}</span>
         {% else %}
             <span>{{ item.vars.value.total|sylius_price }}</span>

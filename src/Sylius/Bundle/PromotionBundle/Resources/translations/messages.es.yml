@@ -20,6 +20,7 @@ sylius:
                 exclude: Excluir
             cart_quantity_configuration:
                 count: Contador
+                equal: Igual
             item_total_configuration:
                 amount: Cantidad
             nth_order_configuration:
@@ -43,6 +44,7 @@ sylius:
             amount: Cantidad
             usage_limit: Límite de uso
             expires_at: Caduca en
+            code_length: Longitud del código
         promotion:
             actions: Acciones
             add_action: Añadir acción

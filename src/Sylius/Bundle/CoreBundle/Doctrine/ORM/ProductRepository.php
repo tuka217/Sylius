@@ -27,6 +27,17 @@ class ProductRepository extends BaseProductRepository implements ProductReposito
     /**
      * {@inheritdoc}
      */
+    public function createListQueryBuilder()
+    {
+        return $this->createQueryBuilder('o')
+            ->addSelect('translation')
+            ->leftJoin('o.translations', 'translation')
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function createByTaxonPaginator(TaxonInterface $taxon, array $criteria = [])
     {
         $queryBuilder = $this->createQueryBuilder('o');
@@ -91,6 +102,9 @@ class ProductRepository extends BaseProductRepository implements ProductReposito
             ->leftJoin('o.translations', 'translation')
             ->addSelect('variant')
             ->leftJoin('o.variants', 'variant')
+            ->addSelect('archetype')
+            ->leftJoin('o.archetype', 'archetype')
+            ->leftJoin('archetype.translations', 'archetype_translation')
         ;
 
         if (!empty($criteria['name'])) {
@@ -99,10 +113,10 @@ class ProductRepository extends BaseProductRepository implements ProductReposito
                 ->setParameter('name', '%'.$criteria['name'].'%')
             ;
         }
-        if (!empty($criteria['sku'])) {
+        if (!empty($criteria['code'])) {
             $queryBuilder
-                ->andWhere('variant.sku = :sku')
-                ->setParameter('sku', $criteria['sku'])
+                ->andWhere('variant.code = :code')
+                ->setParameter('code', $criteria['code'])
             ;
         }
 
@@ -145,7 +159,7 @@ class ProductRepository extends BaseProductRepository implements ProductReposito
     /**
      * {@inheritdoc}
      */
-    public function findLatest($limit = 10, ChannelInterface $channel)
+    public function findLatestByChannel(ChannelInterface $channel, $count)
     {
         return $this->createQueryBuilder('o')
             ->innerJoin('o.channels', 'channel')
@@ -153,7 +167,7 @@ class ProductRepository extends BaseProductRepository implements ProductReposito
             ->andWhere('o.enabled = true')
             ->andWhere('channel = :channel')
             ->setParameter('channel', $channel)
-            ->setMaxResults($limit)
+            ->setMaxResults($count)
             ->getQuery()
             ->getResult()
         ;
@@ -187,6 +201,42 @@ class ProductRepository extends BaseProductRepository implements ProductReposito
         return $queryBuilder
             ->getQuery()
             ->getOneOrNullResult()
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findEnabledByTaxonCodeAndChannel($code, ChannelInterface $channel)
+    {
+        return $this->createQueryBuilder('o')
+            ->innerJoin('o.taxons', 'taxon')
+            ->andWhere('taxon.code = :code')
+            ->innerJoin('o.channels', 'channel')
+            ->andWhere('channel = :channel')
+            ->andWhere('o.enabled = 1')
+            ->setParameter('code', $code)
+            ->setParameter('channel', $channel)
+            ->getQuery()
+            ->getResult();
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneBySlugAndChannel($slug, ChannelInterface $channel)
+    {
+        return $this->createQueryBuilder('o')
+            ->leftJoin('o.translations', 'translation')
+            ->innerJoin('o.channels', 'channel')
+            ->andWhere('channel = :channel')
+            ->andWhere('o.enabled = true')
+            ->andWhere('translation.slug = :slug')
+            ->setParameter('slug', $slug)
+            ->setParameter('channel', $channel)
+            ->getQuery()
+            ->getOneOrNullResult();
         ;
     }
 

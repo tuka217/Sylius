@@ -12,7 +12,9 @@
 namespace Sylius\Behat\Context\Transform;
 
 use Behat\Behat\Context\Context;
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
+use Sylius\Component\User\Repository\CustomerRepositoryInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -21,15 +23,24 @@ use Webmozart\Assert\Assert;
 final class OrderContext implements Context
 {
     /**
+     * @var CustomerRepositoryInterface
+     */
+    private $customerRepository;
+
+    /**
      * @var OrderRepositoryInterface
      */
     private $orderRepository;
 
     /**
+     * @param CustomerRepositoryInterface $customerRepository
      * @param OrderRepositoryInterface $orderRepository
      */
-    public function __construct(OrderRepositoryInterface $orderRepository)
-    {
+    public function __construct(
+        CustomerRepositoryInterface $customerRepository,
+        OrderRepositoryInterface $orderRepository
+    ) {
+        $this->customerRepository = $customerRepository;
         $this->orderRepository = $orderRepository;
     }
 
@@ -38,10 +49,36 @@ final class OrderContext implements Context
      */
     public function getOrderByNumber($orderNumber)
     {
+        $orderNumber = $this->getOrderNumber($orderNumber);
         $order = $this->orderRepository->findOneBy(['number' => $orderNumber]);
 
         Assert::notNull($order, sprintf('Cannot find order with number %s', $orderNumber));
 
         return $order;
+    }
+
+    /**
+     * @Transform /^this order made by "([^"]+)"$/
+     */
+    public function getOrderByCustomer($email)
+    {
+        $customer = $this->customerRepository->findOneBy(['email' => $email]);
+        Assert::notNull($customer, sprintf('Cannot find customer with email %s.', $email));
+
+        $orders = $this->orderRepository->findByCustomer($customer);
+        Assert::notEmpty($orders);
+
+        return end($orders);
+    }
+
+    /**
+     * @Transform :orderNumber
+     * @Transform /^an order "([^"]+)"$/
+     */
+    public function getOrderNumber($orderNumber)
+    {
+        $orderNumber = str_replace('#', '', $orderNumber);
+
+        return $orderNumber;
     }
 }

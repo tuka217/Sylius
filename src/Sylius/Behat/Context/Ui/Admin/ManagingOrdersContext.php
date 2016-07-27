@@ -12,12 +12,15 @@
 namespace Sylius\Behat\Context\Ui\Admin;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
+use Sylius\Behat\NotificationType;
 use Sylius\Behat\Page\Admin\Crud\IndexPageInterface;
 use Sylius\Behat\Page\Admin\Order\ShowPageInterface;
+use Sylius\Behat\Service\NotificationCheckerInterface;
+use Sylius\Behat\Service\SecurityServiceInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Component\Core\Model\UserInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -42,18 +45,34 @@ final class ManagingOrdersContext implements Context
     private $showPage;
 
     /**
+     * @var NotificationCheckerInterface
+     */
+    private $notificationChecker;
+
+    /**
+     * @var SecurityServiceInterface
+     */
+    private $securityService;
+
+    /**
      * @param SharedStorageInterface $sharedStorage
      * @param IndexPageInterface $indexPage
      * @param ShowPageInterface $showPage
+     * @param NotificationCheckerInterface $notificationChecker
+     * @param SecurityServiceInterface $securityService
      */
     public function __construct(
         SharedStorageInterface $sharedStorage,
         IndexPageInterface $indexPage,
-        ShowPageInterface $showPage
+        ShowPageInterface $showPage,
+        NotificationCheckerInterface $notificationChecker,
+        SecurityServiceInterface $securityService
     ) {
         $this->sharedStorage = $sharedStorage;
         $this->indexPage = $indexPage;
         $this->showPage = $showPage;
+        $this->notificationChecker = $notificationChecker;
+        $this->securityService = $securityService;
     }
 
     /**
@@ -70,6 +89,30 @@ final class ManagingOrdersContext implements Context
     public function iSeeTheOrder(OrderInterface $order)
     {
         $this->showPage->open(['id' => $order->getId()]);
+    }
+
+    /**
+     * @When /^I mark (this order) as a paid$/
+     */
+    public function iMarkThisOrderAsAPaid(OrderInterface $order)
+    {
+        $this->showPage->completeOrderLastPayment($order);
+    }
+
+    /**
+     * @When specify its tracking code as :trackingCode
+     */
+    public function specifyItsTrackingCodeAs($trackingCode)
+    {
+        $this->showPage->specifyTrackingCode($trackingCode);
+    }
+
+    /**
+     * @Given /^I ship (this order)$/
+     */
+    public function iShipThisOrder(OrderInterface $order)
+    {
+        $this->showPage->shipOrder($order);
     }
 
     /**
@@ -217,6 +260,17 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
+     * @Then the order should have tax :tax
+     */
+    public function theOrderShouldHaveTax($tax)
+    {
+        Assert::true(
+            $this->showPage->hasTax($tax),
+            sprintf('Order should have tax "%s", but it does not.', $tax)
+        );
+    }
+
+    /**
      * @Then the order's tax total should be :taxTotal
      */
     public function theOrdersTaxTotalShouldBe($taxTotal)
@@ -256,16 +310,109 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
+     * @When I check :itemName data
+     */
+    public function iCheckData($itemName)
+    {
+        $this->sharedStorage->set('item', $itemName);
+    }
+
+    /**
+     * @Then /^(its) unit price should be ([^"]+)$/
+     */
+    public function itemUnitPriceShouldBe($itemName, $unitPrice)
+    {
+        $itemUnitPriceOnPage = $this->showPage->getItemUnitPrice($itemName);
+
+        Assert::eq(
+            $itemUnitPriceOnPage,
+            $unitPrice,
+            'Item unit price is %s, but should be %s.'
+        );
+    }
+
+    /**
+     * @Then /^(its) discounted unit price should be ([^"]+)$/
+     */
+    public function itemDiscountedUnitPriceShouldBe($itemName, $discountedUnitPrice)
+    {
+        $itemUnitPriceOnPage = $this->showPage->getItemDiscountedUnitPrice($itemName);
+
+        Assert::eq(
+            $itemUnitPriceOnPage,
+            $discountedUnitPrice,
+            'Item discounted unit price is %s, but should be %s.'
+        );
+    }
+
+    /**
+     * @Then /^(its) quantity should be ([^"]+)$/
+     */
+    public function itemQuantityShouldBe($itemName, $quantity)
+    {
+        $itemQuantityOnPage = $this->showPage->getItemQuantity($itemName);
+
+        Assert::eq(
+            $itemQuantityOnPage,
+            $quantity,
+            'Item quantity is %s, but should be %s.'
+        );
+    }
+
+    /**
+     * @Then /^(its) subtotal should be ([^"]+)$/
+     */
+    public function itemSubtotalShouldBe($itemName, $subtotal)
+    {
+        $itemSubtotalOnPage = $this->showPage->getItemSubtotal($itemName);
+
+        Assert::eq(
+            $itemSubtotalOnPage,
+            $subtotal,
+            'Item subtotal is %s, but should be %s.'
+        );
+    }
+
+    /**
+     * @Then /^(its) discount should be ([^"]+)$/
      * @Then the :itemName should have :discount discount
      */
-    public function theItemShouldHaveDiscount($itemName, $itemDiscount)
+    public function theItemShouldHaveDiscount($itemName, $discount)
     {
         $itemDiscountOnPage = $this->showPage->getItemDiscount($itemName);
 
         Assert::eq(
             $itemDiscountOnPage,
-            $itemDiscount,
+            $discount,
             'Item discount is %s, but should be %s.'
+        );
+    }
+
+    /**
+     * @Then /^(its) tax should be ([^"]+)$/
+     */
+    public function itemTaxShouldBe($itemName, $tax)
+    {
+        $itemTaxOnPage = $this->showPage->getItemTax($itemName);
+
+        Assert::eq(
+            $itemTaxOnPage,
+            $tax,
+            'Item tax is %s, but should be %s.'
+        );
+    }
+
+    /**
+     * @Then /^(its) total should be ([^"]+)$/
+     */
+    public function itemTotalShouldBe($itemName, $total)
+    {
+        $itemTotalOnPage = $this->showPage->getItemTotal($itemName);
+
+        Assert::eq(
+            $itemTotalOnPage,
+            $total,
+            'Item total is %s, but should be %s.'
         );
     }
 
@@ -276,8 +423,8 @@ final class ManagingOrdersContext implements Context
     {
         $this->sharedStorage->set('order', $order);
 
-        $this->indexPage->open();
-        $this->indexPage->deleteResourceOnPage(['number' => $order->getNumber()]);
+        $this->showPage->open(['id' => $order->getId()]);
+        $this->showPage->deleteOrder();
     }
 
     /**
@@ -290,6 +437,149 @@ final class ManagingOrdersContext implements Context
         Assert::false(
             $this->indexPage->isSingleResourceOnPage(['number' => $order->getNumber()]),
             sprintf('Order with number %s exists but should not.', $order->getNumber())
+        );
+    }
+
+    /**
+     * @Then I should be notified that the order's payment has been successfully completed
+     */
+    public function iShouldBeNotifiedThatTheOrderSPaymentHasBeenSuccessfullyCompleted()
+    {
+        $this->notificationChecker->checkNotification('Payment has been successfully updated.', NotificationType::success());
+    }
+
+    /**
+     * @Then it should have payment state :paymentState
+     */
+    public function itShouldHavePaymentState($paymentState)
+    {
+        Assert::true(
+            $this->showPage->hasPayment($paymentState),
+            sprintf('It should have payment with %s state', $paymentState)
+        );
+    }
+
+    /**
+     * @Then /^I should not be able to mark (this order) as paid again$/
+     */
+    public function iShouldNotBeAbleToFinalizeItsPayment(OrderInterface $order)
+    {
+        Assert::false(
+            $this->showPage->canCompleteOrderLastPayment($order),
+            'It should not have complete payment button.'
+        );
+    }
+
+    /**
+     * @Then I should be notified that the order's shipment has been successfully shipped
+     */
+    public function iShouldBeNotifiedThatTheOrderSShipmentHasBeenSuccessfullyShipped()
+    {
+        $this->notificationChecker->checkNotification('Shipment has been successfully updated.', NotificationType::success());
+    }
+
+    /**
+     * @Then its shipment state should be :shipmentState
+     */
+    public function itsShipmentStateShouldBe($shipmentState)
+    {
+        Assert::true(
+            $this->showPage->hasShipment($shipmentState),
+            sprintf('It should have shipment with %s state', $shipmentState)
+        );
+    }
+
+    /**
+     * @Then /^I should not be able to ship (this order)$/
+     */
+    public function iShouldNotBeAbleToShipThisOrder(OrderInterface $order)
+    {
+        Assert::false(
+            $this->showPage->canShipOrder($order),
+            'It should not have ship shipment button.'
+        );
+    }
+
+    /**
+     * @When I cancel this order
+     */
+    public function iCancelThisOrder()
+    {
+        $this->showPage->cancelOrder();
+    }
+
+    /**
+     * @Then I should be notified that it has been successfully updated
+     */
+    public function iShouldBeNotifiedAboutItHasBeenSuccessfullyCanceled()
+    {
+        $this->notificationChecker->checkNotification(
+            'Order has been successfully updated.',
+            NotificationType::success()
+        );
+    }
+
+    /**
+     * @Then I should not be able to cancel this order
+     */
+    public function iShouldNotBeAbleToCancelThisOrder()
+    {
+        Assert::false(
+            $this->showPage->hasCancelButton(),
+            'There should not be a cancel button, but it is.'
+        );
+    }
+
+    /**
+     * @Then its state should be :state
+     */
+    public function itsStateShouldBe($state)
+    {
+        Assert::same(
+            $this->showPage->getOrderState(),
+            $state,
+            'The order state should be %2$s, but it is %s.'
+        );
+    }
+
+    /**
+     * @Then it should have a :state state
+     */
+    public function itShouldHaveState($state)
+    {
+        $this->indexPage->isSingleResourceOnPage(['state' => $state]);
+    }
+
+    /**
+     * @Then /^(the administrator) should know about (this additional note) for (this order made by "[^"]+")$/
+     */
+    public function theCustomerServiceShouldKnowAboutThisAdditionalNotes(UserInterface $user, $note, OrderInterface $order)
+    {
+        $this->securityService->performActionAs($user, function () use ($note, $order) {
+            $this->showPage->open(['id' => $order->getId()]);
+            Assert::true($this->showPage->hasNote($note), sprintf('I should see %s note, but I do not see', $note));
+        });
+    }
+
+    /**
+     * @Then I should see an order with :orderNumber number
+     */
+    public function iShouldSeeOrderWithNumber($orderNumber)
+    {
+        Assert::true(
+            $this->indexPage->isSingleResourceOnPage(['number' => $orderNumber]),
+            sprintf('Cannot find order with "%s" number in the list.', $orderNumber)
+        );
+    }
+
+    /**
+     * @Given it should have shipment in state :shipmentState
+     */
+    public function itShouldHaveShipmentState($shipmentState)
+    {
+        Assert::true(
+            $this->showPage->hasShipment($shipmentState),
+            sprintf('It should have shipment with %s state', $shipmentState)
         );
     }
 }

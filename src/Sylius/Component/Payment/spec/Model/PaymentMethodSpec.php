@@ -17,7 +17,7 @@ use Sylius\Component\Payment\Model\PaymentMethodInterface;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class PaymentMethodSpec extends ObjectBehavior
+final class PaymentMethodSpec extends ObjectBehavior
 {
     public function let()
     {
@@ -57,7 +57,7 @@ class PaymentMethodSpec extends ObjectBehavior
         $this->getName()->shouldReturn('Stripe');
     }
 
-    function it_is_convertable_to_string_and_returns_its_name()
+    function it_is_convertible_to_string_and_returns_its_name()
     {
         $this->setName('PayPal');
         $this->__toString()->shouldReturn('PayPal');
@@ -72,6 +72,12 @@ class PaymentMethodSpec extends ObjectBehavior
     {
         $this->setDescription('Pay by check.');
         $this->getDescription()->shouldReturn('Pay by check.');
+    }
+
+    function its_instructions_is_mutable()
+    {
+        $this->setInstructions('Pay on account: 1100012312');
+        $this->getInstructions()->shouldReturn('Pay on account: 1100012312');
     }
 
     function it_has_no_gateway_by_default()

@@ -19,7 +19,7 @@ use Sylius\Component\Shipping\Model\ShippingMethodInterface;
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  * @author Gonzalo Vilaseca <gvilaseca@reiss.co.uk>
  */
-class ShippingMethodSpec extends ObjectBehavior
+final class ShippingMethodSpec extends ObjectBehavior
 {
     public function let()
     {
@@ -104,6 +104,12 @@ class ShippingMethodSpec extends ObjectBehavior
     {
         $this->setName('Shippable goods');
         $this->getName()->shouldReturn('Shippable goods');
+    }
+
+    function its_description_is_mutable()
+    {
+        $this->setDescription('Very good shipping, cheap price, good delivery time.');
+        $this->getDescription()->shouldReturn('Very good shipping, cheap price, good delivery time.');
     }
 
     function it_returns_name_when_converted_to_string()

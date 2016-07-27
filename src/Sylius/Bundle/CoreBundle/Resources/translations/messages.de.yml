@@ -35,6 +35,7 @@ sylius:
             currencies: Währungen
             shipping_methods: Versandmethoden
             payment_methods: Zahlungsmethoden
+            tax_zone_default: Standard Steuerzone
             theme: Template
             hostname: Server-Name
         image:
@@ -60,9 +61,11 @@ sylius:
             short_description: Kurzbeschreibung
             variant_selection_method: Variantenauswahlmethode
             main_taxon: Haupt-Taxonomie
+            channels: Ausgabekanäle
+            enabled: Aktiviert
         product_filter:
             name: Name
-            sku: Bestandseinheit
+            code: Code
         product_variant:
             tax_category: Steuerkategorie
         settings:
@@ -147,3 +150,4 @@ sylius:
             name: Versandbestätigung
         user_confirmation:
             name: Bestätigung durch den Benutzer
+            subject: Willkommen Sie in unserem Shop

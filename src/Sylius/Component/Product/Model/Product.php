@@ -18,8 +18,10 @@ use Sylius\Component\Attribute\Model\AttributeValueInterface as BaseAttributeVal
 use Sylius\Component\Resource\Model\TimestampableTrait;
 use Sylius\Component\Resource\Model\ToggleableTrait;
 use Sylius\Component\Resource\Model\TranslatableTrait;
+use Sylius\Component\Resource\Model\TranslationInterface;
 use Sylius\Component\Variation\Model\OptionInterface as BaseOptionInterface;
 use Sylius\Component\Variation\Model\VariantInterface as BaseVariantInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
@@ -36,6 +38,11 @@ class Product implements ProductInterface
      * @var mixed
      */
     protected $id;
+
+    /**
+     * @var string
+     */
+    protected $code;
 
     /**
      * @var null|BaseArchetypeInterface
@@ -98,6 +105,22 @@ class Product implements ProductInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
     }
 
     /**
@@ -315,33 +338,6 @@ class Product implements ProductInterface
     /**
      * {@inheritdoc}
      */
-    public function getMasterVariant()
-    {
-        foreach ($this->variants as $variant) {
-            if ($variant->isMaster()) {
-                return $variant;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setMasterVariant(BaseVariantInterface $masterVariant)
-    {
-        $masterVariant->setMaster(true);
-
-        if (!$this->variants->contains($masterVariant)) {
-            $masterVariant->setProduct($this);
-            $this->variants->add($masterVariant);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function hasVariants()
     {
         return !$this->getVariants()->isEmpty();
@@ -352,9 +348,7 @@ class Product implements ProductInterface
      */
     public function getVariants()
     {
-        return $this->variants->filter(function (BaseVariantInterface $variant) {
-            return !$variant->isMaster();
-        });
+        return $this->variants;
     }
 
     /**
@@ -362,8 +356,8 @@ class Product implements ProductInterface
      */
     public function getAvailableVariants()
     {
-        return $this->variants->filter(function (VariantInterface $variant) {
-            return !$variant->isMaster() && $variant->isAvailable();
+        return $this->variants->filter(function (BaseVariantInterface $variant) {
+            return $variant->isAvailable();
         });
     }
 
@@ -497,5 +491,13 @@ class Product implements ProductInterface
     public function hasAssociation(ProductAssociationInterface $association)
     {
         return $this->associations->contains($association);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSimple() 
+    {
+        return 1 === $this->variants->count() && !$this->hasOptions();
     }
 }

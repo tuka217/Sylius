@@ -24,11 +24,6 @@ use Sylius\Component\Variation\Model\VariantInterface as BaseVariantInterface;
 class ProductVariant extends BaseVariant implements ProductVariantInterface
 {
     /**
-     * @var string
-     */
-    protected $sku;
-
-    /**
      * @var int
      */
     protected $price;
@@ -139,22 +134,6 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     public function getMetadataIdentifier()
     {
         return $this->getMetadataClassIdentifier().'-'.$this->getId();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSku()
-    {
-        return $this->sku;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSku($sku)
-    {
-        $this->sku = $sku;
     }
 
     /**
@@ -312,16 +291,6 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     /**
      * {@inheritdoc}
      */
-    public function setDefaults(BaseVariantInterface $masterVariant)
-    {
-        parent::setDefaults($masterVariant);
-
-        $this->setPrice($masterVariant->getPrice());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getShippingCategory()
     {
         return $this->getProduct()->getShippingCategory();
@@ -349,7 +318,7 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     public function getImage()
     {
         if ($this->images->isEmpty()) {
-            return $this->getProduct()->getImage();
+            return null;
         }
 
         return $this->images->first();

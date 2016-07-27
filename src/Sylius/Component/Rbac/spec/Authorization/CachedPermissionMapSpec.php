@@ -20,7 +20,7 @@ use Sylius\Component\Rbac\Model\RoleInterface;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class CachedPermissionMapSpec extends ObjectBehavior
+final class CachedPermissionMapSpec extends ObjectBehavior
 {
     function let(PermissionMapInterface $map, Cache $cache)
     {
@@ -48,8 +48,8 @@ class CachedPermissionMapSpec extends ObjectBehavior
     {
         $role->getCode()->shouldBeCalled()->willReturn('catalog_manager');
 
-        $cache->contains('catalog_manager')->shouldBeCalled()->willReturn(true);
-        $cache->fetch('catalog_manager')->shouldBeCalled()->willReturn(['can_eat_bananas', 'can_smash_bananas']);
+        $cache->contains('rbac_role:catalog_manager')->shouldBeCalled()->willReturn(true);
+        $cache->fetch('rbac_role:catalog_manager')->shouldBeCalled()->willReturn(['can_eat_bananas', 'can_smash_bananas']);
 
         $this->hasPermission($role, 'can_eat_bananas')->shouldReturn(true);
         $this->hasPermission($role, 'can_eat_oranges')->shouldReturn(false);

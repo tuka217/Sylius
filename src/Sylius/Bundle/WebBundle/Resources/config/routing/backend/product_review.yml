@@ -5,16 +5,7 @@ sylius_backend_product_review_index:
         _controller: sylius.controller.product_review:indexAction
         _sylius:
             template: SyliusWebBundle:Backend/Review:index.html.twig
-
-sylius_backend_product_review_create:
-    pattern: /new
-    methods: [GET, POST]
-    defaults:
-        _controller: sylius.controller.product_review:createAction
-        _sylius:
-            template: SyliusWebBundle:Backend/Review:create.html.twig
-            redirect: sylius_backend_product_review_show
-            form: sylius_product_review_admin
+            permission: true
 
 sylius_backend_product_review_update:
     pattern: /{id}/edit
@@ -22,9 +13,10 @@ sylius_backend_product_review_update:
     defaults:
         _controller: sylius.controller.product_review:updateAction
         _sylius:
-            form: sylius_product_review_admin
+            form: sylius_product_review
             template: SyliusWebBundle:Backend/Review:update.html.twig
             redirect: sylius_backend_product_review_show
+            permission: true
 
 sylius_backend_product_review_delete:
     pattern: /{id}
@@ -33,6 +25,7 @@ sylius_backend_product_review_delete:
         _controller: sylius.controller.product_review:deleteAction
         _sylius:
             redirect: sylius_backend_product_review_index
+            permission: true
 
 sylius_backend_product_review_show:
     pattern: /{id}
@@ -41,11 +34,17 @@ sylius_backend_product_review_show:
         _controller: sylius.controller.product_review:showAction
         _sylius:
             template: SyliusWebBundle:Backend/Review:show.html.twig
+            permission: true
 
 sylius_backend_product_review_update_state:
     pattern: /update-state/{id}/{transition}
     methods: [PUT]
     defaults:
-        _controller: sylius.controller.product_review:updateStateAction
-        graph: sylius_product_review
+        _controller: sylius.controller.product_review:applyStateMachineTransitionAction
+        _sylius:
+            state_machine:
+                graph: sylius_product_review
+                transition: $transition
+            redirect: referer
+            permission: true
 

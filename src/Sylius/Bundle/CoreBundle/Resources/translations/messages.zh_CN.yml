@@ -35,6 +35,7 @@ sylius:
             currencies: 货币
             shipping_methods: 发货方式
             payment_methods: 支付方式
+            tax_zone_default: 默认税区
             theme: 主题
             hostname: 主机名
         image:
@@ -60,9 +61,11 @@ sylius:
             short_description: 简短说明：
             variant_selection_method: 变量选择方法
             main_taxon: 主分类
+            channels: 频道
+            enabled: 已启用
         product_filter:
             name: 名称
-            sku: SKU
+            code: 代码
         product_variant:
             tax_category: 税类别
         settings:
@@ -149,5 +152,6 @@ sylius:
             name: 发货单确认
         user_confirmation:
             name: 用户确认
+            subject: 欢迎来到我们的商店
         password_reset:
             name: 重置密码

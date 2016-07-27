@@ -1,7 +1,7 @@
 Important changes
 =================
 
-``SyliusThemeBundle`` changes the way vanilla Symfony2 works a lot. Templates and translations will never behave
+``SyliusThemeBundle`` changes the way vanilla Symfony works a lot. Templates and translations will never behave
 the same as they were.
 
 Templates
@@ -31,7 +31,7 @@ Changed loading order (priority descending):
 Assets
 ------
 
-Theme assets are installed by ``sylius:assets:install`` command, which is supplementary for and should be used after ``assets:install``.
+Theme assets are installed by ``sylius:theme:assets:install`` command, which is supplementary for and should be used after ``assets:install``.
 
 The command run with ``--symlink`` or ``--relative`` parameters creates symlinks for every installed asset file,
 not for entire asset directory (eg. if ``AcmeBundle/Resources/public/asset.js`` exists, it creates symlink ``web/bundles/acme/asset.js`` 

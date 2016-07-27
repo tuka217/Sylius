@@ -17,9 +17,14 @@ use Symfony\Component\Templating\Helper\Helper;
 class MoneyHelper extends Helper implements MoneyHelperInterface
 {
     /**
+     * @var MoneyFormatterInterface
+     */
+    private $moneyFormatter;
+
+    /**
      * @var string
      */
-    private $defaultCurrency;
+    private $defaultCurrencyCode;
 
     /**
      * @var string
@@ -27,31 +32,26 @@ class MoneyHelper extends Helper implements MoneyHelperInterface
     private $defaultLocale;
 
     /**
-     * @var MoneyFormatterInterface
-     */
-    private $moneyFormatter;
-
-    /**
-     * @param string $defaultCurrency
-     * @param string $defaultLocale
      * @param MoneyFormatterInterface $moneyFormatter
+     * @param string $defaultCurrencyCode
+     * @param string $defaultLocale
      */
-    public function __construct($defaultCurrency, $defaultLocale, MoneyFormatterInterface $moneyFormatter)
+    public function __construct(MoneyFormatterInterface $moneyFormatter, $defaultCurrencyCode, $defaultLocale)
     {
-        $this->defaultCurrency = $defaultCurrency;
-        $this->defaultLocale = $defaultLocale;
         $this->moneyFormatter = $moneyFormatter;
+        $this->defaultCurrencyCode = $defaultCurrencyCode;
+        $this->defaultLocale = $defaultLocale;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function formatAmount($amount, $currency = null, $locale = null)
+    public function formatAmount($amount, $currencyCode = null, $locale = null)
     {
         $locale = $locale ?: $this->defaultLocale;
-        $currency = $currency ?: $this->defaultCurrency;
+        $currencyCode = $currencyCode ?: $this->defaultCurrencyCode;
 
-        return $this->moneyFormatter->format($amount, $currency, $locale);
+        return $this->moneyFormatter->format($amount, $currencyCode, $locale);
     }
 
     /**

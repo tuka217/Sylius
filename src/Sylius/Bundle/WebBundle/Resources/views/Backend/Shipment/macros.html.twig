@@ -9,7 +9,7 @@
     <thead>
         <tr>
             <th>{{ sylius_resource_sort('order', 'sylius.ui.order'|trans) }}</th>
-            <th>{{ sylius_resource_sort('method', 'sylius.ui.method'|trans) }}</th>
+            <th>{{ sylius_resource_sort('method_translation.name', 'sylius.ui.method'|trans) }}</th>
             <th>{{ sylius_resource_sort('state', 'sylius.ui.state'|trans) }}</th>
             <th>{{ 'sylius.ui.shipping_address'|trans }}</th>
             <th class="text-center">{{ 'sylius.ui.total_qty'|trans }}</th>
@@ -32,7 +32,7 @@
             <td>{{ misc.shipment_state(shipment.state) }}</td>
             <td>{{ address.firstname }} {{ address.lastname }} ({{ address.city }}, {{ address.countryCode|sylius_country_name }})</td>
             <td class="text-center">{{ shipment.units|length }}</td>
-            <td>{{ shipment.createdAt|date }}</td>
+            <td>{{ shipment.createdAt|format_date }}</td>
             <td>
                 <div class="pull-right">
                     {{ buttons.show(path('sylius_backend_shipment_show', {'id': shipment.id})) }}

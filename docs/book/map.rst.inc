@@ -1,8 +1,15 @@
 * :doc:`/book/introduction`
+* :doc:`/book/requirements`
+* :doc:`/book/environments`
 * :doc:`/book/installation`
 * :doc:`/book/architecture`
+* :doc:`/book/resource_layer`
 * :doc:`/book/state_machine`
 * :doc:`/book/channels`
+* :doc:`/book/locales`
+* :doc:`/book/currencies`
+* :doc:`/book/countries`
+* :doc:`/book/zones`
 * :doc:`/book/products`
 * :doc:`/book/addresses`
 * :doc:`/book/inventory`
@@ -13,8 +20,6 @@
 * :doc:`/book/pricing`
 * :doc:`/book/promotions`
 * :doc:`/book/users_and_groups`
-* :doc:`/book/currencies`
-* :doc:`/book/locales`
 * :doc:`/book/content`
 * :doc:`/book/emails`
 * :doc:`/book/settings`

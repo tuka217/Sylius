@@ -13,19 +13,28 @@ namespace Sylius\Component\Order\Repository;
 
 use Sylius\Component\Order\Model\OrderInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Sylius\Component\Sequence\Repository\HashSubjectRepositoryInterface;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-interface OrderRepositoryInterface extends RepositoryInterface, HashSubjectRepositoryInterface
+interface OrderRepositoryInterface extends RepositoryInterface
 {
     /**
-     * @param int $amount
+     * @return int
+     */
+    public function count();
+
+    /**
+     * @return int
+     */
+    public function getTotalSales();
+
+    /**
+     * @param int $count
      *
      * @return OrderInterface[]
      */
-    public function findRecentOrders($amount = 10);
+    public function findLatest($count);
 
     /**
      * @param int|string $number

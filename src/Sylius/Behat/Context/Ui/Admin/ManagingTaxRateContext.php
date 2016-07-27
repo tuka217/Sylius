@@ -14,7 +14,7 @@ namespace Sylius\Behat\Context\Ui\Admin;
 use Behat\Behat\Context\Context;
 use Sylius\Behat\Page\Admin\Crud\IndexPageInterface;
 use Sylius\Behat\Page\Admin\TaxRate\UpdatePageInterface;
-use Sylius\Behat\Service\CurrentPageResolverInterface;
+use Sylius\Behat\Service\Resolver\CurrentPageResolverInterface;
 use Sylius\Behat\Page\Admin\TaxRate\CreatePageInterface;
 use Sylius\Component\Core\Model\TaxRateInterface;
 use Webmozart\Assert\Assert;
@@ -221,10 +221,7 @@ final class ManagingTaxRateContext implements Context
      */
     public function iShouldBeNotifiedThatTaxRateWithThisCodeAlreadyExists()
     {
-        Assert::true(
-            $this->createPage->checkValidationMessageFor('code', 'The tax rate with given code already exists.'),
-            'Unique code violation message should appear on page, but it does not.'
-        );
+        Assert::same($this->createPage->getValidationMessage('code'), 'The tax rate with given code already exists.');
     }
 
     /**
@@ -236,7 +233,7 @@ final class ManagingTaxRateContext implements Context
 
         Assert::true(
             $this->indexPage->isSingleResourceOnPage([$element => $code]),
-            sprintf('Tax rate with %s %s cannot be founded.', $element, $code)
+            sprintf('Tax rate with %s %s cannot be found.', $element, $code)
         );
     }
 
@@ -327,11 +324,9 @@ final class ManagingTaxRateContext implements Context
      */
     private function assertFieldValidationMessage($element, $expectedMessage)
     {
+        /** @var CreatePageInterface|UpdatePageInterface $currentPage */
         $currentPage = $this->currentPageResolver->getCurrentPageWithForm([$this->createPage, $this->updatePage]);
 
-        Assert::true(
-            $currentPage->checkValidationMessageFor($element, $expectedMessage),
-            sprintf('Tax rate %s should be required.', $element)
-        );
+        Assert::same($currentPage->getValidationMessage($element), $expectedMessage);
     }
 }

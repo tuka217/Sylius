@@ -6,12 +6,14 @@ sylius:
         header: kiegészítők
         accelerator:
             header: Gyorsító
-            help: Telepítsd és engedélyezd a PHP gyorstárazók egyikét, pl. az APC-t (erősen ajánlott)!
+            help: Zend OpCache Engedélyezése (erősen ajánlott).
         apc: APC
         ctype: Ctype
         gd: GD
         help: 'Telepítsd és engedélyezd a(z) %extension% kiegészítőt.'
         iconv: Iconv
+        exif: Exif
+        fileinfo: Fájl infó
         icu: ICU
         intl: Intl
         json_encode: JSON
@@ -29,15 +31,16 @@ sylius:
         cache:
             header: gyorsítótár
             help:
-                To set permissions run: 'sudo setfacl -R -m u:www-data:rwX -m u:`whoami`:rwX %path% & sudo setfacl -dR -m u:www-data:rwx -m u:`whoami`:rwx %path%'
+                To set permissions run: 'sudo setfacl -R -m u:www-data:rwX -m u:`whoami`:rwX %path% && sudo setfacl -dR -m u:www-data:rwx -m u:`whoami`:rwx %path%'
         exists: létezik
         logs:
             header: naplók
             help:
-                To set permissions run: 'sudo setfacl -R -m u:www-data:rwX -m u:`whoami`:rwX %path% & sudo setfacl -dR -m u:www-data:rwx -m u:`whoami`:rwx %path%'
+                To set permissions run: 'sudo setfacl -R -m u:www-data:rwX -m u:`whoami`:rwX %path% && sudo setfacl -dR -m u:www-data:rwx -m u:`whoami`:rwx %path%'
         not_exists: nem létezik
         not_writable: nem írható
         parameters:
+            header: parameters.yml
             help:
                 To set permissions run: 'sudo chmod a + w % path %'
         vendors: vendors
@@ -59,4 +62,4 @@ sylius:
             header: Elavult időzóna
             help: 'Ez az időzóna %timezone% elavult. Javítsd ki a php.ini fájlban (a támogatott időzónákat itt találod a PHP súgójában: http://php.net/manual/en/timezones.others.php).'
         version: PHP verzió
-        version_recommanded: Ajánlott PHP-verzió
+        version_recommended: Ajánlott PHP-verzió

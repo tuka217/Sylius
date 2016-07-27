@@ -11,12 +11,13 @@
 
 namespace Sylius\Bundle\ProductBundle\Form\Type;
 
+use Sylius\Bundle\ProductBundle\Form\EventSubscriber\ProductOptionFieldSubscriber;
+use Sylius\Bundle\ProductBundle\Form\EventSubscriber\SimpleProductSubscriber;
+use Sylius\Bundle\ResourceBundle\Form\EventSubscriber\AddCodeFormSubscriber;
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * Product form type.
- *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  * @author Gonzalo Vilaseca <gvilaseca@reiss.co.uk>
  */
@@ -28,8 +29,16 @@ class ProductType extends AbstractResourceType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('masterVariant', 'sylius_product_variant', [
-                'master' => true,
+            ->addEventSubscriber(new AddCodeFormSubscriber())
+            ->addEventSubscriber(new ProductOptionFieldSubscriber())
+            ->addEventSubscriber(new SimpleProductSubscriber())
+            ->add('enabled', 'checkbox', [
+                'required' => false,
+                'label' => 'sylius.form.product.enabled',
+            ])
+            ->add('translations', 'sylius_translations', [
+                'type' => 'sylius_product_translation',
+                'label' => 'sylius.form.product.translations',
             ])
             ->add('attributes', 'collection', [
                 'required' => false,
@@ -38,18 +47,7 @@ class ProductType extends AbstractResourceType
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-            ])
-            ->add('associations', 'collection', [
-                'type' => 'sylius_product_association',
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'button_add_label' => 'sylius.ui.add_association',
-            ])
-            ->add('options', 'sylius_product_option_choice', [
-                'required' => false,
-                'multiple' => true,
-                'label' => 'sylius.form.product.options',
+                'label' => false,
             ])
         ;
     }

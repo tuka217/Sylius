@@ -7,14 +7,15 @@ sylius_admin_promotion_coupon_index:
             template: SyliusAdminBundle:Crud:index.html.twig
             grid: sylius_admin_promotion_coupon
             section: admin
+            permission: true
             vars:
                 route:
                     parameters:
                         promotionId: $promotionId
                 templates:
-                    breadCrumb: SyliusAdminBundle:PromotionCoupon/BreadCrumb:indexBreadCrumb.html.twig
+                    breadcrumb: SyliusAdminBundle:PromotionCoupon/Breadcrumb:_index.html.twig
                 icon: tags
-                subheader: sylius.ui.manage_coupons
+                subheader: sylius.ui.manage_discounts_and_promotional_campaigns
 
 sylius_admin_promotion_coupon_create:
     path: /new
@@ -31,13 +32,15 @@ sylius_admin_promotion_coupon_create:
             redirect:
                 route: sylius_admin_promotion_coupon_index
                 parameters: { promotionId: $promotionId }
+            permission: true
             vars:
                 route:
                     parameters:
                         promotionId: $promotionId
                 templates:
                     form: SyliusAdminBundle:PromotionCoupon:_form.html.twig
-                    breadCrumb: SyliusAdminBundle:PromotionCoupon/BreadCrumb:createBreadCrumb.html.twig
+                    breadcrumb: SyliusAdminBundle:PromotionCoupon/Breadcrumb:_create.html.twig
+                subheader: sylius.ui.manage_discounts_and_promotional_campaigns
 
 sylius_admin_promotion_coupon_update:
     path: /{id}/edit
@@ -51,6 +54,7 @@ sylius_admin_promotion_coupon_update:
             redirect:
                 route: sylius_admin_promotion_coupon_index
                 parameters: { promotionId: $promotionId }
+            permission: true
             vars:
                 route:
                     parameters:
@@ -58,15 +62,8 @@ sylius_admin_promotion_coupon_update:
                         promotionId: $promotionId
                 templates:
                     form: SyliusAdminBundle:PromotionCoupon:_form.html.twig
-                    breadCrumb: SyliusAdminBundle:PromotionCoupon/BreadCrumb:updateBreadCrumb.html.twig
-
-sylius_admin_promotion_coupon_delete:
-    path: /{id}
-    methods: [DELETE]
-    defaults:
-        _controller: sylius.controller.promotion_coupon:deleteAction
-        _sylius:
-            redirect: referer
+                    breadcrumb: SyliusAdminBundle:PromotionCoupon/Breadcrumb:_update.html.twig
+                subheader: sylius.ui.manage_discounts_and_promotional_campaigns
 
 sylius_admin_promotion_coupon_generate:
     path: /generate
@@ -79,13 +76,13 @@ sylius_admin_promotion_coupon_generate:
             redirect:
                 route: sylius_admin_promotion_coupon_index
                 parameters: { promotionId: $promotionId }
-            vars:
-                route:
-                    parameters:
-                        promotionId: $promotionId
-                templates:
-                    form: SyliusAdminBundle:PromotionCoupon:_generateForm.html.twig
-                    breadCrumb: SyliusAdminBundle:PromotionCoupon/BreadCrumb:generateBreadCrumb.html.twig
-                icon: random
-                header: sylius.ui.generate
-                subheader: sylius.ui.generating_coupons
+            permission: true
+
+sylius_admin_promotion_coupon_delete:
+    path: /{id}
+    methods: [DELETE]
+    defaults:
+        _controller: sylius.controller.promotion_coupon:deleteAction
+        _sylius:
+            redirect: referer
+            permission: true

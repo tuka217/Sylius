@@ -19,17 +19,17 @@ use Sylius\Component\Resource\Model\TimestampableInterface;
  */
 interface PaymentInterface extends TimestampableInterface, ResourceInterface
 {
-    // Payment states.
+    const STATE_CART = 'cart';
     const STATE_NEW = 'new';
-    const STATE_PENDING = 'pending';
     const STATE_PROCESSING = 'processing';
     const STATE_COMPLETED = 'completed';
-    const STATE_AUTHORIZED = 'authorized';
     const STATE_FAILED = 'failed';
     const STATE_CANCELLED = 'cancelled';
     const STATE_VOID = 'void';
     const STATE_REFUNDED = 'refunded';
+    const STATE_AUTHORIZED = 'authorized';
     const STATE_UNKNOWN = 'unknown';
+    const STATE_PAYEDOUT = 'payedout';
 
     /**
      * @return PaymentMethodInterface
@@ -64,12 +64,12 @@ interface PaymentInterface extends TimestampableInterface, ResourceInterface
     /**
      * @return string
      */
-    public function getCurrency();
+    public function getCurrencyCode();
 
     /**
      * @param string
      */
-    public function setCurrency($currency);
+    public function setCurrencyCode($currencyCode);
 
     /**
      * @return int

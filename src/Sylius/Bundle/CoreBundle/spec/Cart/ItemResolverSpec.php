@@ -12,7 +12,6 @@
 namespace spec\Sylius\Bundle\CoreBundle\Cart;
 
 use PhpSpec\ObjectBehavior;
-use Sylius\Component\Addressing\Checker\RestrictedZoneCheckerInterface;
 use Sylius\Component\Cart\Model\CartItemInterface;
 use Sylius\Component\Cart\Provider\CartProviderInterface;
 use Sylius\Component\Cart\Resolver\ItemResolverInterface;
@@ -27,14 +26,13 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class ItemResolverSpec extends ObjectBehavior
+final class ItemResolverSpec extends ObjectBehavior
 {
     function let(
         CartProviderInterface $cartProvider,
         ProductRepositoryInterface $productRepository,
         FormFactoryInterface $formFactory,
         AvailabilityCheckerInterface $availabilityChecker,
-        RestrictedZoneCheckerInterface $restrictedZoneChecker,
         DelegatingCalculatorInterface $priceCalculator,
         ChannelContextInterface $channelContext
     ) {
@@ -43,7 +41,6 @@ class ItemResolverSpec extends ObjectBehavior
             $productRepository,
             $formFactory,
             $availabilityChecker,
-            $restrictedZoneChecker,
             $priceCalculator,
             $channelContext
         );

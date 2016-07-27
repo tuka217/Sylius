@@ -19,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class CartTypeSpec extends ObjectBehavior
+final class CartTypeSpec extends ObjectBehavior
 {
     function let()
     {
@@ -44,7 +44,7 @@ class CartTypeSpec extends ObjectBehavior
         ;
 
         $builder
-            ->add('additionalInformation')
+            ->add('notes')
             ->willReturn($builder)
         ;
 

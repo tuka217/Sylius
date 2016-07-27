@@ -5,11 +5,17 @@ The Book
     :hidden:
 
     introduction
+    requirements
     environments
     installation
     architecture
+    resource_layer
     state_machine
     channels
+    locales
+    currencies
+    countries
+    zones
     products
     addresses
     inventory
@@ -20,8 +26,6 @@ The Book
     pricing
     promotions
     users_and_groups
-    currencies
-    locales
     content
     emails
     settings

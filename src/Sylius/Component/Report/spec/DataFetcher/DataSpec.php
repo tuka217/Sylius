@@ -14,16 +14,16 @@ namespace spec\Sylius\Component\Report\DataFetcher;
 use PhpSpec\ObjectBehavior;
 
 /**
- * @author Łukasz Chruściel <lchrusciel@gmail.com>
+ * @author Łukasz Chruściel <lukasz.chrusciel@lakion.com>
  */
-class DataSpec extends ObjectBehavior
+final class DataSpec extends ObjectBehavior
 {
     public function it_is_initializable()
     {
         $this->shouldHaveType('Sylius\Component\Report\DataFetcher\Data');
     }
 
-    public function it_has_label_ifnromation()
+    public function it_has_label_information()
     {
         $this->setLabels([]);
         $this->getLabels()->shouldReturn([]);

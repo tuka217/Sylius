@@ -35,6 +35,7 @@ sylius:
             currencies: Moedas
             shipping_methods: Métodos de envio
             payment_methods: Meios de pagamentos
+            tax_zone_default: Zona de imposto do padrão
             theme:  Tema
             hostname: Nome do host
         image:
@@ -60,9 +61,11 @@ sylius:
             short_description: Breve descrição
             variant_selection_method: Método de seleção da variação
             main_taxon: Táxon principal
+            channels: Canais
+            enabled: Ativado
         product_filter:
             name: Nome
-            sku: SKU
+            code: Código
         product_variant:
             tax_category: Categoria de imposto
         settings:
@@ -147,7 +150,11 @@ sylius:
             name: Comentários do pedido
         shipment_confirmation:
             name: Confirmação de postagem
+            content: 'Seu pedido foi enviado. <br/> Obrigado pela preferência.'
         user_confirmation:
             name: Confirmação do usuário
+            subject: Bem-vindo à nossa loja
         password_reset:
             name: Redefinir a senha
+    shipping_method_resolver:
+        by_zones_and_channel: Por zonas e canal

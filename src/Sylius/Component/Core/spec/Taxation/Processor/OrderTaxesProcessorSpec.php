@@ -18,6 +18,7 @@ use Sylius\Component\Addressing\Matcher\ZoneMatcherInterface;
 use Sylius\Component\Addressing\Model\AddressInterface;
 use Sylius\Component\Addressing\Model\ZoneInterface;
 use Sylius\Component\Core\Model\AdjustmentInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 use Sylius\Component\Core\Provider\ZoneProviderInterface;
@@ -34,7 +35,7 @@ use Zend\Stdlib\PriorityQueue;
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  * @author Mark McKelvie <mark.mckelvie@reiss.com>
  */
-class OrderTaxesProcessorSpec extends ObjectBehavior
+final class OrderTaxesProcessorSpec extends ObjectBehavior
 {
     function let(
         ZoneProviderInterface $defaultTaxZoneProvider,
@@ -182,7 +183,7 @@ class OrderTaxesProcessorSpec extends ObjectBehavior
 
         $order->getShippingAddress()->willReturn($address);
         $zoneMatcher->match($address)->willReturn(null);
-        $defaultTaxZoneProvider->getZone()->willReturn(null);
+        $defaultTaxZoneProvider->getZone($order)->willReturn(null);
 
         $strategyRegistry->all()->shouldNotBeCalled();
 

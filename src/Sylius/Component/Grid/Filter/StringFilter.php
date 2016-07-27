@@ -48,8 +48,12 @@ class StringFilter implements FilterInterface
         $type = $data['type'];
         $value = array_key_exists('value', $data) ? $data['value'] : null;
 
+        if (self::TYPE_NOT_EMPTY !== $type && self::TYPE_EMPTY !== $type && empty($value)) {
+            return;
+        }
+
         if (1 === count($fields)) {
-            $expression = $this->getExpression($expressionBuilder, $type, $name, $value);
+            $expression = $this->getExpression($expressionBuilder, $type, $fields[0], $value);
         } else {
             $expressions = [];
 
@@ -64,9 +68,12 @@ class StringFilter implements FilterInterface
     }
 
     /**
+     * @param ExpressionBuilderInterface $expressionBuilder
      * @param string $type
      * @param string $field
      * @param mixed  $value
+     * 
+     * @return ExpressionBuilderInterface
      */
     private function getExpression(ExpressionBuilderInterface $expressionBuilder, $type, $field, $value)
     {

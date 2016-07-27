@@ -21,7 +21,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 
-class BuildVariantFormSubscriberSpec extends ObjectBehavior
+final class BuildVariantFormSubscriberSpec extends ObjectBehavior
 {
     function let(FormFactoryInterface $factory)
     {
@@ -33,7 +33,7 @@ class BuildVariantFormSubscriberSpec extends ObjectBehavior
         $this->shouldHaveType('Sylius\Bundle\VariationBundle\Form\EventListener\BuildVariantFormSubscriber');
     }
 
-    function it_sucscriber_event()
+    function it_subscribes_to_event()
     {
         $this::getSubscribedEvents()->shouldReturn(
             [FormEvents::PRE_SET_DATA => 'preSetData']

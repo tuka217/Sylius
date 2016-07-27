@@ -7,6 +7,7 @@ sylius:
             main:
                 catalog:
                     options: Επιλογές
+                    products: Προϊόντα
                 configuration:
                     countries: Χώρες
                     header: Παραμετροποίηση
@@ -17,3 +18,5 @@ sylius:
                     promotions: Προσφορές
                 sales:
                     orders: Παραγγελίες
+                content:
+                    header: Περιεχόμενο

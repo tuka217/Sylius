@@ -3,7 +3,11 @@
 
 sylius:
     form:
+        rule:
+            unit_count_configuration:
+                equal: Igual a
         shipment:
+            state: Estado
             states:
                 checkout: Finalizar compra
                 pending: Pendente
@@ -11,4 +15,5 @@ sylius:
         shipping_category:
             description: Descrição
         shipping_method:
+            description: Descrição
             tax_category: Categoria de imposto

@@ -23,7 +23,7 @@ use Sylius\Component\Rbac\Model\RoleInterface;
 /**
  * @author Arnaud Langlade <arn0d.dev@gmail.com>
  */
-class RoleRepositorySpec extends ObjectBehavior
+final class RoleRepositorySpec extends ObjectBehavior
 {
     function let(EntityManager $em, ClassMetadata $classMetadata)
     {
@@ -35,7 +35,7 @@ class RoleRepositorySpec extends ObjectBehavior
         $this->shouldHaveType('Sylius\Bundle\RbacBundle\Doctrine\ORM\RoleRepository');
     }
 
-    function it_gets_chield_roles(
+    function it_gets_child_roles(
         $em,
         RoleInterface $role,
         QueryBuilder $builder,

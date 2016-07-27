@@ -12,7 +12,7 @@
 namespace Sylius\Component\Core\OrderProcessing;
 
 use Doctrine\Common\Collections\Collection;
-use SM\Factory\FactoryInterface as StateMachineFactoryInteraface;
+use SM\Factory\FactoryInterface as StateMachineFactoryInterface;
 use Sylius\Component\Order\Factory\OrderItemUnitFactoryInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Inventory\InventoryUnitTransitions;
@@ -35,19 +35,19 @@ class InventoryHandler implements InventoryHandlerInterface
     protected $orderItemUnitFactory;
 
     /**
-     * @var StateMachineFactoryInteraface
+     * @var StateMachineFactoryInterface
      */
     protected $stateMachineFactory;
 
     /**
      * @param InventoryOperatorInterface $inventoryOperator
      * @param OrderItemUnitFactoryInterface $orderItemUnitFactory
-     * @param StateMachineFactoryInteraface $stateMachineFactory
+     * @param StateMachineFactoryInterface $stateMachineFactory
      */
     public function __construct(
         InventoryOperatorInterface $inventoryOperator,
         OrderItemUnitFactoryInterface $orderItemUnitFactory,
-        StateMachineFactoryInteraface $stateMachineFactory
+        StateMachineFactoryInterface $stateMachineFactory
     ) {
         $this->inventoryOperator = $inventoryOperator;
         $this->orderItemUnitFactory = $orderItemUnitFactory;
@@ -63,42 +63,6 @@ class InventoryHandler implements InventoryHandlerInterface
             $quantity = $this->applyTransition($item->getUnits(), InventoryUnitTransitions::SYLIUS_HOLD);
 
             $this->inventoryOperator->hold($item->getVariant(), $quantity);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function releaseInventory(OrderInterface $order)
-    {
-        foreach ($order->getItems() as $item) {
-            $quantity = $this->applyTransition($item->getUnits(), InventoryUnitTransitions::SYLIUS_RELEASE);
-
-            $this->inventoryOperator->release($item->getVariant(), $quantity);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function updateInventory(OrderInterface $order)
-    {
-        foreach ($order->getItems() as $item) {
-            $units = $item->getUnits();
-            $quantity = 0;
-
-            foreach ($units as $unit) {
-                $stateMachine = $this->stateMachineFactory->get($unit, InventoryUnitTransitions::GRAPH);
-                if ($stateMachine->can(InventoryUnitTransitions::SYLIUS_SELL)) {
-                    if ($stateMachine->can(InventoryUnitTransitions::SYLIUS_RELEASE)) {
-                        ++$quantity;
-                    }
-                    $stateMachine->apply(InventoryUnitTransitions::SYLIUS_SELL);
-                }
-            }
-
-            $this->inventoryOperator->release($item->getVariant(), $quantity);
-            $this->inventoryOperator->decrease($units);
         }
     }
 

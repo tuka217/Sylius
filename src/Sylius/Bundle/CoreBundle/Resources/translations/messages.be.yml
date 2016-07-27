@@ -28,6 +28,7 @@ sylius:
             currency_default: Галоўная валюта
             shipping_methods: Метады дастаўкі
             payment_methods: Метады аплаты
+            tax_zone_default: Галоўная падатковая зона
         image:
             file: малюнак
         locale:
@@ -49,9 +50,10 @@ sylius:
             shipping_category: Катэгорыя дастаўкі
             short_description: Кароткае апісанне
             variant_selection_method: Метад выбару варыянта
+            enabled: Уключана
         product_filter:
             name: Імя
-            sku: SKU
+            code: Код
         product_variant:
             tax_category: Катэгорыя падатку
         settings:

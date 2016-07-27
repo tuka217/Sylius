@@ -6,11 +6,15 @@ sylius:
         admin:
             main:
                 catalog:
-                    taxons: Taxonok
+                    attributes: Tulajdonságok
+                    header: Katalógus
                     options: Beállítások
+                    products: Termékek
+                    taxons: Taxonok
                 configuration:
                     channels: Csatornák
                     countries: Országok
+                    currencies: Pénznemek
                     header: Konfiguráció
                     locales: Területi beállítások
                     payment_methods: Fizetési módok
@@ -22,8 +26,12 @@ sylius:
                     header: Marketing
                     promotions: Promóciók
                 customers:
-                    header: Ügyfél
                     customers: Ügyfelek
+                    header: Ügyfél
                 sales:
                     header: Értékesítés
                     orders: Rendelések
+                content:
+                    header: Tartalom
+                    static_contents: Állandó tartalom
+                    routes: Útvonalak

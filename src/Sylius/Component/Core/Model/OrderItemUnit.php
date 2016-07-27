@@ -13,6 +13,7 @@ namespace Sylius\Component\Core\Model;
 
 use Sylius\Component\Inventory\Model\InventoryUnitInterface;
 use Sylius\Component\Order\Model\OrderItemUnit as BaseOrderItemUnit;
+use Sylius\Component\Resource\Model\TimestampableTrait;
 use Sylius\Component\Shipping\Model\ShipmentInterface as BaseShipmentInterface;
 
 /**
@@ -20,6 +21,8 @@ use Sylius\Component\Shipping\Model\ShipmentInterface as BaseShipmentInterface;
  */
 class OrderItemUnit extends BaseOrderItemUnit implements OrderItemUnitInterface
 {
+    use TimestampableTrait;
+
     /**
      * @var string InventoryUnitInterface::STATE_*
      */
@@ -33,17 +36,7 @@ class OrderItemUnit extends BaseOrderItemUnit implements OrderItemUnitInterface
     /**
      * @var string BaseShipmentInterface::STATE_*
      */
-    protected $shippingState = BaseShipmentInterface::STATE_CHECKOUT;
-
-    /**
-     * @var \DateTime
-     */
-    protected $createdAt;
-
-    /**
-     * @var \DateTime
-     */
-    protected $updatedAt;
+    protected $shippingState = BaseShipmentInterface::STATE_CART;
 
     /**
      * @param OrderItemInterface $orderItem
@@ -144,34 +137,18 @@ class OrderItemUnit extends BaseOrderItemUnit implements OrderItemUnitInterface
     }
 
     /**
+     * Returns sum of neutral and non neutral tax adjustments.
+     *
      * {@inheritdoc}
      */
-    public function getCreatedAt()
+    public function getTaxTotal()
     {
-        return $this->createdAt;
-    }
+        $taxTotal = 0;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setCreatedAt(\DateTime $createdAt)
-    {
-        $this->createdAt = $createdAt;
-    }
+        foreach ($this->getAdjustments(AdjustmentInterface::TAX_ADJUSTMENT) as $taxAdjustment) {
+            $taxTotal += $taxAdjustment->getAmount();
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUpdatedAt(\DateTime $updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
+        return $taxTotal;
     }
 }

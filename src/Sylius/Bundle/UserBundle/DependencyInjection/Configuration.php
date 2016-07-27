@@ -17,6 +17,7 @@ use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 use Sylius\Bundle\UserBundle\Controller\CustomerController;
 use Sylius\Bundle\UserBundle\Controller\UserController;
 use Sylius\Bundle\UserBundle\Form\Type\CustomerGuestType;
+use Sylius\Bundle\ResourceBundle\Form\Type\ResourceFromIdentifierType;
 use Sylius\Bundle\UserBundle\Form\Type\CustomerProfileType;
 use Sylius\Bundle\UserBundle\Form\Type\CustomerRegistrationType;
 use Sylius\Bundle\UserBundle\Form\Type\CustomerSimpleRegistrationType;
@@ -84,49 +85,26 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-            ->end()
-        ;
-
-        $this->addValidationGroupsSection($rootNode);
-        $this->addResourcesSection($rootNode);
-
-        return $treeBuilder;
-    }
-
-    /**
-     * @param ArrayNodeDefinition $node
-     */
-    private function addValidationGroupsSection(ArrayNodeDefinition $node)
-    {
-        $node
-            ->children()
-                ->arrayNode('validation_groups')
+                ->arrayNode('verification')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->arrayNode('customer_profile')
-                            ->prototype('scalar')->end()
-                            ->defaultValue(['sylius', 'sylius_customer_profile'])
-                        ->end()
-                        ->arrayNode('customer_registration')
-                            ->prototype('scalar')->end()
-                            ->defaultValue(['sylius', 'sylius_customer_profile', 'sylius_user_registration'])
-                        ->end()
-                        ->arrayNode('customer_simple_registration')
-                            ->prototype('scalar')->end()
-                            ->defaultValue(['sylius', 'sylius_user_registration'])
-                        ->end()
-                        ->arrayNode('customer_guest')
-                            ->prototype('scalar')->end()
-                            ->defaultValue(['sylius_customer_guest'])
-                        ->end()
-                        ->arrayNode('user_registration')
-                            ->prototype('scalar')->end()
-                            ->defaultValue(['sylius', 'sylius_user_registration'])
+                        ->arrayNode('token')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->integerNode('length')
+                                    ->defaultValue(16)
+                                    ->min(1)->max(40)
+                                ->end()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()
             ->end()
         ;
+
+        $this->addResourcesSection($rootNode);
+
+        return $treeBuilder;
     }
 
     /**
@@ -170,7 +148,7 @@ class Configuration implements ConfigurationInterface
                                     ->children()
                                         ->arrayNode('default')
                                             ->prototype('scalar')->end()
-                                            ->defaultValue(['sylius', 'sylius_customer_profile'])
+                                            ->defaultValue(['sylius'])
                                         ->end()
                                         ->arrayNode('profile')
                                             ->prototype('scalar')->end()
@@ -223,7 +201,7 @@ class Configuration implements ConfigurationInterface
                                         ->end()
                                         ->arrayNode('registration')
                                             ->prototype('scalar')->end()
-                                            ->defaultValue(['sylius'])
+                                            ->defaultValue(['sylius', 'sylius_user_registration'])
                                         ->end()
                                     ->end()
                                 ->end()
@@ -262,6 +240,7 @@ class Configuration implements ConfigurationInterface
                                             ->children()
                                                 ->scalarNode('default')->defaultValue(GroupType::class)->cannotBeEmpty()->end()
                                                 ->scalarNode('choice')->defaultValue(ResourceChoiceType::class)->cannotBeEmpty()->end()
+                                                ->scalarNode('from_identifier')->defaultValue(ResourceFromIdentifierType::class)->cannotBeEmpty()->end()
                                             ->end()
                                         ->end()
                                     ->end()
@@ -270,6 +249,10 @@ class Configuration implements ConfigurationInterface
                                     ->addDefaultsIfNotSet()
                                     ->children()
                                         ->arrayNode('default')
+                                            ->prototype('scalar')->end()
+                                            ->defaultValue(['sylius'])
+                                        ->end()
+                                        ->arrayNode('from_identifier')
                                             ->prototype('scalar')->end()
                                             ->defaultValue(['sylius'])
                                         ->end()

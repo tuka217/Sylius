@@ -11,6 +11,7 @@
 
 namespace Sylius\Behat\Page\Shop;
 
+use Behat\Mink\Element\NodeElement;
 use Sylius\Behat\Page\SymfonyPage;
 
 /**
@@ -18,6 +19,14 @@ use Sylius\Behat\Page\SymfonyPage;
  */
 class HomePage extends SymfonyPage implements HomePageInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getRouteName()
+    {
+        return 'sylius_shop_homepage';
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -29,8 +38,46 @@ class HomePage extends SymfonyPage implements HomePageInterface
     /**
      * {@inheritdoc}
      */
-    public function getRouteName()
+    public function hasLogoutButton()
     {
-        return 'sylius_homepage';
+        return $this->hasElement('logout_button');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getActiveCurrency()
+    {
+        return $this->getElement('currency_selector')->find('css', '.sylius-active-currency')->getText();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAvailableCurrencies()
+    {
+        return array_map(
+            function (NodeElement $element) { return $element->getText(); },
+            $this->getElement('currency_selector')->findAll('css', '.sylius-available-currency')
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function switchCurrency($currencyCode)
+    {
+        $this->getElement('currency_selector')->clickLink($currencyCode);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDefinedElements()
+    {
+        return array_merge(parent::getDefinedElements(), [
+            'currency_selector' => '#sylius-currency-selector',
+            'logout_button' => '.sylius-logout-button',
+        ]);
     }
 }

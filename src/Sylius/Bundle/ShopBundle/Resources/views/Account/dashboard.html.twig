@@ -1,0 +1,42 @@
+{% extends '@SyliusShop/Account/layout.html.twig' %}
+
+{% block breadcrumb %}
+    <div class="ui breadcrumb">
+        <a href="{{ path('sylius_shop_homepage') }}" class="section">{{ 'sylius.ui.home'|trans }}</a>
+        <div class="divider"> / </div>
+        <div class="active section">{{ 'sylius.ui.my_account'|trans }}</div>
+    </div>
+{% endblock %}
+
+{% block subcontent %}
+    <h1 class="ui dividing header">
+        {{ 'sylius.ui.my_account'|trans }}
+        <div class="sub header">{{ 'sylius.ui.manage_your_personal_information_and_preferences'|trans }}</div>
+    </h1>
+    <div class="ui large list" id="customer-information">
+        <div class="ui item">
+            {{ customer.fullName }}
+        </div>
+        <div class="ui item">
+            <strong>
+                {{ customer.email }}
+                {% if customer.user.verified %}
+                    <i title="{{ 'sylius.ui.verified'|trans }}" class="green checkmark icon"></i>
+                {% else %}
+                    <i title="{{ 'sylius.ui.not_verified'|trans }}" class="red remove icon"></i>
+                {% endif %}
+            </strong>
+        </div>
+    </div>
+    <div class="ui text menu">
+        <a href="{{ path('sylius_shop_account_profile_update') }}" class="item"><i class="pencil icon"></i> {{ 'sylius.ui.edit'|trans }}</a>
+        <a href="{{ path('sylius_shop_account_change_password') }}" class="item"><i class="lock icon"></i> {{ 'sylius.ui.change_password'|trans }}</a>
+        {% if not customer.user.verified %}
+            <form class="item" id="verification-form" action="{{ path('sylius_shop_user_request_verification_token') }}" method="post">
+                <button type="submit" class="ui green basic button labeled icon mini">
+                    <i class="checkmark icon"></i> {{ 'sylius.ui.verify'|trans }}
+                </button>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

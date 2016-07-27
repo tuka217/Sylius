@@ -18,7 +18,7 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 
-class GroupRepositorySpec extends ObjectBehavior
+final class GroupRepositorySpec extends ObjectBehavior
 {
     public function let(EntityManager $em, ClassMetadata $classMetadata)
     {
@@ -35,7 +35,7 @@ class GroupRepositorySpec extends ObjectBehavior
         $this->shouldHaveType(EntityRepository::class);
     }
 
-    function it_has_a_form_query_buidler($em, QueryBuilder $builder)
+    function it_has_a_form_query_builder($em, QueryBuilder $builder)
     {
         $em->createQueryBuilder()->shouldBeCalled()->willReturn($builder);
         $builder->select('o')->shouldBeCalled()->willReturn($builder);

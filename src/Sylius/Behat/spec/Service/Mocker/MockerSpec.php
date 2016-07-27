@@ -20,7 +20,7 @@ use Sylius\Behat\Service\Mocker\MockerInterface;
 /**
  * @author Arkadiusz Krakowiak <arkadiusz.krakowiak@lakion.com>
  */
-class MockerSpec extends ObjectBehavior
+final class MockerSpec extends ObjectBehavior
 {
     function let(MockerContainer $container)
     {
@@ -39,9 +39,9 @@ class MockerSpec extends ObjectBehavior
 
     function it_mocks_given_service($container)
     {
-        $container->mock('payum.http_client', HttpClient::class)->shouldBeCalled();
+        $container->mock('sylius.payum.http_client', HttpClient::class)->shouldBeCalled();
 
-        $this->mockService('payum.http_client', HttpClient::class);
+        $this->mockService('sylius.payum.http_client', HttpClient::class);
     }
 
     function it_mocks_collaborator()

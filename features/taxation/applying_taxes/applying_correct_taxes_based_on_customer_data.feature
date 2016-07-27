@@ -9,22 +9,22 @@ Feature: Apply correct taxes based on customer data
         And the store ships to "France" and "Australia"
         And there is a zone "EU" containing all members of the European Union
         And there is a zone "The Rest of the World" containing all other countries
-        And default currency is "EUR"
         And default tax zone is "EU"
+        And the store ships everywhere for free
         And the store has "EU VAT" tax rate of 23% for "Clothes" within "EU" zone
         And the store has "EU VAT" tax rate of 10% for "Clothes" for the rest of the world
         And the store has a product "PHP T-Shirt" priced at "€100.00"
         And it belongs to "Clothes" tax category
         And there is user "john@example.com" identified by "password123", with "Australia" as shipping country
+        And I am logged in as "john@example.com"
 
-    @ui
+    @todo
     Scenario: Proper taxes for taxed product
         When I add product "PHP T-Shirt" to the cart
-        And I proceed logging as "john@example.com" with "password123" password
         Then my cart total should be "€110.00"
         And my cart taxes should be "€10.00"
 
-    @ui
+    @todo
     Scenario: Proper taxes after specifying shipping address
         When I add product "PHP T-Shirt" to the cart
         And I log in as "john@example.com" with "password123" password
@@ -32,9 +32,9 @@ Feature: Apply correct taxes based on customer data
         Then my cart total should be "€110.00"
         And my cart taxes should be "€10.00"
 
-    @ui
+    @todo
     Scenario: Proper taxes for logged in Customer with already specified shipping address
-        Given I am logged in customer
+        Given I am a logged in customer
         And my default shipping address is "Australia"
         When I add product "PHP T-Shirt" to the cart
         And I proceed without selecting shipping address

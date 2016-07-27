@@ -1,4 +1,4 @@
-Symfony2 Bundles
+Symfony Bundles
 ================
 
 .. toctree::
@@ -10,6 +10,7 @@ Symfony2 Bundles
     SyliusAttributeBundle/index
     SyliusCartBundle/index
     SyliusContactBundle/index
+    SyliusFixturesBundle/index
     SyliusFlowBundle/index
     SyliusGridBundle/index
     SyliusInventoryBundle/index

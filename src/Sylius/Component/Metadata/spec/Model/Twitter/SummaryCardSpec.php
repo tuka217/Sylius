@@ -20,7 +20,7 @@ use Sylius\Component\Metadata\Model\Twitter\SummaryCard;
  *
  * @author Kamil Kokot <kamil.kokot@lakion.com>
  */
-class SummaryCardSpec extends ObjectBehavior
+final class SummaryCardSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
@@ -42,7 +42,7 @@ class SummaryCardSpec extends ObjectBehavior
         \PHPUnit_Framework_Assert::assertEquals('Lorem ipsum', $that->getTitle());
     }
 
-    function it_is_mergable_with_same_class_object()
+    function it_is_mergeable_with_same_class_object()
     {
         $metadata = new SummaryCard();
         $metadata->setTitle('Lorem ipsum');

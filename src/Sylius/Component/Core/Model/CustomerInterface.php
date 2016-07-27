@@ -20,16 +20,6 @@ use Sylius\Component\User\Model\CustomerInterface as BaseCustomerInterface;
 interface CustomerInterface extends BaseCustomerInterface
 {
     /**
-     * @param string $currency
-     */
-    public function setCurrency($currency);
-
-    /**
-     * @return string
-     */
-    public function getCurrency();
-
-    /**
      * @return Collection|OrderInterface[]
      */
     public function getOrders();

@@ -4,21 +4,21 @@
 {% import 'SyliusWebBundle:Backend/Macros:alerts.html.twig' as alerts %}
 {% import 'SyliusWebBundle:Backend/Macros:misc.html.twig' as misc %}
 
-{% set router_paramters = customer is not null ? {'id' : customer.id} : {} %}
+{% set router_parameters = customer is not null ? {'id' : customer.id} : {} %}
 
 {% if orders|length > 0 %}
 <table id="orders" class="table">
     <thead>
         <tr>
             <th></th>
-            <th>{{ sylius_resource_sort('createdAt', 'sylius.ui.creation_time'|trans, null, {'route_params' : router_paramters}) }}</th>
-            <th>{{ sylius_resource_sort('channel', 'sylius.ui.channel'|trans, null, {'route_params' : router_paramters}) }}</th>
-            <th>{{ sylius_resource_sort('number', 'sylius.ui.number'|trans, null, {'route_params' : router_paramters}) }}</th>
-            <th>{{ sylius_resource_sort('paymentState', 'sylius.ui.payment_state'|trans, null, {'route_params' : router_paramters}) }}</th>
-            <th>{{ sylius_resource_sort('shippingState', 'sylius.ui.shipment_state'|trans, null, {'route_params' : router_paramters}) }}</th>
-            <th>{{ sylius_resource_sort('customer.lastName', 'sylius.ui.customer'|trans, null, {'route_params' : router_paramters}) }}</th>
-            <th>{{ sylius_resource_sort('total', 'sylius.ui.total'|trans, null, {'route_params' : router_paramters}) }}</th>
-            <th>{{ sylius_resource_sort('details', 'sylius.ui.additional_information'|trans, null, {'route_params' : router_paramters}) }}</th>
+            <th>{{ sylius_resource_sort('createdAt', 'sylius.ui.creation_time'|trans, null, {'route_params' : router_parameters}) }}</th>
+            <th>{{ sylius_resource_sort('channel', 'sylius.ui.channel'|trans, null, {'route_params' : router_parameters}) }}</th>
+            <th>{{ sylius_resource_sort('number', 'sylius.ui.number'|trans, null, {'route_params' : router_parameters}) }}</th>
+            <th>{{ sylius_resource_sort('paymentState', 'sylius.ui.payment_state'|trans, null, {'route_params' : router_parameters}) }}</th>
+            <th>{{ sylius_resource_sort('shippingState', 'sylius.ui.shipment_state'|trans, null, {'route_params' : router_parameters}) }}</th>
+            <th>{{ sylius_resource_sort('customer.lastName', 'sylius.ui.customer'|trans, null, {'route_params' : router_parameters}) }}</th>
+            <th>{{ sylius_resource_sort('total', 'sylius.ui.total'|trans, null, {'route_params' : router_parameters}) }}</th>
+            <th>{{ sylius_resource_sort('details', 'sylius.ui.additional_information'|trans, null, {'route_params' : router_parameters}) }}</th>
             <th></th>
         </tr>
     </thead>
@@ -26,9 +26,9 @@
         {% for order in orders %}
         <tr id="{{ order.id }}">
             <td class="center-text"><input type="checkbox" value="{{ order.id }}" /></td>
-            <td>{{ order.createdAt|date }}</td>
+            <td>{{ order.createdAt|format_date }}</td>
             <td>
-                <span {%- if order.channel.color -%} style="color: {{ order.channel.color }};"{%- endif -%}>{{ order.channel.code }}</span>
+                <span {% if order.channel.color %}style="color: {{ order.channel.color }};"{% endif %}>{{ order.channel.code }}</span>
             </td>
             <td>
                 <a href="{{ path('sylius_backend_order_show', {'id': order.id}) }}">
@@ -44,14 +44,11 @@
             <td>
                 <p>{{ order.customer.fullName }} <br><a href="{{ path('sylius_backend_customer_show', {'id': order.customer.id}) }}">{{ order.customer.email }}</a></p>
             </td>
-            <td>{{ order.total|sylius_price(order.currency) }}</td>
-            <td>{{ order.additionalInformation }}</td>
+            <td>{{ order.total|sylius_price(order.currencyCode) }}</td>
+            <td>{{ order.notes }}</td>
             <td>
                 <div class="pull-right">
                 {{ buttons.show(path('sylius_backend_order_show', {'id': order.id})) }}
-                {% if not order.shippingState is constant('Sylius\\Component\\Shipping\\Model\\ShipmentInterface::STATE_SHIPPED') %}
-                    {{ buttons.edit(path('sylius_backend_order_update', {'id': order.id})) }}
-                {% endif %}
                 {{ buttons.delete(path('sylius_backend_order_delete', {'id': order.id})) }}
                 </div>
             </td>
@@ -102,7 +99,7 @@
                     {{ order.customer.email }}
                 </a>
             </td>
-            <td>{{ order.total|sylius_price(order.currency) }}</td>
+            <td>{{ order.total|sylius_price(order.currencyCode) }}</td>
         </tr>
         {% endfor %}
     </tbody>

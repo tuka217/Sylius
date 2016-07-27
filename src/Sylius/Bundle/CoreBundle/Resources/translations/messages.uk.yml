@@ -30,6 +30,7 @@ sylius:
             currency_default: Валюта за замовчуванням
             shipping_methods: Методи доставки
             payment_methods: Способи оплати
+            tax_zone_default: Податкова зона за замовчуванням
         image:
             file: Зображення
         locale:
@@ -51,9 +52,11 @@ sylius:
             shipping_category: Категорія доставки
             short_description: Короткий опис
             variant_selection_method: Метод вибору варіанту
+            channels: Канали
+            enabled: Увімкнено
         product_filter:
             name: Ім’я
-            sku: Артикул
+            code: Код
         product_variant:
             tax_category: Категорія податку
         settings:

@@ -20,7 +20,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 /**
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
  */
-class ContainsTaxonConfigurationTypeSpec extends ObjectBehavior
+final class ContainsTaxonConfigurationTypeSpec extends ObjectBehavior
 {
     function let(TaxonRepositoryInterface $taxonRepository)
     {
@@ -42,7 +42,7 @@ class ContainsTaxonConfigurationTypeSpec extends ObjectBehavior
         $taxonRepository->getClassName()->willReturn('taxon');
 
         $builder
-            ->add('taxon', 'sylius_entity_to_identifier', Argument::type('array'))
+            ->add('taxon', 'sylius_taxon_from_identifier', Argument::type('array'))
             ->shouldBeCalled()
             ->willReturn($builder);
         ;

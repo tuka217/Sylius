@@ -21,6 +21,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -103,6 +104,11 @@ class ResourceController extends Controller
     protected $eventDispatcher;
 
     /**
+     * @var StateMachineInterface
+     */
+    protected $stateMachine;
+
+    /**
      * @param MetadataInterface $metadata
      * @param RequestConfigurationFactoryInterface $requestConfigurationFactory
      * @param ViewHandlerInterface $viewHandler
@@ -117,6 +123,7 @@ class ResourceController extends Controller
      * @param FlashHelperInterface $flashHelper
      * @param AuthorizationCheckerInterface $authorizationChecker
      * @param EventDispatcherInterface $eventDispatcher
+     * @param StateMachineInterface $stateMachine
      */
     public function __construct(
         MetadataInterface $metadata,
@@ -132,7 +139,8 @@ class ResourceController extends Controller
         RedirectHandlerInterface $redirectHandler,
         FlashHelperInterface $flashHelper,
         AuthorizationCheckerInterface $authorizationChecker,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        StateMachineInterface $stateMachine
     ) {
         $this->metadata = $metadata;
         $this->requestConfigurationFactory = $requestConfigurationFactory;
@@ -148,6 +156,7 @@ class ResourceController extends Controller
         $this->flashHelper = $flashHelper;
         $this->authorizationChecker = $authorizationChecker;
         $this->eventDispatcher = $eventDispatcher;
+        $this->stateMachine = $stateMachine;
     }
 
     /**
@@ -168,7 +177,7 @@ class ResourceController extends Controller
 
         if ($configuration->isHtmlRequest()) {
             $view
-                ->setTemplate($configuration->getTemplate(ResourceActions::SHOW))
+                ->setTemplate($configuration->getTemplate(ResourceActions::SHOW . '.html'))
                 ->setTemplateVar($this->metadata->getName())
                 ->setData([
                     'configuration' => $configuration,
@@ -198,7 +207,7 @@ class ResourceController extends Controller
 
         if ($configuration->isHtmlRequest()) {
             $view
-                ->setTemplate($configuration->getTemplate(ResourceActions::INDEX))
+                ->setTemplate($configuration->getTemplate(ResourceActions::INDEX . '.html'))
                 ->setTemplateVar($this->metadata->getPluralName())
                 ->setData([
                     'configuration' => $configuration,
@@ -244,7 +253,7 @@ class ResourceController extends Controller
             $this->eventDispatcher->dispatchPostEvent(ResourceActions::CREATE, $configuration, $newResource);
 
             if (!$configuration->isHtmlRequest()) {
-                return $this->viewHandler->handle($configuration, View::create($newResource, 201));
+                return $this->viewHandler->handle($configuration, View::create($newResource, Response::HTTP_CREATED));
             }
 
             $this->flashHelper->addSuccessFlash($configuration, ResourceActions::CREATE, $newResource);
@@ -253,7 +262,7 @@ class ResourceController extends Controller
         }
 
         if (!$configuration->isHtmlRequest()) {
-            return $this->viewHandler->handle($configuration, View::create($form, 400));
+            return $this->viewHandler->handle($configuration, View::create($form, Response::HTTP_BAD_REQUEST));
         }
 
         $view = View::create()
@@ -264,7 +273,7 @@ class ResourceController extends Controller
                 $this->metadata->getName() => $newResource,
                 'form' => $form->createView(),
             ])
-            ->setTemplate($configuration->getTemplate(ResourceActions::CREATE))
+            ->setTemplate($configuration->getTemplate(ResourceActions::CREATE . '.html'))
         ;
 
         return $this->viewHandler->handle($configuration, $view);
@@ -298,11 +307,15 @@ class ResourceController extends Controller
                 return $this->redirectHandler->redirectToResource($configuration, $resource);
             }
 
+            if ($configuration->hasStateMachine()) {
+                $this->stateMachine->apply($configuration, $resource);
+            }
+
             $this->manager->flush();
             $this->eventDispatcher->dispatchPostEvent(ResourceActions::UPDATE, $configuration, $resource);
 
             if (!$configuration->isHtmlRequest()) {
-                return $this->viewHandler->handle($configuration, View::create($resource, 204));
+                return $this->viewHandler->handle($configuration, View::create(null, Response::HTTP_NO_CONTENT));
             }
 
             $this->flashHelper->addSuccessFlash($configuration, ResourceActions::UPDATE, $resource);
@@ -311,7 +324,7 @@ class ResourceController extends Controller
         }
 
         if (!$configuration->isHtmlRequest()) {
-            return $this->viewHandler->handle($configuration, View::create($form, 400));
+            return $this->viewHandler->handle($configuration, View::create($form, Response::HTTP_BAD_REQUEST));
         }
 
         $view = View::create()
@@ -322,7 +335,7 @@ class ResourceController extends Controller
                 $this->metadata->getName() => $resource,
                 'form' => $form->createView(),
             ])
-            ->setTemplate($configuration->getTemplate(ResourceActions::UPDATE))
+            ->setTemplate($configuration->getTemplate(ResourceActions::UPDATE . '.html'))
         ;
 
         return $this->viewHandler->handle($configuration, $view);
@@ -355,12 +368,53 @@ class ResourceController extends Controller
         $this->eventDispatcher->dispatchPostEvent(ResourceActions::DELETE, $configuration, $resource);
 
         if (!$configuration->isHtmlRequest()) {
-            return $this->viewHandler->handle($configuration, View::create(null, 204));
+            return $this->viewHandler->handle($configuration, View::create(null, Response::HTTP_NO_CONTENT));
         }
 
         $this->flashHelper->addSuccessFlash($configuration, ResourceActions::DELETE, $resource);
 
         return $this->redirectHandler->redirectToIndex($configuration, $resource);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     */
+    public function applyStateMachineTransitionAction(Request $request)
+    {
+        $configuration = $this->requestConfigurationFactory->create($this->metadata, $request);
+
+        $this->isGrantedOr403($configuration, ResourceActions::UPDATE);
+        $resource = $this->findOr404($configuration);
+
+        $event = $this->eventDispatcher->dispatchPreEvent(ResourceActions::UPDATE, $configuration, $resource);
+
+        if ($event->isStopped() && !$configuration->isHtmlRequest()) {
+            throw new HttpException($event->getErrorCode(), $event->getMessage());
+        }
+        if ($event->isStopped()) {
+            $this->flashHelper->addFlashFromEvent($configuration, $event);
+
+            return $this->redirectHandler->redirectToResource($configuration, $resource);
+        }
+
+        if (!$this->stateMachine->can($configuration, $resource)) {
+            throw new BadRequestHttpException();
+        }
+
+        $this->stateMachine->apply($configuration, $resource);
+        $this->manager->flush();
+
+        $this->eventDispatcher->dispatchPostEvent(ResourceActions::UPDATE, $configuration, $resource);
+
+        if (!$configuration->isHtmlRequest()) {
+            return $this->viewHandler->handle($configuration, View::create($resource, Response::HTTP_OK));
+        }
+
+        $this->flashHelper->addSuccessFlash($configuration, ResourceActions::UPDATE, $resource);
+
+        return $this->redirectHandler->redirectToResource($configuration, $resource);
     }
 
     /**
@@ -402,7 +456,7 @@ class ResourceController extends Controller
         $this->eventDispatcher->dispatchPostEvent(ResourceActions::UPDATE, $configuration, $resource);
 
         if (!$configuration->isHtmlRequest()) {
-            return $this->viewHandler->handle($configuration, View::create($resource, 204));
+            return $this->viewHandler->handle($configuration, View::create(null, Response::HTTP_NO_CONTENT));
         }
 
         $this->flashHelper->addSuccessFlash($configuration, $enabled ? 'enable' : 'disable', $resource);
@@ -454,47 +508,12 @@ class ResourceController extends Controller
         $this->eventDispatcher->dispatchPostEvent(ResourceActions::UPDATE, $configuration, $resource);
 
         if (!$configuration->isHtmlRequest()) {
-            return $this->viewHandler->handle($configuration, View::create($resource, 204));
+            return $this->viewHandler->handle($configuration, View::create(null, Response::HTTP_NO_CONTENT));
         }
 
         $this->flashHelper->addSuccessFlash($configuration, 'move', $resource);
 
         return $this->redirectHandler->redirectToIndex($configuration, $resource);
-    }
-
-    /**
-     * @param Request $request
-     * @param string $transition
-     * @param string $graph
-     *
-     * @return RedirectResponse
-     */
-    public function updateStateAction(Request $request, $transition, $graph)
-    {
-        $configuration = $this->requestConfigurationFactory->create($this->metadata, $request);
-        $resource = $this->findOr404($configuration);
-
-        $stateMachine = $this->get('sm.factory')->get($resource, $graph);
-        if (!$stateMachine->can($transition)) {
-            throw new NotFoundHttpException(sprintf(
-                'The requested transition %s cannot be applied on the given %s with graph %s.',
-                $transition,
-                $this->metadata->getName(),
-                $graph
-            ));
-        }
-
-        $stateMachine->apply($transition);
-
-        $this->manager->flush();
-
-        if (!$configuration->isHtmlRequest()) {
-            return $this->viewHandler->handle($configuration, View::create($resource, 204));
-        }
-
-        $this->flashHelper->addSuccessFlash($configuration, ResourceActions::UPDATE, $resource);
-
-        return $this->redirectHandler->redirectToReferer($configuration);
     }
 
     /**

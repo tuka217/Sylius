@@ -5,14 +5,25 @@ sylius:
     menu:
         admin:
             main:
+                catalog:
+                    header: Catálogo
+                    products: Produtos
                 configuration:
+                    channels: Canais
                     countries: Países
+                    locales: Linguagens
                     payment_methods: Métodos de pagamento
                     shipping_methods: Métodos de envio
                     tax_rates: Impostos
                     zones: Zonas
                 marketing:
+                    header: Marketing
                     promotions: Promoções
+                customers:
+                    customers: Clientes
+                    header: Cliente
                 sales:
                     header: Vendas
                     orders: Encomendas
+                content:
+                    header: Conteúdo

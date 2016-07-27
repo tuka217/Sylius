@@ -53,9 +53,9 @@ interface CreatePageInterface extends BaseCreatePageInterface
     public function chooseLocale($language);
 
     /**
-     * @param string $currency
+     * @param string $currencyCode
      */
-    public function chooseCurrency($currency);
+    public function chooseCurrency($currencyCode);
 
     /**
      * @param string $shippingMethod
@@ -66,4 +66,19 @@ interface CreatePageInterface extends BaseCreatePageInterface
      * @param string $paymentMethod
      */
     public function choosePaymentMethod($paymentMethod);
+
+    /**
+     * @param string $taxZone
+     */
+    public function chooseDefaultTaxZone($taxZone);
+
+    /**
+     * @param string $currency
+     */
+    public function chooseDefaultCurrency($currency);
+
+    /**
+     * @param string $taxCalculationStrategy
+     */
+    public function chooseTaxCalculationStrategy($taxCalculationStrategy);
 }

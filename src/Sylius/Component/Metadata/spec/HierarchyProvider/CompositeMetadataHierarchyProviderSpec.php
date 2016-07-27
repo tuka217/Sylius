@@ -20,7 +20,7 @@ use Sylius\Component\Metadata\Model\MetadataSubjectInterface;
  *
  * @author Kamil Kokot <kamil.kokot@lakion.com>
  */
-class CompositeMetadataHierarchyProviderSpec extends ObjectBehavior
+final class CompositeMetadataHierarchyProviderSpec extends ObjectBehavior
 {
     function let(MetadataHierarchyProviderInterface $firstHierarchyProvider, MetadataHierarchyProviderInterface $secondHierarchyProvider)
     {
@@ -56,7 +56,7 @@ class CompositeMetadataHierarchyProviderSpec extends ObjectBehavior
         $this->getHierarchyByMetadataSubject($metadataSubject)->shouldReturn(['Child-42', 'Child', 'Parent-42']);
     }
 
-    function it_returns_default_hirearchy_if_can_not_find_supporting_hierarchy_provider(
+    function it_returns_default_hierarchy_if_can_not_find_supporting_hierarchy_provider(
         MetadataHierarchyProviderInterface $hierarchyProvider,
         MetadataSubjectInterface $metadataSubject
     ) {

@@ -11,6 +11,7 @@
 
 namespace Sylius\Component\Product\Factory;
 
+use Sylius\Component\Product\Model\ProductInterface;
 use Sylius\Component\Resource\Factory\TranslatableFactoryInterface;
 
 /**
@@ -18,6 +19,11 @@ use Sylius\Component\Resource\Factory\TranslatableFactoryInterface;
  */
 interface ProductFactoryInterface extends TranslatableFactoryInterface
 {
+    /**
+     * @return ProductInterface
+     */
+    public function createWithVariant();
+
     /**
      * @param mixed $archetypeCode
      *

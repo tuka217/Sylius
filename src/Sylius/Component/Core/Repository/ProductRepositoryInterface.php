@@ -23,6 +23,8 @@ use Sylius\Component\Product\Repository\ProductRepositoryInterface as BaseProduc
  */
 interface ProductRepositoryInterface extends BaseProductRepositoryInterface
 {
+    public function createListQueryBuilder();
+
     /**
      * @param TaxonInterface $taxon
      * @param array $criteria
@@ -55,12 +57,12 @@ interface ProductRepositoryInterface extends BaseProductRepositoryInterface
     public function findForDetailsPage($id);
 
     /**
-     * @param int $limit
      * @param ChannelInterface $channel
+     * @param int $count
      *
      * @return ProductInterface[]
      */
-    public function findLatest($limit = 10, ChannelInterface $channel);
+    public function findLatestByChannel(ChannelInterface $channel, $count);
 
     /**
      * @param ArchetypeInterface $archetype
@@ -77,4 +79,20 @@ interface ProductRepositoryInterface extends BaseProductRepositoryInterface
      * @return ProductInterface|null
      */
     public function findOneByIdAndChannel($id, ChannelInterface $channel = null);
+
+    /**
+     * @param string $code
+     * @param ChannelInterface $channel
+     * 
+     * @return ProductInterface[]|null
+     */
+    public function findEnabledByTaxonCodeAndChannel($code, ChannelInterface $channel);
+
+    /**
+     * @param string $slug
+     * @param ChannelInterface $channel
+     *
+     * @return ProductInterface|null
+     */
+    public function findOneBySlugAndChannel($slug, ChannelInterface $channel);
 }

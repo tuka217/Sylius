@@ -22,13 +22,14 @@ use Sylius\Component\Grid\Renderer\GridRendererInterface;
 use Sylius\Component\Grid\View\GridView;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @mixin TwigGridRenderer
  *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class TwigGridRendererSpec extends ObjectBehavior
+final class TwigGridRendererSpec extends ObjectBehavior
 {
     function let(\Twig_Environment $twig, ServiceRegistryInterface $fieldsRegistry, FormFactoryInterface $formFactory)
     {
@@ -47,12 +48,12 @@ class TwigGridRendererSpec extends ObjectBehavior
     {
         $this->shouldHaveType('Sylius\Bundle\GridBundle\Renderer\TwigGridRenderer');
     }
-    
+
     function it_is_a_grid_renderer()
     {
         $this->shouldImplement(GridRendererInterface::class);
     }
-    
+
     function it_uses_Twig_to_render_the_grid_view(\Twig_Environment $twig, GridView $gridView)
     {
         $twig->render('SyliusGridBundle:default.html.twig', ['grid' => $gridView])->willReturn('<html>Grid!</html>');
@@ -73,7 +74,7 @@ class TwigGridRendererSpec extends ObjectBehavior
         $this->renderAction($gridView, $action)->shouldReturn('<a href="#">Action!</a>');
     }
 
-    function it_renders_field_with_data_via_appriopriate_field_type(
+    function it_renders_field_with_data_via_appropriate_field_type(
         GridView $gridView,
         Field $field,
         ServiceRegistryInterface $fieldsRegistry,
@@ -81,7 +82,17 @@ class TwigGridRendererSpec extends ObjectBehavior
     ) {
         $field->getType()->willReturn('string');
         $fieldsRegistry->get('string')->willReturn($fieldType);
-        $fieldType->render($field, 'Value')->willReturn('<strong>Value</strong>');
+        $fieldType->configureOptions(Argument::type(OptionsResolver::class))
+            ->will(function ($args) {
+                $args[0]->setRequired('foo');
+            })
+        ;
+
+        $field->getOptions()->willReturn([
+            'foo' => 'bar',
+        ]);
+        $fieldType->render($field, 'Value', ['foo' => 'bar'])->willReturn('<strong>Value</strong>');
+
 
         $this->renderField($gridView, $field, 'Value')->shouldReturn('<strong>Value</strong>');
     }

@@ -23,7 +23,7 @@ use Sylius\Component\Resource\StateMachine\StateMachineInterface;
 /**
  * @author Alexandre Bacco <alexandre.bacco@gmail.com>
  */
-class OrderPaymentCallbackSpec extends ObjectBehavior
+final class OrderPaymentCallbackSpec extends ObjectBehavior
 {
     function let(FactoryInterface $factory)
     {
@@ -48,7 +48,7 @@ class OrderPaymentCallbackSpec extends ObjectBehavior
         $order->setPaymentState(PaymentInterface::STATE_CANCELLED)->shouldBeCalled();
 
         $factory->get($order, OrderTransitions::GRAPH)->willReturn($sm);
-        $sm->apply(OrderTransitions::SYLIUS_CONFIRM, true)->shouldBeCalled();
+        $sm->apply(OrderTransitions::TRANSITION_FULFILL, true)->shouldBeCalled();
 
         $this->updateOrderOnPayment($payment);
     }
@@ -75,7 +75,7 @@ class OrderPaymentCallbackSpec extends ObjectBehavior
         $filteredPayments->count()->willReturn(1);
 
         $factory->get($order, OrderTransitions::GRAPH)->willReturn($sm);
-        $sm->apply(OrderTransitions::SYLIUS_CONFIRM, true)->shouldBeCalled();
+        $sm->apply(OrderTransitions::TRANSITION_FULFILL, true)->shouldBeCalled();
 
         $this->updateOrderOnPayment($payment);
     }

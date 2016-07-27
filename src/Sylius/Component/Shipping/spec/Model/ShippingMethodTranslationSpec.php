@@ -17,7 +17,7 @@ use Sylius\Component\Shipping\Model\ShippingMethodTranslationInterface;
 /**
  * @author Gonzalo Vilaseca <gvilaseca@reiss.co.uk>
  */
-class ShippingMethodTranslationSpec extends ObjectBehavior
+final class ShippingMethodTranslationSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
@@ -43,6 +43,12 @@ class ShippingMethodTranslationSpec extends ObjectBehavior
     {
         $this->setName('Shippable goods');
         $this->getName()->shouldReturn('Shippable goods');
+    }
+
+    function its_description_is_mutable()
+    {
+        $this->setDescription('Very good shipping, cheap price, good delivery time.');
+        $this->getDescription()->shouldReturn('Very good shipping, cheap price, good delivery time.');
     }
 
     function it_returns_name_when_converted_to_string()

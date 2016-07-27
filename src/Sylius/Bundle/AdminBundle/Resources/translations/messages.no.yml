@@ -6,8 +6,9 @@ sylius:
         admin:
             main:
                 catalog:
-                    taxons: Taksonomier
                     options: Instillinger
+                    products: Produkter
+                    taxons: Taksonomier
                 configuration:
                     countries: Land
                     header: Konfigurasjon
@@ -21,3 +22,6 @@ sylius:
                 sales:
                     header: Salg
                     orders: Bestillinger
+                content:
+                    header: Innhold
+                    routes: Ruter

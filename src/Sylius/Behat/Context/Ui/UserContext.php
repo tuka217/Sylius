@@ -14,10 +14,11 @@ namespace Sylius\Behat\Context\Ui;
 use Behat\Behat\Context\Context;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Sylius\Behat\Page\Admin\Customer\ShowPageInterface;
-use Sylius\Behat\Page\Shop\User\LoginPageInterface;
+use Sylius\Behat\Page\Shop\Account\LoginPageInterface;
 use Sylius\Behat\Page\Shop\User\RegisterPageInterface;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\User\Repository\UserRepositoryInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Magdalena Banasiak <magdalena.banasiak@lakion.com>
@@ -46,55 +47,32 @@ final class UserContext implements Context
     private $loginPage;
 
     /**
-     * @var RegisterPageInterface
-     */
-    private $registerPage;
-
-    /**
      * @param SharedStorageInterface $sharedStorage
      * @param UserRepositoryInterface $userRepository
      * @param ShowPageInterface $customerShowPage
      * @param LoginPageInterface $loginPage
-     * @param RegisterPageInterface $registerPage
      */
     public function __construct(
         SharedStorageInterface $sharedStorage,
         UserRepositoryInterface $userRepository,
         ShowPageInterface $customerShowPage,
-        LoginPageInterface $loginPage,
-        RegisterPageInterface $registerPage
+        LoginPageInterface $loginPage
     ) {
         $this->sharedStorage = $sharedStorage;
         $this->userRepository = $userRepository;
         $this->customerShowPage = $customerShowPage;
         $this->loginPage = $loginPage;
-        $this->registerPage = $registerPage;
     }
 
     /**
-     * @Given /^I log in as "([^"]*)" with "([^"]*)" password$/
+     * @Given I log in as :email with :password password
      */
-    public function iLogInAs($login, $password)
+    public function iLogInAsWithPassword($email, $password)
     {
         $this->loginPage->open();
-        $this->loginPage->logIn($login, $password);
-    }
-
-    /**
-     * @When I try to register again with email :email
-     */
-    public function iTryToRegister($email)
-    {
-        $this->registerPage->open();
-        $this->registerPage->register($email);
-    }
-
-    /**
-     * @Then I should be successfully registered
-     */
-    public function iShouldBeRegistered()
-    {
-        expect($this->registerPage->wasRegistrationSuccessful())->toBe(true);
+        $this->loginPage->specifyUsername($email);
+        $this->loginPage->specifyPassword($password);
+        $this->loginPage->logIn();
     }
 
     /**
@@ -125,7 +103,13 @@ final class UserContext implements Context
      */
     public function iShouldNotBeAbleToDeleteMyOwnAccount()
     {
-        expect($this->customerShowPage)->toThrow(ElementNotFoundException::class)->during('deleteAccount');
+        try {
+            $this->customerShowPage->deleteAccount();
+        } catch (ElementNotFoundException $exception) {
+            return;
+        }
+
+        throw new \DomainException('Delete account should throw an exception!');
     }
 
     /**
@@ -137,6 +121,6 @@ final class UserContext implements Context
 
         $this->customerShowPage->open(['id' => $deletedUser->getCustomer()->getId()]);
 
-        expect($this->customerShowPage->isRegistered())->toBe(false);
+        Assert::false($this->customerShowPage->isRegistered());
     }
 }

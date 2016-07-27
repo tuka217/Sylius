@@ -16,6 +16,12 @@
                     xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
                                         http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
 
+    <class name="Sylius\Component\Core\Model\Channel">
+        <property name="taxCalculationStrategy">
+            <constraint name="NotBlank" />
+        </property>
+    </class>
+
     <class name="Sylius\Component\Core\Model\Order">
         <property name="shippingAddress">
             <constraint name="Valid" />
@@ -23,14 +29,17 @@
         <property name="billingAddress">
             <constraint name="Valid" />
         </property>
+        <property name="shipments">
+            <constraint name="Valid" />
+        </property>
+        <property name="currencyCode">
+            <constraint name="Currency">
+                <option name="message">sylius.order.currency_code.not_valid</option>
+            </constraint>
+        </property>
     </class>
 
     <class name="Sylius\Component\Core\Model\ProductVariant">
-        <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
-            <option name="fields">sku</option>
-            <option name="message">sylius.product_variant.sku.unique</option>
-            <option name="groups">sylius</option>
-        </constraint>
         <property name="price">
             <constraint name="NotBlank">
                 <option name="message">sylius.product_variant.price.not_blank</option>
@@ -78,7 +87,7 @@
                 <option name="groups">sylius</option>
             </constraint>
         </property>
-    </class>    
+    </class>
     <class name="Sylius\Component\Cart\Model\CartItem">
         <constraint name="Sylius\Bundle\InventoryBundle\Validator\Constraints\InStock">
             <option name="stockablePath">variant</option>
@@ -90,6 +99,12 @@
         <constraint name="Sylius\Bundle\CoreBundle\Validator\Constraints\HasEnabledEntity">
             <option name="groups">sylius</option>
         </constraint>
+        <property name="defaultCurrency">
+            <constraint name="NotBlank">
+                <option name="message">sylius.channel.default_currency.not_blank</option>
+                <option name="groups">sylius</option>
+            </constraint>
+        </property>
     </class>
 
 </constraint-mapping>

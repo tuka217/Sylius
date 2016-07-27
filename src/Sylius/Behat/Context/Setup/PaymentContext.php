@@ -14,7 +14,7 @@ namespace Sylius\Behat\Context\Setup;
 use Behat\Behat\Context\Context;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sylius\Bundle\CoreBundle\Test\Services\PaymentMethodNameToGatewayConverterInterface;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Payment\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Repository\PaymentMethodRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
@@ -87,6 +87,7 @@ final class PaymentContext implements Context
         $channel = $this->sharedStorage->get('channel');
         $channel->addPaymentMethod($paymentMethod);
 
+        $this->sharedStorage->set('payment_method', $paymentMethod);
         $this->paymentMethodRepository->add($paymentMethod);
     }
 
@@ -107,6 +108,16 @@ final class PaymentContext implements Context
     public function theStoreHasAPaymentMethodDisabled(PaymentMethodInterface $paymentMethod)
     {
         $paymentMethod->disable();
+
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @Given /^(it) has instructions "([^"]+)"$/
+     */
+    public function itHasInstructions(PaymentMethodInterface $paymentMethod, $instructions)
+    {
+        $paymentMethod->setInstructions($instructions);
 
         $this->objectManager->flush();
     }

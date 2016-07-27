@@ -33,39 +33,34 @@ class AttributeValue implements AttributeValueInterface
     protected $attribute;
 
     /**
-     * @var mixed
-     */
-    protected $value;
-
-    /**
      * @var string
      */
-    protected $text;
+    private $text;
 
     /**
      * @var bool
      */
-    protected $boolean;
+    private $boolean;
 
     /**
      * @var int
      */
-    protected $integer;
+    private $integer;
 
     /**
      * @var float
      */
-    protected $float;
+    private $float;
 
     /**
      * @var \DateTime
      */
-    protected $datetime;
+    private $datetime;
 
     /**
      * @var \DateTime
      */
-    protected $date;
+    private $date;
 
     /**
      * {@inheritdoc}
@@ -116,7 +111,7 @@ class AttributeValue implements AttributeValueInterface
             return null;
         }
 
-        $getter = 'get'.ucfirst($this->attribute->getStorageType());
+        $getter = 'get' . $this->attribute->getStorageType();
 
         return $this->$getter();
     }
@@ -128,8 +123,9 @@ class AttributeValue implements AttributeValueInterface
     {
         $this->assertAttributeIsSet();
 
-        $property = $this->attribute->getStorageType();
-        $this->$property = $value;
+        $setter = 'set' . $this->attribute->getStorageType();
+
+        $this->$setter($value);
     }
 
     /**
@@ -165,7 +161,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @return bool
      */
-    public function getBoolean()
+    protected function getBoolean()
     {
         return $this->boolean;
     }
@@ -173,7 +169,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @param bool $boolean
      */
-    public function setBoolean($boolean)
+    protected function setBoolean($boolean)
     {
         $this->boolean = $boolean;
     }
@@ -181,7 +177,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @return string
      */
-    public function getText()
+    protected function getText()
     {
         return $this->text;
     }
@@ -189,7 +185,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @param string $text
      */
-    public function setText($text)
+    protected function setText($text)
     {
         $this->text = $text;
     }
@@ -197,7 +193,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @return int
      */
-    public function getInteger()
+    protected function getInteger()
     {
         return $this->integer;
     }
@@ -205,7 +201,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @param int $integer
      */
-    public function setInteger($integer)
+    protected function setInteger($integer)
     {
         $this->integer = $integer;
     }
@@ -213,7 +209,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @return float
      */
-    public function getFloat()
+    protected function getFloat()
     {
         return $this->float;
     }
@@ -221,7 +217,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @param float $float
      */
-    public function setFloat($float)
+    protected function setFloat($float)
     {
         $this->float = $float;
     }
@@ -229,7 +225,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @return \DateTime
      */
-    public function getDatetime()
+    protected function getDatetime()
     {
         return $this->datetime;
     }
@@ -237,7 +233,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @param \DateTime $datetime
      */
-    public function setDatetime(\DateTime $datetime)
+    protected function setDatetime(\DateTime $datetime)
     {
         $this->datetime = $datetime;
     }
@@ -245,7 +241,7 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @return \DateTime
      */
-    public function getDate()
+    protected function getDate()
     {
         return $this->date;
     }
@@ -253,10 +249,11 @@ class AttributeValue implements AttributeValueInterface
     /**
      * @param \DateTime $date
      */
-    public function setDate(\DateTime $date)
+    protected function setDate(\DateTime $date)
     {
         $this->date = $date;
     }
+
     /**
      * @throws \BadMethodCallException
      */

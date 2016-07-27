@@ -14,7 +14,7 @@ namespace spec\Sylius\Bundle\FlowBundle\Validator;
 use PhpSpec\ObjectBehavior;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class ProcessValidatorExceptionSpec extends ObjectBehavior
+final class ProcessValidatorExceptionSpec extends ObjectBehavior
 {
     function let()
     {
@@ -26,7 +26,7 @@ class ProcessValidatorExceptionSpec extends ObjectBehavior
         $this->shouldHaveType('Sylius\Bundle\FlowBundle\Validator\ProcessValidatorException');
     }
 
-    function it_is_http_excetion()
+    function it_is_http_exception()
     {
         $this->shouldHaveType(HttpException::class);
     }

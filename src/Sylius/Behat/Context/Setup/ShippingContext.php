@@ -16,7 +16,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Sylius\Component\Addressing\Model\ZoneInterface;
 use Sylius\Component\Addressing\Repository\ZoneRepositoryInterface;
 use Sylius\Component\Core\Model\ShippingMethodInterface;
-use Sylius\Component\Core\Test\Services\SharedStorageInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Shipping\Calculator\DefaultCalculators;
@@ -122,6 +122,45 @@ final class ShippingContext implements Context
     }
 
     /**
+     * @Given /^the store has disabled "([^"]+)" shipping method with ("[^"]+") fee$/
+     */
+    public function storeHasDisabledShippingMethodWithFee($shippingMethodName, $fee)
+    {
+        $this->createShippingMethod($shippingMethodName, null, null, 'en', ['amount' => $fee], DefaultCalculators::FLAT_RATE, false);
+    }
+
+    /**
+     * @Given /^the store has "([^"]+)" shipping method with ("[^"]+") fee per unit$/
+     */
+    public function theStoreHasShippingMethodWithFeePerUnit($shippingMethodName, $fee)
+    {
+        $this->createShippingMethod($shippingMethodName, null, null, 'en', ['amount' => $fee], DefaultCalculators::PER_UNIT_RATE);
+    }
+
+    /**
+     * @Given /^the store has "([^"]+)" shipping method with ("[^"]+") fee on fist unit and ("[^"]+") on next (\d+)$/
+     */
+    public function theStoreHasShippingMethodWithFeeOnFistUnitAndOnNext($shippingMethodName, $fee, $perUnitFee, $limit)
+    {
+        $this->createShippingMethod(
+            $shippingMethodName, 
+            null, 
+            null, 
+            'en', 
+            ['first_unit_cost' => $fee, 'additional_unit_cost' => $perUnitFee, 'additional_unit_limit' => $limit], 
+            DefaultCalculators::FLEXIBLE_RATE
+        );
+    }
+    
+    /**
+     * @Given /^the store has "([^"]+)" shipping method with ("[^"]+") fee not assigned to any channel$/
+     */
+    public function storeHasShippingMethodWithFeeNotAssignedToAnyChannel($shippingMethodName, $fee)
+    {
+        $this->createShippingMethod($shippingMethodName, null, null, 'en', ['amount' => $fee], DefaultCalculators::FLAT_RATE, false, false);
+    }
+
+    /**
      * @Given /^(shipping method "[^"]+") belongs to ("[^"]+" tax category)$/
      */
     public function shippingMethodBelongsToTaxCategory(ShippingMethodInterface $shippingMethod, TaxCategoryInterface $taxCategory)
@@ -155,6 +194,8 @@ final class ShippingContext implements Context
      * @param string $locale
      * @param array $configuration
      * @param string $calculator
+     * @param bool $enabled
+     * @param bool $addForCurrentChannel
      */
     private function createShippingMethod(
         $name,
@@ -162,7 +203,9 @@ final class ShippingContext implements Context
         ZoneInterface $zone = null,
         $locale = 'en',
         $configuration = ['amount' => 0],
-        $calculator = DefaultCalculators::FLAT_RATE
+        $calculator = DefaultCalculators::FLAT_RATE,
+        $enabled = true,
+        $addForCurrentChannel = true
     ) {
         if (null === $zone) {
             $zone = $this->sharedStorage->get('zone');
@@ -180,6 +223,12 @@ final class ShippingContext implements Context
         $shippingMethod->setConfiguration($configuration);
         $shippingMethod->setCalculator($calculator);
         $shippingMethod->setZone($zone);
+        $shippingMethod->setEnabled($enabled);
+
+        if ($addForCurrentChannel && $this->sharedStorage->has('channel')) {
+            $channel = $this->sharedStorage->get('channel');
+            $channel->addShippingMethod($shippingMethod);
+        }
 
         $this->shippingMethodRepository->add($shippingMethod);
         $this->sharedStorage->set('shipping_method', $shippingMethod);

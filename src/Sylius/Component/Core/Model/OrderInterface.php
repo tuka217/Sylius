@@ -118,14 +118,12 @@ interface OrderInterface extends
     /**
      * @return string
      */
-    public function getCurrency();
+    public function getCurrencyCode();
 
     /**
      * @param string
-     *
-     * @return OrderInterface
      */
-    public function setCurrency($currency);
+    public function setCurrencyCode($currencyCode);
 
     /**
      * @return float
@@ -141,11 +139,6 @@ interface OrderInterface extends
      * @param BaseCouponInterface $coupon
      */
     public function setPromotionCoupon(BaseCouponInterface $coupon = null);
-
-    /**
-     * @return int
-     */
-    public function getPromotionsTotalRecursively();
 
     /**
      * @return string
@@ -178,4 +171,19 @@ interface OrderInterface extends
      * @return bool
      */
     public function isInvoiceAvailable();
+
+    /**
+     * @return int
+     */
+    public function getTaxTotal();
+
+    /**
+     * @return int
+     */
+    public function getShippingTotal();
+
+    /**
+     * @return int
+     */
+    public function getOrderPromotionTotal();
 }

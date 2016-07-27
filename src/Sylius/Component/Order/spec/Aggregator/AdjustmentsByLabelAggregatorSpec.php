@@ -18,7 +18,7 @@ use Sylius\Component\Order\Model\AdjustmentInterface;
 /**
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
  */
-class AdjustmentsByLabelAggregatorSpec extends ObjectBehavior
+final class AdjustmentsByLabelAggregatorSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
@@ -62,7 +62,7 @@ class AdjustmentsByLabelAggregatorSpec extends ObjectBehavior
         $adjustment2->getAmount()->willReturn(3000);
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('Each adjustments array element must implement '.AdjustmentInterface::class.'.'))
+            ->shouldThrow(\InvalidArgumentException::class)
             ->during('aggregate', [[$adjustment1, $adjustment2, 'badObject']])
         ;
     }

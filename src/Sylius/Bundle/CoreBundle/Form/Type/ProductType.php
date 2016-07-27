@@ -30,15 +30,12 @@ class ProductType extends BaseProductType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('translations', 'sylius_translations', [
-                'type' => 'sylius_product_translation',
-                'label' => 'sylius.form.product.translations',
+            ->add('channels', 'sylius_channel_choice', [
+                'multiple' => true,
+                'expanded' => true,
+                'label' => 'sylius.form.product.channels',
             ])
-            ->add('shippingCategory', 'sylius_shipping_category_choice', [
-                'required' => false,
-                'empty_value' => '---',
-                'label' => 'sylius.form.product.shipping_category',
-            ])
+            ->add('mainTaxon', 'sylius_taxon_to_hidden_identifier')
             ->add('taxons', 'sylius_taxon_choice', [
                 'label' => 'sylius.form.product.taxons',
                 'multiple' => true,
@@ -47,18 +44,6 @@ class ProductType extends BaseProductType
                 'label' => 'sylius.form.product.variant_selection_method',
                 'choices' => Product::getVariantSelectionMethodLabels(),
             ])
-            ->add('channels', 'sylius_channel_choice', [
-                'multiple' => true,
-                'expanded' => true,
-                'label' => 'sylius.form.product.channels',
-            ])
-            ->add('restrictedZone', 'sylius_zone_choice', [
-                'empty_value' => '---',
-                'label' => 'sylius.form.product.restricted_zone',
-            ])
-            ->add('mainTaxon', 'sylius_taxon_choice', [
-                'label' => 'sylius.form.product.main_taxon',
-             ])
         ;
     }
 }
