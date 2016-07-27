@@ -11,7 +11,7 @@
 
 namespace Sylius\Bundle\CoreBundle\EventListener;
 
-use Sylius\Bundle\UserBundle\EventListener\CustomerAwareListener as BaseCustomerAwareListener;
+use Sylius\Bundle\CustomerBundle\EventListener\CustomerAwareListener as BaseCustomerAwareListener;
 use Sylius\Component\Cart\Event\CartEvent;
 use Sylius\Component\Resource\Exception\UnexpectedTypeException;
 use Sylius\Component\Customer\Model\CustomerAwareInterface;
