@@ -86,9 +86,20 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
     /**
      * {@inheritdoc}
      */
+    public function chooseDefaultLocale($locale)
+    {
+        if (null !== $locale) {
+            $this->getElement('default_locale')->selectOption($locale);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function chooseDefaultCurrency($currency)
     {
         if (null !== $currency) {
+            $this->getElement('currencies')->selectOption($currency);
             $this->getElement('default_currency')->selectOption($currency);
         }
     }
@@ -119,6 +130,8 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
             'enabled' => '#sylius_channel_enabled',
             'name' => '#sylius_channel_name',
             'default_currency' => '#sylius_channel_defaultCurrency',
+            'currencies' => '#sylius_channel_currencies',
+            'default_locale' => '#sylius_channel_defaultLocale',
         ]);
     }
 }

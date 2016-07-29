@@ -16,11 +16,12 @@ use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Cart\Model\Cart;
 use Sylius\Component\Channel\Model\ChannelInterface as BaseChannelInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
+use Sylius\Component\Core\OrderPaymentStates;
 use Sylius\Component\Inventory\Model\InventoryUnitInterface;
 use Sylius\Component\Payment\Model\PaymentInterface as BasePaymentInterface;
 use Sylius\Component\Promotion\Model\CouponInterface as BaseCouponInterface;
 use Sylius\Component\Promotion\Model\PromotionInterface as BasePromotionInterface;
-use Sylius\Component\User\Model\CustomerInterface as BaseCustomerInterface;
+use Sylius\Component\Customer\Model\CustomerInterface as BaseCustomerInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -82,7 +83,7 @@ class Order extends Cart implements OrderInterface
     /**
      * @var string
      */
-    protected $paymentState = BasePaymentInterface::STATE_CART;
+    protected $paymentState = OrderPaymentStates::STATE_CART;
 
     /**
      * It depends on the status of all order shipments.
@@ -265,8 +266,6 @@ class Order extends Cart implements OrderInterface
         if (!$this->hasPayment($payment)) {
             $this->payments->add($payment);
             $payment->setOrder($this);
-
-            $this->setPaymentState($payment->getState());
         }
     }
 

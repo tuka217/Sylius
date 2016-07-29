@@ -11,8 +11,8 @@
 
 namespace Sylius\Bundle\CoreBundle\Cart;
 
+use Sylius\Component\Cart\Context\CartContextInterface;
 use Sylius\Component\Cart\Model\CartItemInterface;
-use Sylius\Component\Cart\Provider\CartProviderInterface;
 use Sylius\Component\Cart\Resolver\ItemResolverInterface;
 use Sylius\Component\Cart\Resolver\ItemResolvingException;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
@@ -30,9 +30,9 @@ use Symfony\Component\HttpFoundation\Request;
 class ItemResolver implements ItemResolverInterface
 {
     /**
-     * @var CartProviderInterface
+     * @var CartContextInterface
      */
-    protected $cartProvider;
+    protected $cartContext;
 
     /**
      * @var DelegatingCalculatorInterface
@@ -60,22 +60,22 @@ class ItemResolver implements ItemResolverInterface
     protected $channelContext;
 
     /**
-     * @param CartProviderInterface          $cartProvider
-     * @param RepositoryInterface            $productRepository
-     * @param FormFactoryInterface           $formFactory
-     * @param AvailabilityCheckerInterface   $availabilityChecker
-     * @param DelegatingCalculatorInterface  $priceCalculator
-     * @param ChannelContextInterface        $channelContext
+     * @param CartContextInterface $cartContext
+     * @param RepositoryInterface $productRepository
+     * @param FormFactoryInterface $formFactory
+     * @param AvailabilityCheckerInterface $availabilityChecker
+     * @param DelegatingCalculatorInterface $priceCalculator
+     * @param ChannelContextInterface $channelContext
      */
     public function __construct(
-        CartProviderInterface          $cartProvider,
-        RepositoryInterface            $productRepository,
-        FormFactoryInterface           $formFactory,
-        AvailabilityCheckerInterface   $availabilityChecker,
-        DelegatingCalculatorInterface  $priceCalculator,
-        ChannelContextInterface        $channelContext
+        CartContextInterface $cartContext,
+        RepositoryInterface $productRepository,
+        FormFactoryInterface $formFactory,
+        AvailabilityCheckerInterface $availabilityChecker,
+        DelegatingCalculatorInterface $priceCalculator,
+        ChannelContextInterface $channelContext
     ) {
-        $this->cartProvider = $cartProvider;
+        $this->cartContext = $cartContext;
         $this->productRepository = $productRepository;
         $this->formFactory = $formFactory;
         $this->availabilityChecker = $availabilityChecker;
@@ -115,7 +115,7 @@ class ItemResolver implements ItemResolverInterface
             throw new ItemResolvingException('Submitted form is invalid.');
         }
 
-        $cart = $this->cartProvider->getCart();
+        $cart = $this->cartContext->getCart();
         $quantity = $item->getQuantity();
 
         $context = ['quantity' => $quantity];

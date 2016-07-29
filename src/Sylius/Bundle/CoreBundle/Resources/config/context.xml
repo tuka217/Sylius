@@ -30,6 +30,12 @@
             <argument type="service" id="sylius.context.customer" />
         </service>
 
+        <service id="sylius.context.cart_shop_based" class="Sylius\Component\Core\Cart\Context\ShopBasedCartContext" decorates="sylius.context.cart_new">
+            <argument type="service" id="sylius.context.cart_shop_based.inner" />
+            <argument type="service" id="sylius.context.shopper" />
+            <tag name="sylius.cart_context" priority="-888" />
+        </service>
+
         <service id="sylius.currency_provider.channel_based" class="Sylius\Component\Core\Provider\ChannelBasedCurrencyProvider" decorates="sylius.currency_provider">
             <argument type="service" id="sylius.context.channel" />
         </service>
@@ -52,6 +58,34 @@
                 <argument type="service">
                     <service class="Sylius\Component\Currency\Context\ProviderBasedCurrencyContext">
                         <argument type="service" id="sylius.currency_provider" />
+                    </service>
+                </argument>
+            </call>
+        </service>
+
+        <service id="sylius.locale_provider.channel_based" class="Sylius\Component\Core\Provider\ChannelBasedLocaleProvider" decorates="sylius.locale_provider">
+            <argument type="service" id="sylius.context.channel" />
+            <argument>%locale%</argument>
+        </service>
+
+        <service id="sylius.storage.locale" class="Sylius\Component\Core\Locale\LocaleStorage">
+            <argument type="service" id="sylius.storage.session" />
+        </service>
+
+        <service id="sylius.context.locale.core" class="Sylius\Component\Locale\Context\CompositeLocaleContext" decorates="sylius.context.locale">
+            <call method="addContext">
+                <argument type="service">
+                    <service class="Sylius\Component\Core\Context\StorageBasedLocaleContext">
+                        <argument type="service" id="sylius.context.channel" />
+                        <argument type="service" id="sylius.storage.locale" />
+                        <argument type="service" id="sylius.locale_provider" />
+                    </service>
+                </argument>
+            </call>
+            <call method="addContext">
+                <argument type="service">
+                    <service class="Sylius\Component\Locale\Context\ProviderBasedLocaleContext">
+                        <argument type="service" id="sylius.locale_provider" />
                     </service>
                 </argument>
             </call>
