@@ -140,11 +140,9 @@ sylius:
         extra_notes: Extra anteckningar
         failed: Misslyckad
         faqs: FAQs
-        female: Kvinna
         filter: Filter
         filters: Filter
         first_name: Förnamn
-        firstname: Förnamn
         forgot_password: Glömt lösenordet
         gateway: Portal
         generate_coupons: Generera kuponger
@@ -176,7 +174,6 @@ sylius:
         login_button: Inloggning
         logout: Logga ut
         main_taxon: Huvudsaklig taxon
-        male: Man
         manage_attributes_of_your_products: Hantera attribut för dina produkter
         manage_categorization_of_your_products: Hantera kategorisering av dina produkter
         manage_configuration_options_of_your_products: Hantera konfigurationsalternativ för dina produkter
@@ -225,7 +222,6 @@ sylius:
         not_empty: Inte tom
         not_in: Inte i
         number: Nummer
-        onhold: Väntande
         options: Alternativ
         or: eller
         order_comment_name: Orderkommentar
@@ -320,7 +316,6 @@ sylius:
         summary: Sammanfattning
         support: Support
         tax: Skatt
-        tax_categories: Skattekategorier
         tax_category: Momskategori
         taxation_categories: Skattekategorier
         taxonomy: Taxonomi

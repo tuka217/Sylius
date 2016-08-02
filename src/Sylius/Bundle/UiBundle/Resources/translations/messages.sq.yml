@@ -270,10 +270,8 @@ sylius:
         expires_at: Skadon më
         extra_information: Informacione shtese
         failed: Nuk u krye
-        female: Femër
         filter: Filtri
         first_name: Emri
-        firstname: Emri
         forgot_password: Harruat fjalëkalimin
         fulfill: Përmbyll
         gateway: Gateway
@@ -335,7 +333,6 @@ sylius:
         login_sylius_store: 'Futu <small>Sylius arkiv </small>'
         logout: Dil
         main_taxon: Tipologjia kryesore
-        male: Mashkull
         manage: Kontrollo
         manage_adjustments: Kontrollo parametrat
         manage_attributes: Kontrollo atributet
@@ -560,7 +557,7 @@ sylius:
         shipping_charges: Pagesat e dërgimit
         shipping_method: Mënyra e dërgimit
         shipping_method_details: Hollësi të mënyrës së dërgimit
-        shipping_methods: Mënyrat e dërgesave
+        shipping_methods: Mënyrat e dërgesës
         shipping_state: Gjendja e dërgimit
         shipping_total: Pagesa totale e dërgimit
         shop_by: Bli me
@@ -588,7 +585,6 @@ sylius:
         summary: Permbledhje
         support: Mbështetja
         sylius_logo: Sylius
-        tax_categories: Kategoritë e taksimit
         tax_category: Kategoria e taksimit
         tax_rate_details: Hollësi të normës së taksimit
         tax_rates: Normat e taksimit

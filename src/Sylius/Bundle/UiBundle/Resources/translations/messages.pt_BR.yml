@@ -302,11 +302,9 @@ sylius:
         extra_information: Informações extras
         failed: Falhou
         faqs: Perguntas freqüentes
-        female: Feminino
         filter: Filtrar
         filters: Filtros
         first_name: Nome
-        firstname: Nome
         forgot_password: Esqueceu a senha
         fulfill: Completar
         gateway: Gateway
@@ -373,7 +371,6 @@ sylius:
         login_sylius_store: 'Logon <small>Sylius armazenar</small>'
         logout: Sair
         main_taxon: Táxon principal
-        male: Masculino
         manage: Gerenciar
         manage_adjustments: Gerenciar ajustes
         manage_attributes: Gerenciar Atributos
@@ -489,7 +486,6 @@ sylius:
         number_of_orders: Número de pedidos
         oauth_provider: Provedor OAuth
         on_hold: Em espera
-        onhold: Em espera
         options: Opções
         or: Ou
         order: Pedido
@@ -662,7 +658,6 @@ sylius:
         support: Suporte
         sylius_logo: Sylius
         tax: Taxa
-        tax_categories: Categorias de imposto
         tax_category: Categoria de imposto
         tax_rate_details: Detalhes de imposto
         tax_rates: Taxas de imposto

@@ -301,11 +301,9 @@ sylius:
         extra_information: ข้อมูลเพิ่มเติม
         failed: ล้มเหลว
         faqs: ถาม-ตอบ
-        female: ผู้หญิง
         filter: กรองข้อมูล
         filters: กรองข้อมูล
         first_name: ชื่อ
-        firstname: ชื่อ
         forgot_password: ลืมรหัสผ่าน
         fulfill: Fulfill
         gateway: ช่องทางการชำระเงิน
@@ -372,7 +370,6 @@ sylius:
         login_sylius_store: 'เข้าสู่ระบบ <small>Sylius store</small>'
         logout: ออกจากระบบ
         main_taxon: หมวดหมู่หลัก
-        male: ผู้ชาย
         manage: จัดการ
         manage_adjustments: จัดการการปรับปรุง
         manage_attributes: การจัดการคุณลักษณะ (Attribute)
@@ -488,7 +485,6 @@ sylius:
         number_of_orders: จำนวนใบสั่งซื้อ
         oauth_provider: ผู้ให้บริการการใช้ OAuth
         on_hold: On hold
-        onhold: Onhold
         options: ตัวเลือก
         or: หรือ
         order: ใบสั่งซื้อ
@@ -661,7 +657,6 @@ sylius:
         support: สนับสนุน
         sylius_logo: ツ Sylius
         tax: ภาษี
-        tax_categories: ประเภทภาษี
         tax_category: ประเภทภาษี
         tax_rate_details: รายละเอียดอัตราภาษี
         tax_rates: อัตราภาษี

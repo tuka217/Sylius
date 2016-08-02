@@ -12,14 +12,15 @@
 namespace spec\Sylius\Bundle\CoreBundle\Cart;
 
 use PhpSpec\ObjectBehavior;
+use Sylius\Component\Cart\Context\CartContextInterface;
 use Sylius\Component\Cart\Model\CartItemInterface;
-use Sylius\Component\Cart\Provider\CartProviderInterface;
 use Sylius\Component\Cart\Resolver\ItemResolverInterface;
 use Sylius\Component\Cart\Resolver\ItemResolvingException;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Inventory\Checker\AvailabilityCheckerInterface;
 use Sylius\Component\Pricing\Calculator\DelegatingCalculatorInterface;
+use Sylius\Component\Variation\Resolver\VariantResolverInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -29,20 +30,22 @@ use Symfony\Component\HttpFoundation\Request;
 final class ItemResolverSpec extends ObjectBehavior
 {
     function let(
-        CartProviderInterface $cartProvider,
+        CartContextInterface $cartContext,
         ProductRepositoryInterface $productRepository,
         FormFactoryInterface $formFactory,
         AvailabilityCheckerInterface $availabilityChecker,
         DelegatingCalculatorInterface $priceCalculator,
-        ChannelContextInterface $channelContext
+        ChannelContextInterface $channelContext,
+        VariantResolverInterface $variantResolver
     ) {
         $this->beConstructedWith(
-            $cartProvider,
+            $cartContext,
             $productRepository,
             $formFactory,
             $availabilityChecker,
             $priceCalculator,
-            $channelContext
+            $channelContext,
+            $variantResolver
         );
     }
 
