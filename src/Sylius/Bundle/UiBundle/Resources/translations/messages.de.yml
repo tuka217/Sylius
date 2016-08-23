@@ -57,7 +57,6 @@ sylius:
         author: Autor
         availability: Verfügbarkeit
         available_on: Verfügbar ab
-        available_on_demand: Auf Nachfrage
         available_until: Verfügbar bis
         back: Zurück
         backorder: Lieferrückstand
@@ -253,10 +252,8 @@ sylius:
         existing_customer: Existierender Benutzer
         expires_at: Verfällt am
         failed: Fehlgeschlagen
-        female: Frau
         filter: Filtern
         first_name: Vorname
-        firstname: Vorname
         forgot_password: Passwort vergessen
         fulfill: Zu erfüllen
         gateway: Schnittstelle
@@ -316,7 +313,6 @@ sylius:
         login_sylius_store: 'Login <small>Sylius Webshop</small>'
         logout: Abmelden
         main_taxon: Haupt-Taxonomie
-        male: Mann
         manage: Verwaltung
         manage_adjustments: Verwalten von Anpassungen
         manage_attributes: Attribute verwalten
@@ -551,7 +547,6 @@ sylius:
         summary: Zusammenfassung
         support: Support
         sylius_logo: Sylius
-        tax_categories: Steuerkategorien
         tax_category: Steuerkategorie
         tax_rate_details: Steuersätze
         tax_rates: Steuersätze

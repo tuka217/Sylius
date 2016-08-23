@@ -17,7 +17,7 @@ use Sylius\Behat\Page\Admin\Customer\CreatePageInterface;
 use Sylius\Behat\Page\Admin\Customer\ShowPageInterface;
 use Sylius\Behat\Page\Admin\Customer\UpdatePageInterface;
 use Sylius\Behat\Service\SharedStorageInterface;
-use Sylius\Component\User\Model\CustomerInterface;
+use Sylius\Component\Customer\Model\CustomerInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -485,6 +485,17 @@ final class ManagingCustomersContext implements Context
             str_replace(',', '', $billingAddress),
             $this->showPage->getBillingAddress(),
             'Customer billing address should be "%s", but it is not.'
+        );
+    }
+
+    /**
+     * @Then I should see information about no existing account for this customer
+     */
+    public function iShouldSeeInformationAboutNoExistingAccountForThisCustomer()
+    {
+        Assert::true(
+            $this->showPage->hasAccount(),
+            'There should be information about no account, but there is none.'
         );
     }
 }

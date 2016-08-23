@@ -17,6 +17,8 @@ The Book
     countries
     zones
     products
+    attributes
+    taxons
     addresses
     inventory
     orders

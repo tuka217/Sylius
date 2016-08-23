@@ -11,6 +11,7 @@ sylius:
             name: Nazwa
         notes: Dodatkowe uwagi
     ui:
+        abandoned: Porzucony
         access_token: Token dostępowy
         action: Akcja
         actions: Akcje
@@ -25,12 +26,15 @@ sylius:
         add_image: Dodaj zdjęcie
         add_member: Dodaj kraj
         add_menu_element: Dodaj element menu
+        add_new_email: Dodaj nową wiadomość Email
         add_new_permission: Dodaj nowe uprawnienia
         add_new_role: Dodawanie nowej roli
         add_province: Dodaj województwo
         add_rule: Dodaj regułę
         add_to_cart: Dodaj do koszyka
         add_value: Dodaj wartość
+        adding_new_customer_groups: Dodawanie nowych grup użytkowników
+        adding_new_email: Dodawanie nowych wiadomości Email
         adding_new_locale: Dodaj nowe ustawienia regionalne
         additional_information: Dodatkowe informacje
         addressing_step: Adres
@@ -51,7 +55,6 @@ sylius:
         availability: Dostepność
         available_for_channels: Dostępne dla kanałów
         available_on: Dostępny od
-        available_on_demand: Dostępny na zamówienie
         available_on_hand: Dostępny od ręki
         available_until: Dostępne do
         average_order_value: Średnia wartość zamówienia
@@ -67,12 +70,15 @@ sylius:
         calculator: Kalkulator
         cancel: Anuluj
         cancelled: Anulowane
+        cart: Koszyk
         cart_locked: Koszyk zablokowany
+        cart_summary: Podsumowanie koszyka
         categorization: Kategoria
         category: Kategoria
         category_requirements: Wymagania kategorii
         change_address: Zmień adres
         change_password: Zmień hasło
+        change_payment_method: Zmień metodę płatności
         change_shipping_method: Zmień metodę wysyłki
         change_your_password: Zmiana hasła
         channel: Kanał
@@ -257,10 +263,8 @@ sylius:
         extra_information: Dodatkowe informacje
         extra_notes: Dodatkowe uwagi
         failed: Nieudane
-        female: Kobieta
         filter: Filtruj
         first_name: Imię
-        firstname: Imię
         forgot_password: Nie pamiętasz hasła
         fulfill: Uzupełnij
         gateway: Bramka
@@ -317,7 +321,6 @@ sylius:
         login_button: Zaloguj
         logout: Wyloguj
         main_taxon: Główne grupy
-        male: Mężczyzna
         manage: Zarządzaj
         manage_attributes_of_your_products: Zarządzaj cechami produktów
         manage_categorization_of_your_products: Zarządzaj kategoryzacją produktów
@@ -413,7 +416,6 @@ sylius:
         not_in: Nie w
         number: Numer
         number_of_orders: Liczba zamówień
-        onhold: Oczekujące
         options: Warianty
         or: lub
         order: zamówienie
@@ -462,6 +464,7 @@ sylius:
         product_association_types: Rodzaje produktów towarzyszących
         product_associations: Powiązania produktów
         product_details_viewing_product_product: 'Szczegóły produktu <small>Oglądasz produkt "<strong>%product%</strong>"</small>'
+        product_reviews: Recenzje produktu
         product_variants: Warianty produktu
         products: Produkty
         products_categorized_as_name: 'Produkty sklasyfikowane jako "%name%"'
@@ -553,7 +556,6 @@ sylius:
         summary: Podsumowanie
         support: Wsparcie techniczne
         tax: Podatek
-        tax_categories: Kategorie podatkowe
         tax_category: Kategoria podatkowa
         tax_rate_details: Szczegóły stawki podatkowej
         tax_rates: Stawki podatkowe

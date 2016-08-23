@@ -43,7 +43,6 @@ sylius:
         author: Autorius
         availability: Prieinamumas
         available_on: Prieinamas nuo
-        available_on_demand: Prieinamas pagal poreikį
         back: Atgal
         backorder: Užsakyti į ateitį
         balance_due: Likutis
@@ -199,7 +198,6 @@ sylius:
         failed: Nepavyko
         filter: Filtruoti
         first_name: Vardas
-        firstname: Vardas
         fulfill: Išpildyti
         gateway: Apmokėjimo kanalas
         general_info: Bendroji informacija

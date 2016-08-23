@@ -45,7 +45,6 @@ sylius:
         author: Autor
         availability: Dostupnost
         available_on: Dostupný od
-        available_on_demand: K dispozici na požádání
         back: Zpět
         backorder: Doobjednání
         balance_due: Nedoplatek
@@ -202,10 +201,8 @@ sylius:
         existing_customer: Stávající zákazník
         expires_at: Končí v
         failed: Neúspěšné
-        female: Žena
         filter: Filtr
         first_name: Křestní Jméno
-        firstname: Křestní Jméno
         fulfill: Splnit
         gateway: Brána
         general_info: Obecné informace
@@ -251,7 +248,6 @@ sylius:
         login: Přihlásit
         login_button: Přihlásit
         logout: Odhlásit
-        male: Muž
         manage: Správa
         manage_adjustments: Správa nastavení
         manage_attributes: Správa atributů
@@ -276,7 +272,7 @@ sylius:
         message: Zpráva
         method: Metoda
         modified: Změněno
-        my_account: Účet
+        my_account: Můj účet
         n_a: Není k dispozici
         name: Jméno
         new: Nový

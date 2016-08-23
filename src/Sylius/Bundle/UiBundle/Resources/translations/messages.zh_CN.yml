@@ -60,7 +60,6 @@ sylius:
         availability: 可用
         available_for_channels: 可用于频道
         available_on: 可用
-        available_on_demand: 可按用户要求
         available_until: 有效期至
         average_order_value: 订单均价
         back: 返回
@@ -288,10 +287,8 @@ sylius:
         extra_information: 额外信息
         failed: 失败
         faqs: 常见问题
-        female: 女士
         filter: 筛选器
         first_name: 名字
-        firstname: 名字
         forgot_password: 忘记密码
         fulfill: 完成
         gateway: 网关
@@ -354,7 +351,6 @@ sylius:
         login_sylius_store: '登录 <small>Sylius 店铺</small>'
         logout: 注销
         main_taxon: 主分类
-        male: 男士
         manage: 管理
         manage_adjustments: 管理调价
         manage_attributes: 管理属性
@@ -391,7 +387,7 @@ sylius:
         manage_your_customers: 管理您的客户
         manage_your_product_catalog: 管理您的产品目录
         manage_zones: 管理区域
-        marketing: 市场
+        marketing: 市场营销
         media: 新闻
         members: 会员
         menu_nodes: 菜单节点
@@ -468,7 +464,6 @@ sylius:
         number_of_orders: 订单数
         oauth_provider: OAuth 提供器
         on_hold: 搁置
-        onhold: 搁置
         options: 选项
         or: 或者
         order: 订单
@@ -627,7 +622,6 @@ sylius:
         support: 支持
         sylius_logo: Sylius
         tax: 税收
-        tax_categories: 税类别
         tax_category: 税类别
         tax_rate_details: 税务率详细
         tax_rates: 税率

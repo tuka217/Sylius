@@ -13,12 +13,12 @@ sylius:
         city: Stadt
         code: Code
         company: Firma
+        content: Inhalt
         coupon: Gutschein
         default_currency: Standardwährung
         email: E-Mail
         enabled: Aktiviert
         first_name: Vorname
-        firstname: Vorname
         id: ID
         image: Bild
         label: Bezeichnung

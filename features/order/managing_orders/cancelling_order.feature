@@ -20,11 +20,18 @@ Feature: Cancelling orders
         And I cancel this order
         Then I should be notified that it has been successfully updated
         And its state should be "Cancelled"
-        And it should have payment state "Cancelled"
         And it should have shipment in state "Cancelled"
+        And it should have payment state "Cancelled"
+        And there should be only 1 payment
 
     @ui
     Scenario: Cannot cancel an order, which is already cancelled
         Given the customer canceled this order
         When I view the summary of the order "#00000022"
         Then I should not be able to cancel this order
+
+    @ui
+    Scenario: Checking order payment state of a cancelled order
+        Given this order was canceled
+        When I browse orders
+        Then this order should have order payment state "Cancelled"

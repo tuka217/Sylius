@@ -64,7 +64,6 @@ sylius:
         availability: Elérhető
         available_for_channels: Minden csatornán elérhető
         available_on: A rendelkezésre álló
-        available_on_demand: Igény szerint rendelkezésre áll
         available_on_hand: Rendelkezésre álló
         available_until: Elérhető amíg
         average_order_value: Átlagos rendelési érték
@@ -307,11 +306,9 @@ sylius:
         extra_notes: További megjegyzések
         failed: Sikertelen
         faqs: GYIK
-        female: Nő
         filter: Szűrő
         filters: Szűrők
         first_name: Keresztnév
-        firstname: Keresztnév
         forgot_password: Elfelejtett jelszó
         fulfill: Teljesítés
         gateway: Átjáró
@@ -378,7 +375,6 @@ sylius:
         login_sylius_store: 'Bejelentkezés a <small>Sylius webáruházba</small>'
         logout: Kilépés
         main_taxon: Fő taxonómia
-        male: Férfi
         manage: Kezelés
         manage_adjustments: Korrekciók kezelése
         manage_attributes: Attribútumok kezelése
@@ -427,7 +423,7 @@ sylius:
         modified: Módosítva
         move_down: Mozgatás lefelé
         move_up: Mozgatás Felfelé
-        my_account: Fiókom
+        my_account: Az Ön fiókja
         n_a: N/A
         name: Név
         new: Új
@@ -497,7 +493,6 @@ sylius:
         number_of_orders: Rendelések száma
         oauth_provider: OAuth Kiszolgáló
         on_hold: Tartva
-        onhold: Visszatartott
         options: Beállítások
         or: vagy
         order: Rendelés
@@ -675,7 +670,6 @@ sylius:
         support: Támogatás
         sylius_logo: Sylius
         tax: Adó
-        tax_categories: Adó kategóriák
         tax_category: ÁFA-kategória
         tax_rate_details: Adó mérték részletei
         tax_rates: Adókulcsok

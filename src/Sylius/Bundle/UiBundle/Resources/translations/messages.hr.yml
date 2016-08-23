@@ -53,7 +53,6 @@ sylius:
         author: Autor
         availability: Dostupnost
         available_on: Dostupno
-        available_on_demand: Dostupno na zahtjev
         back: Povratak
         back_to_store: Povratak u trgovinu
         backorder: Na čekanju
@@ -243,11 +242,9 @@ sylius:
         existing_customer: Postojeći kupac
         failed: Neuspješno
         faqs: Česta pitanja
-        female: Ženski
         filter: Filter
         filters: Filteri
         first_name: Ime
-        firstname: Ime
         forgot_password: Zaboravljena lozinka
         fulfill: Ispunjeno
         gateway: Gateway
@@ -303,7 +300,6 @@ sylius:
         login_button: Prijavi se
         login_sylius_store: 'Prijava <small>Sylius trgovina</small>'
         logout: Odjavi se
-        male: Muški
         manage: Upravljanje
         manage_adjustments: Upravljajte prilagodbama
         manage_attributes: Upravljajte atributima

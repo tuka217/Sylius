@@ -23,7 +23,6 @@
         "ext-exif": "*",
         "ext-fileinfo": "*",
         "ext-gd": "*",
-
         "doctrine/collections": "~1.2",
         "doctrine/common": "~2.5",
         "doctrine/data-fixtures": "~1.1.0",
@@ -44,7 +43,7 @@
         "jms/serializer-bundle": "^0.13|^1.0",
         "jms/translation-bundle": "^1.1",
         "knplabs/knp-gaufrette-bundle": "~0.1",
-        "knplabs/knp-menu-bundle": "~1.1",
+        "knplabs/knp-menu-bundle": "^2.1",
         "knplabs/knp-snappy-bundle": "~1.2",
         "liip/imagine-bundle": "~1.0",
         "ocramius/proxy-manager": "^1.0",
@@ -55,15 +54,14 @@
         "php-http/guzzle6-adapter": "~1.1",
         "polishsymfonycommunity/symfony-mocker-container": "^1.0",
         "sensio/distribution-bundle": "~3.0",
+        "sonata-project/intl-bundle": "^2.2",
         "stof/doctrine-extensions-bundle": "~1.1",
         "swiftmailer/swiftmailer": "~5.0",
         "symfony-cmf/block-bundle": "~1.2",
         "symfony-cmf/content-bundle": "~1.2",
-        "symfony-cmf/create-bundle": "~1.2",
         "symfony-cmf/media-bundle": "~1.2",
-        "symfony-cmf/menu-bundle": "~1.2",
+        "symfony-cmf/menu-bundle": "^2.0",
         "symfony-cmf/routing-bundle": "^1.4",
-        "symfony/assetic-bundle": "^2.8",
         "symfony/monolog-bundle": "^2.8",
         "symfony/polyfill-iconv": "~1.0",
         "symfony/polyfill-intl-icu": "~1.0",
@@ -77,8 +75,7 @@
         "willdurand/hateoas-bundle": "^0.4|^1.0",
         "winzou/state-machine-bundle": "~0.2",
         "zendframework/zend-hydrator": "^1.0|^2.0",
-        "zendframework/zend-stdlib": "^2.0|^3.0",
-        "sonata-project/intl-bundle": "^2.2"
+        "zendframework/zend-stdlib": "^2.0|^3.0"
     },
     "require-dev": {
         "akeneo/phpspec-skip-example-extension": "^2.0",
@@ -90,7 +87,7 @@
         "behat/symfony2-extension": "~2.0",
         "fabpot/php-cs-fixer": "^1.11",
         "hwi/oauth-bundle": "~0.3",
-        "lakion/api-test-case": "^1.0@dev",
+        "lakion/api-test-case": "^1.0",
         "lakion/mink-debug-extension": "^1.0.3",
         "malukenho/kawaii-gherkin": "^0.1",
         "matthiasnoback/symfony-config-test": "^2.0",
@@ -121,6 +118,8 @@
         "sylius/core-bundle": "self.version",
         "sylius/currency": "self.version",
         "sylius/currency-bundle": "self.version",
+        "sylius/customer": "self.version",
+        "sylius/customer-bundle": "self.version",
         "sylius/fixtures-bundle": "self.version",
         "sylius/flow-bundle": "self.version",
         "sylius/installer-bundle": "self.version",
@@ -172,14 +171,12 @@
     "scripts": {
         "travis-build": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Symfony\\Cmf\\Bundle\\CreateBundle\\Composer\\ScriptHandler::downloadCreateAndCkeditor"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap"
         ],
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Symfony\\Cmf\\Bundle\\CreateBundle\\Composer\\ScriptHandler::downloadCreateAndCkeditor",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
         ],
@@ -187,7 +184,6 @@
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Symfony\\Cmf\\Bundle\\CreateBundle\\Composer\\ScriptHandler::downloadCreateAndCkeditor",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
         ]

@@ -57,7 +57,6 @@ sylius:
         availability: موارد موجود
         available_for_channels: قابل دسترسی برای کانال ها
         available_on: تاریخ فعال شدن
-        available_on_demand: قابل سفارش
         available_until: در دسترس تا
         back: بازگشت
         backorder: پیش خرید
@@ -263,10 +262,8 @@ sylius:
         existing_customer: از قبل عضو هستم
         expires_at: انقضا در تاریخ
         failed: پرداخت ناموفق
-        female: خانم
         filter: فیلتر
         first_name: نام
-        firstname: نام
         forgot_password: فراموشی کلمه عبور
         fulfill: ارسال
         gateway: درگاه پرداخت
@@ -326,7 +323,6 @@ sylius:
         login_sylius_store: 'ورود <small> فروشگاه سایلیوس </small>'
         logout: خروج
         main_taxon: رده اصلی
-        male: آقا
         manage: مدیریت
         manage_adjustments: مدیریت سایر هزینه ها
         manage_attributes: مدیریت قابلیت ها
@@ -483,7 +479,7 @@ sylius:
         promotion_details: جزئیات فروش ویژه
         promotion_information: اطلاعات فروش ویژه
         promotion_total: جمع تخفیفات
-        promotions: فروش ویژه
+        promotions: فروش های ویژه
         province: استان
         provinces: استان ها
         qty: تعداد
@@ -569,7 +565,6 @@ sylius:
         summary: خلاصه
         support: پشتیبانی
         sylius_logo: Sylius
-        tax_categories: شاخه های مالیات
         tax_category: نوع مالیات
         tax_rate_details: جزئیات نرخ مالیات
         tax_rates: نرخ های مالیات
@@ -670,4 +665,4 @@ sylius:
         your_products: محصولات شما
         zone: منطقه
         zone_details: جزئیات منطقه
-        zones: مناطق
+        zones: منطقه‌ها

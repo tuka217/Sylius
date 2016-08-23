@@ -24,7 +24,6 @@ sylius:
         add_channel: 'Add channel'
         add_choice: 'Add choice'
         add_coupon: 'Add coupon'
-        add_coupon: Add coupon
         add_image: 'Add image'
         add_member: 'Add member'
         add_menu_element: 'Add menu element'
@@ -34,22 +33,24 @@ sylius:
         add_province: 'Add province'
         add_rule: 'Add rule'
         add_to_cart: 'Add to cart'
-        add_to_cart: Add to cart
         add_value: 'Add value'
         adding_new_customer_groups: 'Adding new customer groups'
         adding_new_email: 'Adding new Email'
         adding_new_locale: 'Adding new locale'
         additional_information: 'Additional information'
+        address: 'Address'
         addressing: Addressing
         addressing_step: 'Addressing step'
         adjustments: Adjustments
         administration: Administration
         administration_dashboard: 'Administration dashboard'
         administration_panel_login: Administration panel login
+        admin_users: Administrators
         all: All
         all_your_addresses: 'All your addresses'
         amount: Amount
         an_error_occurred: An error occurred
+        api: Api
         apply_coupon: Apply coupon
         archetype: Archetype
         archetypes: Archetypes
@@ -63,10 +64,10 @@ sylius:
         availability: Availability
         available_for_channels: Available for channels
         available_on: 'Available on'
-        available_on_demand: 'Available on demand'
         available_on_hand: Available on hand
         available_until: 'Available until'
         average_order_value: Average order value
+        awaiting_payment: Awaiting payment
         back: Back
         back_to_store: Back to store
         backorder: Backorder
@@ -82,6 +83,7 @@ sylius:
         calculator: Calculator
         cancel: Cancel
         cancelled: Cancelled
+        cart: Cart
         cart_locked: 'Cart locked'
         cart_summary: 'Cart summary'
         categorization: Categorization
@@ -209,9 +211,7 @@ sylius:
         date: Date
         default_billing_address: 'Default billing address'
         default_currency: 'Default currency'
-        default_currency: Default currency
         default_locale: 'Default locale'
-        default_locale: Default locale
         default_shipping_address: 'Default shipping address'
         delete: Delete
         delete_image: 'Delete image'
@@ -304,7 +304,6 @@ sylius:
         existing_customer: 'Existing Customer'
         expiration_and_usage_limits: Expiration and usage limits
         expires_at: 'Expires at'
-        expires_at: Expires at
         extra_information: Extra information
         extra_notes: Extra notes
         failed: Failed
@@ -313,10 +312,9 @@ sylius:
         filter: Filter
         filters: Filters
         first_name: 'First name'
-        firstname: 'First name'
         forgot_password: 'Forgot password'
-        forgot_password: Forgot password
         fulfill: Fulfill
+        fulfilled: Fulfilled
         gateway: Gateway
         general_info: 'General Info'
         general_settings: 'General Settings'
@@ -384,6 +382,7 @@ sylius:
         male: Male
         manage: Manage
         manage_adjustments: 'Manage adjustments'
+        manage_admin_users: 'Manage administrators'
         manage_attributes: 'Manage attributes'
         manage_attributes_of_your_products: Manage attributes of your products
         manage_categorization_of_your_products: Manage categorization of your products
@@ -434,16 +433,15 @@ sylius:
         n_a: N/A
         name: Name
         new: New
+        new_admin_user: 'New administrator'
         new_archetype: 'New archetype'
         new_channel: New channel
         new_comment_posted_on_order: 'New comment posted on order'
         new_contact_request: 'New contact request'
         new_contact_topic: 'New contact topic'
         new_country: 'New country'
-        new_country: New country
         new_coupon: New coupon
         new_currency: 'New currency'
-        new_currency: New currency
         new_customer: 'New customer'
         new_customers: New customers
         new_locale: New locale
@@ -466,7 +464,6 @@ sylius:
         new_shipping_method: 'New shipping method'
         new_static_content: 'New static content'
         new_tax_category: 'New tax category'
-        new_tax_category: New tax category
         new_tax_rate: 'New tax rate'
         new_taxon: 'New taxon'
         new_user: 'New user'
@@ -481,6 +478,7 @@ sylius:
         no_default_billing_address: 'No default billing address'
         no_default_shipping_address: 'No default shipping address'
         no_description: 'No description'
+        no_payment_methods_available: There are currently no payment methods available for your order
         no_pricing_configuration: 'No pricing configuration'
         no_promotion: No promotion applied
         no_requirement: No requirement
@@ -499,19 +497,18 @@ sylius:
         not_empty: Not empty
         not_in: Not in
         not_verified: Not verified
+        notes: Notes
         notify_customer: 'Notify Customer'
         number: Number
         number_of_orders: 'Number of orders'
         oauth_provider: 'OAuth Provider'
         on_hold: 'On hold'
-        onhold: Onhold
         options: Options
         or: or
         order: Order
         order_comment_name: 'Order comment'
         order_comments: 'Order comments'
         order_confirmation_name: 'Order confirmation'
-        order_details: 'Order details'
         order_details: Details of your order
         order_history: Order history
         order_item_product: Item
@@ -526,7 +523,9 @@ sylius:
         overview_of_your_store: 'Overview of your store'
         page: Page
         pages: Pages
+        paid: Paid
         parent: Parent
+        partially_paid: Partially paid
         partially_shipped: Partially shipped
         password: Password
         payment: Payment
@@ -627,7 +626,6 @@ sylius:
         sales_this_month: Sales
         save: Save
         save_changes: 'Save changes'
-        save_changes: Save changes
         scope: Scope
         search: Search
         security_settings: 'Security Settings'
@@ -653,7 +651,6 @@ sylius:
         shipping_method: 'Shipping method'
         shipping_method_details: 'Shipping method details'
         shipping_methods: 'Shipping Methods'
-        shipping_methods: Shipping methods
         shipping_state: 'Shipping state'
         shipping_total: 'Shipping total'
         shop_by: 'Shop by'
@@ -688,7 +685,6 @@ sylius:
         sylius_logo: Sylius
         tax: Tax
         tax_categories: 'Tax Categories'
-        tax_categories: Tax categories
         tax_category: 'Tax category'
         tax_rate_details: 'Tax rate details'
         tax_rates: 'Tax Rates'
