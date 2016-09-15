@@ -12,14 +12,18 @@
 namespace Sylius\Component\Core\OrderProcessing;
 
 use Sylius\Component\Core\Model\AdjustmentInterface;
-use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\OrderInterface as CoreOrderInterface;
+use Sylius\Component\Order\Model\OrderInterface;
+use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Shipping\Calculator\DelegatingCalculatorInterface;
+use Sylius\Component\Shipping\Calculator\UndefinedShippingMethodException;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class ShippingChargesProcessor implements ShippingChargesProcessorInterface
+final class ShippingChargesProcessor implements OrderProcessorInterface
 {
     /**
      * @var FactoryInterface
@@ -44,20 +48,25 @@ class ShippingChargesProcessor implements ShippingChargesProcessorInterface
     /**
      * {@inheritdoc}
      */
-    public function applyShippingCharges(OrderInterface $order)
+    public function process(OrderInterface $order)
     {
+        /** @var CoreOrderInterface $order */
+        Assert::isInstanceOf($order, CoreOrderInterface::class);
+
         // Remove all shipping adjustments, we recalculate everything from scratch.
         $order->removeAdjustments(AdjustmentInterface::SHIPPING_ADJUSTMENT);
 
         foreach ($order->getShipments() as $shipment) {
-            $shippingCharge = $this->shippingChargesCalculator->calculate($shipment);
+            try {
+                $shippingCharge = $this->shippingChargesCalculator->calculate($shipment);
 
-            $adjustment = $this->adjustmentFactory->createNew();
-            $adjustment->setType(AdjustmentInterface::SHIPPING_ADJUSTMENT);
-            $adjustment->setAmount($shippingCharge);
-            $adjustment->setLabel($shipment->getMethod()->getName());
+                $adjustment = $this->adjustmentFactory->createNew();
+                $adjustment->setType(AdjustmentInterface::SHIPPING_ADJUSTMENT);
+                $adjustment->setAmount($shippingCharge);
+                $adjustment->setLabel($shipment->getMethod()->getName());
 
-            $order->addAdjustment($adjustment);
+                $order->addAdjustment($adjustment);
+            } catch (UndefinedShippingMethodException $exception) {}
         }
     }
 }

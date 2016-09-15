@@ -5,7 +5,7 @@ Feature: Payments are in the state "new" after checkout
     I want to have new payments after my customer's checkout
 
     Background:
-        Given the store operates on a single channel in "France"
+        Given the store operates on a single channel in "United States"
         And the store has a product "Angel T-Shirt"
         And the store ships everywhere for free
         And the store allows paying with "Cash on Delivery"
@@ -19,3 +19,8 @@ Feature: Payments are in the state "new" after checkout
     Scenario: Checking payment state of a placed order
         When I view the summary of the order "#00000666"
         Then it should have payment state "New"
+
+    @ui
+    Scenario: Checking order payment state of a placed order
+        When I browse orders
+        Then the order "#00000666" should have order payment state "Awaiting payment"

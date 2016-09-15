@@ -5,7 +5,7 @@ Feature: Finalizing order payment
     I want to be able to finalize payment
 
     Background:
-        Given the store operates on a single channel in "France"
+        Given the store operates on a single channel in "United States"
         And the store has a product "Angel T-Shirt"
         And the store ships everywhere for free
         And the store allows paying with "Cash on Delivery"
@@ -27,3 +27,9 @@ Feature: Finalizing order payment
         Given this order is already paid
         When I view the summary of the order "#00000666"
         Then I should not be able to mark this order as paid again
+
+    @ui
+    Scenario: Checking order payment state of a completed order
+        Given this order is already paid
+        When I browse orders
+        Then this order should have order payment state "Paid"

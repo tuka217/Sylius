@@ -17,7 +17,7 @@ use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
-use Sylius\Component\User\Repository\CustomerRepositoryInterface;
+use Sylius\Component\Customer\Repository\CustomerRepositoryInterface;
 
 /**
  * @author Anna Walasek <anna.walasek@lakion.com>
@@ -228,5 +228,15 @@ final class CustomerContext implements Context
 
         $this->sharedStorage->set('customer', $customer);
         $this->customerRepository->add($customer);
+    }
+
+    /**
+     * @Given /^(the customer) subscribed to the newsletter$/
+     */
+    public function theCustomerSubscribedToTheNewsletter(CustomerInterface $customer)
+    {
+        $customer->setSubscribedToNewsletter(true);
+
+        $this->customerManager->flush();
     }
 }

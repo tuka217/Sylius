@@ -16,16 +16,20 @@ The Book
     currencies
     countries
     zones
-    products
     addresses
+    customer_and_shopuser
+    adminuser
+    products
+    attributes
+    taxons
     inventory
     orders
+    checkout
     shipments
     payments
     taxation
     pricing
     promotions
-    users_and_groups
     content
     emails
     settings

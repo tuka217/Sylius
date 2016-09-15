@@ -28,6 +28,7 @@ use Sylius\Component\Product\Model\OptionInterface;
 use Sylius\Component\Product\Model\OptionValueInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Taxation\Model\TaxCategoryInterface;
+use Sylius\Component\Variation\Resolver\VariantResolverInterface;
 
 /**
  * @author Arkadiusz Krakowiak <arkadiusz.krakowiak@lakion.com>
@@ -82,6 +83,11 @@ final class ProductContext implements Context
     private $objectManager;
 
     /**
+     * @var VariantResolverInterface
+     */
+    private $defaultVariantResolver;
+
+    /**
      * @param SharedStorageInterface $sharedStorage
      * @param ProductRepositoryInterface $productRepository
      * @param ProductFactoryInterface $productFactory
@@ -91,6 +97,7 @@ final class ProductContext implements Context
      * @param FactoryInterface $productOptionFactory
      * @param FactoryInterface $productOptionValueFactory
      * @param ObjectManager $objectManager
+     * @param VariantResolverInterface $defaultVariantResolver
      */
     public function __construct(
         SharedStorageInterface $sharedStorage,
@@ -101,7 +108,8 @@ final class ProductContext implements Context
         FactoryInterface $productVariantFactory,
         FactoryInterface $productOptionFactory,
         FactoryInterface $productOptionValueFactory,
-        ObjectManager $objectManager
+        ObjectManager $objectManager,
+        VariantResolverInterface $defaultVariantResolver
     ) {
         $this->sharedStorage = $sharedStorage;
         $this->productRepository = $productRepository;
@@ -112,12 +120,13 @@ final class ProductContext implements Context
         $this->productOptionFactory = $productOptionFactory;
         $this->productOptionValueFactory = $productOptionValueFactory;
         $this->objectManager = $objectManager;
+        $this->defaultVariantResolver = $defaultVariantResolver;
     }
 
     /**
      * @Given the store has a product :productName
      * @Given the store has a :productName product
-     * @Given /^the store has a product "([^"]+)" priced at ("[^"]+")$/
+     * @Given /^the store(?:| also) has a product "([^"]+)" priced at ("[^"]+")$/
      */
     public function storeHasAProductPricedAt($productName, $price = 0)
     {
@@ -157,7 +166,7 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Given /^the (product "[^"]+") has "([^"]+)" variant priced at ("[^"]+")$/
+     * @Given /^the (product "[^"]+") has(?:| a) "([^"]+)" variant priced at ("[^"]+")$/
      * @Given /^(this product) has "([^"]+)" variant priced at ("[^"]+")$/
      */
     public function theProductHasVariantPricedAt(ProductInterface $product, $productVariantName, $price)
@@ -195,7 +204,8 @@ final class ProductContext implements Context
      */
     public function productBelongsToTaxCategory(ProductInterface $product, TaxCategoryInterface $taxCategory)
     {
-        $product->getFirstVariant()->setTaxCategory($taxCategory);
+        $variant = $this->defaultVariantResolver->getVariant($product);
+        $variant->setTaxCategory($taxCategory);
         $this->objectManager->flush();
     }
 
@@ -321,6 +331,49 @@ final class ProductContext implements Context
     }
 
     /**
+     * @Given /^there (?:is|are) (\d+) (?:item|unit)(?:|s) of (product "([^"]+)") available in the inventory$/
+     * @When product :product quantity is changed to :quantity
+     */
+    public function thereIsQuantityOfProducts($quantity, ProductInterface $product)
+    {
+        $this->setProductsQuantity($product, $quantity);
+    }
+
+    /**
+     * @Given /^the (product "([^"]+)") is out of stock$/
+     */
+    public function theProductIsNotAvailable(ProductInterface $product)
+    {
+        $product->getFirstVariant()->setTracked(true);
+
+        $this->setProductsQuantity($product, 0);
+    }
+
+    /**
+     * @When other customer has bought :quantity :product products by this time
+     */
+    public function otherCustomerHasBoughtProductsByThisTime($quantity, ProductInterface $product)
+    {
+        /** @var ProductVariantInterface $productVariant */
+        $productVariant = $this->defaultVariantResolver->getVariant($product);
+        $productQuantity = $productVariant->getOnHand() - $quantity;
+
+        $this->setProductsQuantity($product, $productQuantity);
+    }
+
+    /**
+     * @Given /^(this product) is tracked by the inventory$/
+     * @Given /^("[^"]+" product) is(?:| also) tracked by the inventory$/
+     */
+    public function thisProductIsTrackedByTheInventory(ProductInterface $product)
+    {
+        $variant = $this->defaultVariantResolver->getVariant($product);
+        $variant->setTracked(true);
+
+        $this->objectManager->flush();
+    }
+
+    /**
      * @Given /^(this product) is available in "([^"]+)" size priced at ("[^"]+")$/
      */
     public function thisProductIsAvailableInSize(ProductInterface $product, $optionValueName, $price)
@@ -346,6 +399,38 @@ final class ProductContext implements Context
     public function thisProductHasThisProductOption(ProductInterface $product, OptionInterface $option)
     {
         $product->addOption($option);
+
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @Given /^there are ([^"]+) items of ("[^"]+" variant of product "[^"]+") available in the inventory$/
+     */
+    public function thereAreItemsOfProductInVariantAvailableInTheInventory($quantity, ProductVariantInterface $productVariant)
+    {
+        $productVariant->setTracked(true);
+        $productVariant->setOnHand($quantity);
+
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @Given /^the ("[^"]+" product) is tracked by the inventory$/
+     */
+    public function theProductIsTrackedByTheInventory(ProductInterface $product)
+    {
+        $productVariant = $this->defaultVariantResolver->getVariant($product);
+        $productVariant->setTracked(true);
+
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @Given /^the ("[^"]+" product variant) is tracked by the inventory$/
+     */
+    public function theProductVariantIsTrackedByTheInventory(ProductVariantInterface $productVariant)
+    {
+        $productVariant->setTracked(true);
 
         $this->objectManager->flush();
     }
@@ -407,11 +492,24 @@ final class ProductContext implements Context
         $product = $this->productFactory->createWithVariant();
 
         $product->setName($productName);
-        $product->getFirstVariant()->setPrice($price);
         $product->setCode($this->convertToCode($productName));
-        $product->getFirstVariant()->setCode($product->getCode());
+
+        $variant = $this->defaultVariantResolver->getVariant($product);
+        $variant->setPrice($price);
+        $variant->setCode($product->getCode());
 
         return $product;
+    }
+
+    /**
+     * @param ProductInterface $product
+     * @param int $quantity
+     */
+    private function setProductsQuantity(ProductInterface $product, $quantity)
+    {
+        $product->getFirstVariant()->setOnHand($quantity);
+
+        $this->saveProduct($product);
     }
 
     /**

@@ -14,6 +14,7 @@ namespace Sylius\Bundle\CoreBundle\DependencyInjection;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Sylius\Component\Resource\Factory\Factory;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -29,13 +30,13 @@ final class SyliusCoreExtension extends AbstractResourceExtension implements Pre
     /**
      * @var array
      */
-    private $bundles = [
+    private static $bundles = [
         'sylius_addressing',
         'sylius_api',
         'sylius_attribute',
         'sylius_channel',
-        'sylius_contact',
         'sylius_currency',
+        'sylius_customer',
         'sylius_inventory',
         'sylius_locale',
         'sylius_order',
@@ -44,15 +45,12 @@ final class SyliusCoreExtension extends AbstractResourceExtension implements Pre
         'sylius_product',
         'sylius_promotion',
         'sylius_review',
-        'sylius_report',
-        'sylius_settings',
         'sylius_shipping',
         'sylius_mailer',
         'sylius_taxation',
         'sylius_taxonomy',
         'sylius_user',
         'sylius_variation',
-        'sylius_rbac',
     ];
 
     /**
@@ -65,29 +63,15 @@ final class SyliusCoreExtension extends AbstractResourceExtension implements Pre
 
         $this->registerResources('sylius', $config['driver'], $config['resources'], $container);
 
-        $configFiles = [
-            'services.xml',
-            'controller.xml',
-            'context.xml',
-            'form.xml',
-            'api_form.xml',
-            'templating.xml',
-            'reports.xml',
-            'state_machine.xml',
-            'email.xml',
-            'metadata.xml',
-            'sitemap.xml',
-            'dashboard.xml',
-        ];
+        $loader->load('services.xml');
 
         $env = $container->getParameter('kernel.environment');
         if ('test' === $env || 'test_cached' === $env) {
-            $configFiles[] = 'test_services.xml';
+            $loader->load('test_services.xml');
         }
 
-        foreach ($configFiles as $configFile) {
-            $loader->load($configFile);
-        }
+        $container->setParameter('sylius.sitemap', $config['sitemap']);
+        $container->setParameter('sylius.sitemap_template', $config['sitemap']['template']);
 
         $this->overwriteRuleFactory($container);
     }
@@ -100,15 +84,15 @@ final class SyliusCoreExtension extends AbstractResourceExtension implements Pre
         $config = $this->processConfiguration(new Configuration(), $container->getExtensionConfig($this->getAlias()));
 
         foreach ($container->getExtensions() as $name => $extension) {
-            if (in_array($name, $this->bundles)) {
+            if (in_array($name, self::$bundles, true)) {
                 $container->prependExtensionConfig($name, ['driver' => $config['driver']]);
             }
         }
 
         $container->prependExtensionConfig('sylius_theme', ['context' => 'sylius.theme.context.channel_based']);
 
-        $container->setParameter('sylius.sitemap', $config['sitemap']);
-        $container->setParameter('sylius.sitemap_template', $config['sitemap']['template']);
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $this->prependHwiOauth($container, $loader);
     }
 
     /**
@@ -121,5 +105,18 @@ final class SyliusCoreExtension extends AbstractResourceExtension implements Pre
         $decoratedPromotionRuleFactoryDefinition = new Definition($promotionRuleFactoryClass, [$baseFactoryDefinition]);
 
         $container->setDefinition('sylius.factory.promotion_rule', $decoratedPromotionRuleFactoryDefinition);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param LoaderInterface $loader
+     */
+    private function prependHwiOauth(ContainerBuilder $container, LoaderInterface $loader)
+    {
+        if (!$container->hasExtension('hwi_oauth')) {
+            return;
+        }
+
+        $loader->load('integration/hwi_oauth.xml');
     }
 }

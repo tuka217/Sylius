@@ -44,11 +44,6 @@ final class BookProductFixture extends AbstractFixture
     private $productOptionFixture;
 
     /**
-     * @var ProductArchetypeFixture
-     */
-    private $productArchetypeFixture;
-
-    /**
      * @var ProductFixture
      */
     private $productFixture;
@@ -68,7 +63,6 @@ final class BookProductFixture extends AbstractFixture
      * @param RepositoryInterface $taxonRepository
      * @param ProductAttributeFixture $productAttributeFixture
      * @param ProductOptionFixture $productOptionFixture
-     * @param ProductArchetypeFixture $productArchetypeFixture
      * @param ProductFixture $productFixture
      */
     public function __construct(
@@ -76,14 +70,12 @@ final class BookProductFixture extends AbstractFixture
         RepositoryInterface $taxonRepository,
         ProductAttributeFixture $productAttributeFixture,
         ProductOptionFixture $productOptionFixture,
-        ProductArchetypeFixture $productArchetypeFixture,
         ProductFixture $productFixture
     ) {
         $this->taxonFixture = $taxonFixture;
         $this->taxonRepository = $taxonRepository;
         $this->productAttributeFixture = $productAttributeFixture;
         $this->productOptionFixture = $productOptionFixture;
-        $this->productArchetypeFixture = $productArchetypeFixture;
         $this->productFixture = $productFixture;
 
         $this->faker = \Faker\Factory::create();
@@ -121,18 +113,9 @@ final class BookProductFixture extends AbstractFixture
         ]]]);
 
         $this->productAttributeFixture->load(['custom' => [
-            ['name' => 'Book author', 'code' => 'BOOK-AUTHOR', 'type' => TextAttributeType::TYPE],
-            ['name' => 'Book ISBN', 'code' => 'BOOK-ISBN', 'type' => TextAttributeType::TYPE],
-            ['name' => 'Book pages', 'code' => 'BOOK-PAGES', 'type' => IntegerAttributeType::TYPE],
-        ]]);
-
-        $this->productArchetypeFixture->load(['custom' => [
-            [
-                'name' => 'Book',
-                'code' => 'BOOK',
-                'product_attributes' => ['BOOK-AUTHOR', 'BOOK-ISBN', 'BOOK-PAGES'],
-                'product_options' => [],
-            ],
+            ['name' => 'Book author', 'code' => 'book_author', 'type' => TextAttributeType::TYPE],
+            ['name' => 'Book ISBN', 'code' => 'book_isbn', 'type' => TextAttributeType::TYPE],
+            ['name' => 'Book pages', 'code' => 'book_pages', 'type' => IntegerAttributeType::TYPE],
         ]]);
 
         $products = [];
@@ -143,12 +126,11 @@ final class BookProductFixture extends AbstractFixture
                 'name' => sprintf('Book "%s" by %s', $this->faker->word, $name),
                 'code' => $this->faker->uuid,
                 'main_taxon' => 'books',
-                'product_archetype' => 'BOOK',
                 'taxons' => ['books'],
                 'product_attributes' => [
-                    'BOOK-AUTHOR' => $name,
-                    'BOOK-ISBN' => $this->faker->isbn13,
-                    'BOOK-PAGES' => $this->faker->numberBetween(42, 1024),
+                    'book_author' => $name,
+                    'book_isbn' => $this->faker->isbn13,
+                    'book_pages' => $this->faker->numberBetween(42, 1024),
                 ],
                 'images' => [sprintf('%s/../Resources/fixtures/%s', __DIR__, 'books.jpg')],
             ];

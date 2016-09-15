@@ -46,20 +46,22 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "jackalope/jackalope": "^1.2",
         "jackalope/jackalope-doctrine-dbal": "^1.2",
-        "lakion/api-test-case": "^1.0@dev",
+        "lakion/api-test-case": "^1.0",
         "matthiasnoback/symfony-dependency-injection-test": "^1.0",
         "mongofill/mongofill": "dev-master",
         "phpspec/phpspec": "^3.0",
         "phpunit/phpunit": "^4.8",
         "sensio/generator-bundle": "^3.0",
         "sylius/grid-bundle": "^1.0",
+        "sylius/locale": "^1.0",
         "twig/twig": "~1.11"
     },
     "suggest": {
         "doctrine/mongodb-odm": "1.0.*@dev",
         "doctrine/orm": "^2.4.8,<2.5",
         "doctrine/phpcr-bundle": "~1.1",
-        "sylius/rbac-bundle": "^1.0"
+        "sylius/rbac-bundle": "^1.0",
+        "sylius/locale": "^1.0"
     },
     "scripts": {
         "post-install-cmd": [

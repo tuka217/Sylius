@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Core\Pricing\Calculators;
 use Sylius\Component\Product\Model\Variant as BaseVariant;
 use Sylius\Component\Taxation\Model\TaxCategoryInterface;
-use Sylius\Component\Variation\Model\VariantInterface as BaseVariantInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
@@ -54,14 +54,9 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     protected $onHand = 0;
 
     /**
-     * @var int
-     */
-    protected $sold = 0;
-
-    /**
      * @var bool
      */
-    protected $availableOnDemand = true;
+    protected $tracked = false;
 
     /**
      * @var Collection|ProductVariantImageInterface[]
@@ -251,17 +246,19 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     /**
      * {@inheritdoc}
      */
-    public function getSold()
+    public function setTracked($tracked)
     {
-        return $this->sold;
+        Assert::boolean($tracked);
+
+        $this->tracked = $tracked;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setSold($sold)
+    public function isTracked()
     {
-        $this->sold = (int) $sold;
+        return $this->tracked;
     }
 
     /**
@@ -270,22 +267,6 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     public function getInventoryName()
     {
         return $this->getProduct()->getName();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isAvailableOnDemand()
-    {
-        return $this->availableOnDemand;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setAvailableOnDemand($availableOnDemand)
-    {
-        $this->availableOnDemand = (bool) $availableOnDemand;
     }
 
     /**
