@@ -13,6 +13,7 @@ namespace Sylius\Behat\Page\Shop\Cart;
 
 use Behat\Mink\Exception\ElementNotFoundException;
 use Sylius\Behat\Page\SymfonyPage;
+use Sylius\Component\Core\Model\ProductInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -76,7 +77,7 @@ class SummaryPage extends SymfonyPage implements SummaryPageInterface
     {
         $itemTotalElement = $this->getElement('product_total', ['%name%' => $productName]);
 
-        return $this->getPriceFromString(trim($itemTotalElement->getText()));
+        return  $itemTotalElement->getText();
     }
 
     /**
@@ -182,6 +183,28 @@ class SummaryPage extends SymfonyPage implements SummaryPageInterface
     /**
      * {@inheritdoc}
      */
+    public function hasItemWithCode($code)
+    {
+        return $this->hasItemWith($code, '.sylius-product-variant-code');
+    }
+
+    /**
+     * {@inheritdoc]
+     */
+    public function hasProductOutOfStockValidationMessage(ProductInterface $product)
+    {
+        $message = sprintf('%s does not have sufficient stock.', $product->getName());
+
+        try {
+            return $this->getElement('validation_errors')->getText() === $message;
+        } catch (ElementNotFoundException $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isEmpty()
     {
         return false !== strpos($this->getDocument()->find('css', '.message')->getText(), 'Your cart is empty');
@@ -197,9 +220,38 @@ class SummaryPage extends SymfonyPage implements SummaryPageInterface
         return (int) $itemElement->find('css', 'input[type=number]')->getValue();
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getCartTotal()
+    {
+        $cartTotalText = $this->getElement('cart_total')->getText();
+
+        if (strpos($cartTotalText, ',') !== false ) {
+            return strstr($cartTotalText, ',', true);
+        }
+
+        return $cartTotalText;
+    }
+
     public function clearCart()
     {
         $this->getElement('clear_button')->click();
+    }
+
+    public function updateCart()
+    {
+        $this->getElement('update_button')->click();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function waitForRedirect($timeout)
+    {
+        $this->getDocument()->waitFor($timeout, function () {
+            return $this->isOpen();
+        });
     }
 
     /**
@@ -210,6 +262,7 @@ class SummaryPage extends SymfonyPage implements SummaryPageInterface
         return array_merge(parent::getDefinedElements(), [
             'apply_coupon_button' => 'button:contains("Apply coupon")',
             'cart_items' => '#sylius-cart-items',
+            'cart_total' => '#sylius-cart-button',
             'clear_button' => '#sylius-cart-clear',
             'coupon_field' => '#sylius_cart_promotionCoupon',
             'grand_total' => '#sylius-cart-grand-total',
@@ -222,6 +275,8 @@ class SummaryPage extends SymfonyPage implements SummaryPageInterface
             'save_button' => '#sylius-save',
             'shipping_total' => '#sylius-cart-shipping-total',
             'tax_total' => '#sylius-cart-tax-total',
+            'update_button' => '#sylius-cart-update',
+            'validation_errors' => '.sylius-validation-error',
         ]);
     }
 

@@ -16,9 +16,9 @@ use Sylius\Component\Cart\Model\CartInterface;
 use Sylius\Component\Channel\Model\ChannelAwareInterface;
 use Sylius\Component\Payment\Model\PaymentsSubjectInterface;
 use Sylius\Component\Promotion\Model\CouponInterface as BaseCouponInterface;
-use Sylius\Component\Promotion\Model\PromotionCountableSubjectInterface;
-use Sylius\Component\Promotion\Model\PromotionCouponAwareSubjectInterface;
-use Sylius\Component\User\Model\CustomerAwareInterface;
+use Sylius\Component\Promotion\Model\CountablePromotionSubjectInterface;
+use Sylius\Component\Promotion\Model\CouponAwarePromotionSubjectInterface;
+use Sylius\Component\Customer\Model\CustomerAwareInterface;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
@@ -26,8 +26,8 @@ use Sylius\Component\User\Model\CustomerAwareInterface;
 interface OrderInterface extends
     CartInterface,
     PaymentsSubjectInterface,
-    PromotionCountableSubjectInterface,
-    PromotionCouponAwareSubjectInterface,
+    CountablePromotionSubjectInterface,
+    CouponAwarePromotionSubjectInterface,
     CustomerAwareInterface,
     ChannelAwareInterface
 {
@@ -108,6 +108,8 @@ interface OrderInterface extends
      */
     public function removeShipment(ShipmentInterface $shipment);
 
+    public function removeShipments();
+
     /**
      * @param ShipmentInterface $shipment
      *
@@ -136,6 +138,16 @@ interface OrderInterface extends
     public function setExchangeRate($exchangeRate);
 
     /**
+     * @return string
+     */
+    public function getLocaleCode();
+
+    /**
+     * @param string
+     */
+    public function setLocaleCode($localeCode);
+
+    /**
      * @param BaseCouponInterface $coupon
      */
     public function setPromotionCoupon(BaseCouponInterface $coupon = null);
@@ -149,11 +161,6 @@ interface OrderInterface extends
      * @param string $state
      */
     public function setShippingState($state);
-
-    /**
-     * @return bool
-     */
-    public function isBackorder();
 
     /**
      * @return ShipmentInterface

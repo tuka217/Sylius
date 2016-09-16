@@ -11,15 +11,12 @@
 
 namespace Sylius\Component\Inventory\Model;
 
-use Sylius\Component\Resource\Model\TimestampableTrait;
-
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
+ * @author Grzegorz Sadowski <grzegorz.sadowski@lakion.com>
  */
 class InventoryUnit implements InventoryUnitInterface
 {
-    use TimestampableTrait;
-
     /**
      * @var mixed
      */
@@ -29,16 +26,6 @@ class InventoryUnit implements InventoryUnitInterface
      * @var StockableInterface
      */
     protected $stockable;
-
-    /**
-     * @var string
-     */
-    protected $inventoryState = InventoryUnitInterface::STATE_CHECKOUT;
-
-    public function __construct()
-    {
-        $this->createdAt = new \DateTime();
-    }
 
     /**
      * {@inheritdoc}
@@ -70,37 +57,5 @@ class InventoryUnit implements InventoryUnitInterface
     public function getInventoryName()
     {
         return $this->stockable->getInventoryName();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInventoryState()
-    {
-        return $this->inventoryState;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setInventoryState($state)
-    {
-        $this->inventoryState = $state;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isSold()
-    {
-        return InventoryUnitInterface::STATE_SOLD === $this->inventoryState;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isBackordered()
-    {
-        return InventoryUnitInterface::STATE_BACKORDERED === $this->inventoryState;
     }
 }

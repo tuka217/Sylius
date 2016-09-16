@@ -17,8 +17,8 @@ use Sylius\Behat\NotificationType;
 use Sylius\Behat\Page\Shop\Cart\SummaryPageInterface;
 use Sylius\Behat\Page\Shop\Product\ShowPageInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
-use Sylius\Behat\Service\SecurityServiceInterface;
-use Sylius\Component\Core\Model\UserInterface;
+use Sylius\Behat\Service\SharedSecurityServiceInterface;
+use Sylius\Component\Core\Model\ShopUserInterface;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Product\Model\OptionInterface;
 use Sylius\Component\Product\Model\ProductInterface;
@@ -52,37 +52,46 @@ final class CartContext implements Context
     private $notificationChecker;
 
     /**
-     * @var SecurityServiceInterface
+     * @var SharedSecurityServiceInterface
      */
-    private $securityService;
+    private $sharedSecurityService;
 
     /**
      * @param SharedStorageInterface $sharedStorage
      * @param SummaryPageInterface $summaryPage
      * @param ShowPageInterface $productShowPage
      * @param NotificationCheckerInterface $notificationChecker
-     * @param SecurityServiceInterface $securityService
+     * @param SharedSecurityServiceInterface $sharedSecurityService
      */
     public function __construct(
         SharedStorageInterface $sharedStorage,
         SummaryPageInterface $summaryPage,
         ShowPageInterface $productShowPage,
         NotificationCheckerInterface $notificationChecker,
-        SecurityServiceInterface $securityService
+        SharedSecurityServiceInterface $sharedSecurityService
     ) {
         $this->sharedStorage = $sharedStorage;
         $this->summaryPage = $summaryPage;
         $this->productShowPage = $productShowPage;
         $this->notificationChecker = $notificationChecker;
-        $this->securityService = $securityService;
+        $this->sharedSecurityService = $sharedSecurityService;
     }
 
     /**
+     * @Given I am at the summary of my cart
      * @When I see the summary of my cart
      */
     public function iOpenCartSummaryPage()
     {
         $this->summaryPage->open();
+    }
+
+    /**
+     * @When I update my cart
+     */
+    public function iUpdateMyCart()
+    {
+        $this->summaryPage->updateCart();
     }
 
     /**
@@ -151,7 +160,7 @@ final class CartContext implements Context
      * @Then my cart shipping total should be :shippingTotal
      * @Then my cart shipping should be for free
      */
-    public function myCartShippingFeeShouldBe($shippingTotal = '€0.00')
+    public function myCartShippingFeeShouldBe($shippingTotal = '$0.00')
     {
         $this->summaryPage->open();
 
@@ -243,7 +252,7 @@ final class CartContext implements Context
     }
 
     /**
-     * @Given /^I add (this product) to the cart$/
+     * @Given /^I (?:add|added) (this product) to the cart$/
      * @Given I added product :product to the cart
      * @Given /^I (?:have|had) (product "[^"]+") in the cart$/
      * @When I add product :product to the cart
@@ -259,9 +268,9 @@ final class CartContext implements Context
     /**
      * @Given /^(this user) has ("[^"]+" product) in the cart$/
      */
-    public function thisUserHasProductInTheCart(UserInterface $user, ProductInterface $product)
+    public function thisUserHasProductInTheCart(ShopUserInterface $user, ProductInterface $product)
     {
-        $this->securityService->performActionAs($user, function () use ($product) {
+        $this->sharedSecurityService->performActionAsShopUser($user, function () use ($product) {
             $this->iAddProductToTheCart($product);
         });
     }
@@ -280,24 +289,33 @@ final class CartContext implements Context
     }
 
     /**
-     * @Given I added :variant variant of product :product to the cart
-     * @When I add :variant variant of product :product to the cart
-     * @When I have :variant variant of product :product in the cart
+     * @Given I added :variantName variant of product :product to the cart
+     * @When I add :variantName variant of product :product to the cart
+     * @When I have :variantName variant of product :product in the cart
      * @When /^I add "([^"]+)" variant of (this product) to the cart$/
      */
-    public function iAddProductToTheCartSelectingVariant($variant, ProductInterface $product)
+    public function iAddProductToTheCartSelectingVariant($variantName, ProductInterface $product)
     {
         $this->productShowPage->open(['slug' => $product->getSlug()]);
-        $this->productShowPage->addToCartWithVariant($variant);
+        $this->productShowPage->addToCartWithVariant($variantName);
 
         $this->sharedStorage->set('product', $product);
     }
 
     /**
-     * @Given I have :quantity products :product in the cart
-     * @When I add :quantity products :product to the cart
+     * @When /^I add (\d+) of (them) to (?:the|my) cart$/
      */
-    public function iAddProductsToTheCart(ProductInterface $product, $quantity)
+    public function iAddQuantityOfProductsToTheCart($quantity, ProductInterface $product)
+    {
+        $this->productShowPage->open(['slug' => $product->getSlug()]);
+        $this->productShowPage->addToCartWithQuantity($quantity);
+    }
+
+    /**
+     * @Given /^I have(?:| added) (\d+) (products "([^"]+)") (?:to|in) the cart$/
+     * @When /^I add(?:|ed) (\d+) (products "([^"]+)") to the cart$/
+     */
+    public function iAddProductsToTheCart($quantity, ProductInterface $product)
     {
         $this->productShowPage->open(['slug' => $product->getSlug()]);
         $this->productShowPage->addToCartWithQuantity($quantity);
@@ -306,10 +324,12 @@ final class CartContext implements Context
     }
 
     /**
-     * @Then I should be on my cart summary page
+     * @Then /^I should be(?: on| redirected to) my cart summary page$/
      */
     public function shouldBeOnMyCartSummaryPage()
     {
+        $this->summaryPage->waitForRedirect(3);
+
         Assert::true(
             $this->summaryPage->isOpen(),
             'Cart summary page should be open, but it does not.'
@@ -354,6 +374,17 @@ final class CartContext implements Context
         Assert::true(
             $this->summaryPage->hasItemWithVariantNamed($variantName),
             sprintf('The product with variant %s should appear on the list, but it does not.', $variantName)
+        );
+    }
+
+    /**
+     * @Then this item should have code :variantCode
+     */
+    public function thisItemShouldHaveCode($variantCode)
+    {
+        Assert::true(
+            $this->summaryPage->hasItemWithCode($variantCode),
+            sprintf('The product with code %s should appear on the list, but it does not.', $variantCode)
         );
     }
 
@@ -425,6 +456,53 @@ final class CartContext implements Context
         $this->notificationChecker->checkNotification(
             'Your promotion coupon is not valid.',
             NotificationType::failure()
+        );
+    }
+
+    /**
+     * @Then total price of :productName item should be :productPrice
+     */
+    public function thisItemPriceShouldBe($productName, $productPrice)
+    {
+        $this->summaryPage->open();
+
+        Assert::same(
+            $this->summaryPage->getItemTotal($productName),
+            $productPrice
+        );
+    }
+
+    /**
+     * @Then /^I should be notified that (this product) cannot be updated$/
+     */
+    public function iShouldBeNotifiedThatThisProductDoesNotHaveSufficientStock(ProductInterface $product)
+    {
+        Assert::true(
+            $this->summaryPage->hasProductOutOfStockValidationMessage($product),
+            sprintf('I should see validation message for %s product', $product->getName())
+        );
+    }
+
+    /**
+     * @Then /^I should not be notified that (this product) cannot be updated$/
+     */
+    public function iShouldNotBeNotifiedThatThisProductCannotBeUpdated(ProductInterface $product)
+    {
+        Assert::false(
+            $this->summaryPage->hasProductOutOfStockValidationMessage($product),
+            sprintf('I should see validation message for %s product', $product->getName())
+        );
+    }
+
+    /**
+     * @Then my cart's total should be :total
+     */
+    public function myCartSTotalShouldBe($total)
+    {
+        Assert::same(
+            $total,
+            $this->summaryPage->getCartTotal(),
+            'Cart should have %s total, but it has %2$s.'
         );
     }
 }

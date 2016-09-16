@@ -5,7 +5,7 @@ Feature: Verifying account's email address
     I want to be able to verify my email address
 
     Background:
-        Given the store operates on a single channel in "France"
+        Given the store operates on a single channel in "United States"
         And there is a "valkyrie@cain.com" user
         And this user is not verified
 
@@ -28,7 +28,7 @@ Feature: Verifying account's email address
         Then I should be notified that the verification email has been sent
         And it should be sent to "valkyrie@cain.com"
 
-    @ui @email
+    @ui
     Scenario: Being unable to verify using old verification links
         Given I am logged in as "valkyrie@cain.com"
         And I have already received a verification email

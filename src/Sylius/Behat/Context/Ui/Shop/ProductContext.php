@@ -13,6 +13,7 @@ namespace Sylius\Behat\Context\Ui\Shop;
 
 use Behat\Behat\Context\Context;
 use Sylius\Behat\Page\Shop\Product\ShowPageInterface;
+use Sylius\Behat\Page\Shop\Taxon\ShowPageInterface as TaxonShowPageInterface;
 use Sylius\Behat\Page\SymfonyPageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
@@ -31,17 +32,17 @@ final class ProductContext implements Context
     private $showPage;
 
     /**
-     * @var SymfonyPageInterface
+     * @var TaxonShowPageInterface
      */
     private $taxonShowPage;
 
     /**
      * @param ShowPageInterface $showPage
-     * @param SymfonyPageInterface $taxonShowPage
+     * @param TaxonShowPageInterface $taxonShowPage
      */
     public function __construct(
         ShowPageInterface $showPage,
-        SymfonyPageInterface $taxonShowPage
+        TaxonShowPageInterface $taxonShowPage
     ) {
         $this->showPage = $showPage;
         $this->taxonShowPage = $taxonShowPage;
@@ -103,6 +104,7 @@ final class ProductContext implements Context
 
     /**
      * @Then I should be on :product product detailed page
+     * @Then I should still be on product :product page
      */
     public function iShouldBeOnProductDetailedPage(ProductInterface $product)
     {
@@ -137,7 +139,7 @@ final class ProductContext implements Context
     public function iShouldSeeProduct($productName)
     {
         Assert::true(
-            $this->taxonShowPage->isProductInList($productName),
+            $this->taxonShowPage->isProductOnList($productName),
             sprintf("The product %s should appear on page, but it does not.", $productName)
         );
     }
@@ -148,7 +150,7 @@ final class ProductContext implements Context
     public function iShouldNotSeeProduct($productName)
     {
         Assert::false(
-            $this->taxonShowPage->isProductInList($productName),
+            $this->taxonShowPage->isProductOnList($productName),
             sprintf("The product %s should not appear on page, but it does.", $productName)
         );
     }
@@ -161,6 +163,75 @@ final class ProductContext implements Context
         Assert::true(
             $this->taxonShowPage->isEmpty(),
             'There should appear information about empty list of products, but it does not.'
+        );
+    }
+
+    /**
+     * @Then I should see that it is out of stock
+     */
+    public function iShouldSeeItIsOutOfStock()
+    {
+        Assert::true(
+            $this->showPage->isOutOfStock(),
+            'Out of stock label should be visible.'
+        );
+    }
+
+    /**
+     * @Then I should be unable to add it to the cart
+     */
+    public function iShouldBeUnableToAddItToTheCart()
+    {
+        Assert::false(
+            $this->showPage->hasAddToCartButton(),
+            'Add to cart button should not be visible.'
+        );
+    }
+
+    /**
+     * @Then I should see the product price :price
+     */
+    public function iShouldSeeTheProductPrice($price)
+    {
+        Assert::same(
+            $price,
+            $this->showPage->getPrice(),
+            'Product should have price %2$s, but it has %s'
+        );
+    }
+
+    /**
+     * @Then I should see the product :productName with price :productPrice
+     */
+    public function iShouldSeeTheProductWithPrice($productName, $productPrice)
+    {
+        Assert::true(
+            $this->taxonShowPage->isProductWithPriceOnList($productName, $productPrice),
+            sprintf("The product %s with price %s should appear on page, but it does not.", $productName, $productPrice)
+        );
+    }
+
+    /**
+     * @Then /^I should be notified that (this product) does not have sufficient stock$/
+     */
+    public function iShouldBeNotifiedThatThisProductDoesNotHaveSufficientStock(ProductInterface $product)
+    {
+       $this->showPage->waitForValidationErrors(3);
+
+        Assert::true(
+            $this->showPage->hasProductOutOfStockValidationMessage($product),
+            sprintf('I should see validation message for %s product', $product->getName())
+        );
+    }
+
+    /**
+     * @Then /^I should not be notified that (this product) does not have sufficient stock$/
+     */
+    public function iShouldNotBeNotifiedThatThisProductDoesNotHaveSufficientStock(ProductInterface $product)
+    {
+        Assert::false(
+            $this->showPage->hasProductOutOfStockValidationMessage($product),
+            sprintf('I should see validation message for %s product', $product->getName())
         );
     }
 }

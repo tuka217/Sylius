@@ -28,7 +28,6 @@ sylius:
         author: Forfatter
         availability: Tilgængelighed
         available_on: Tilgængelig
-        available_on_demand: Tilgængelig for forudbestilling
         back: Tilbage
         backorder: Restordre
         balance_due: Restbeløb
@@ -123,7 +122,6 @@ sylius:
         failed: Mislykkedes
         filter: Filter
         first_name: Fornavn
-        firstname: Fornavn
         fulfill: Udfør
         gateway: Gateway
         general_info: Generel info

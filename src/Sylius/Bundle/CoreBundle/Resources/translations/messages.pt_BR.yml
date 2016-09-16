@@ -35,6 +35,7 @@ sylius:
             currencies: Moedas
             shipping_methods: Métodos de envio
             payment_methods: Meios de pagamentos
+            tax_calculation_strategy: Estratégia de cálculo de impostos
             tax_zone_default: Zona de imposto do padrão
             theme:  Tema
             hostname: Nome do host
@@ -68,20 +69,6 @@ sylius:
             code: Código
         product_variant:
             tax_category: Categoria de imposto
-        settings:
-            general:
-                currency: Moeda padrão
-                locale: Língua
-                meta_description: Meta descrição
-                meta_keywords: Meta palavra-chaves
-                title: Título da página
-                tracking_code:
-                    Tracking code (for example: Código do Google Analytics
-            taxation:
-                default_tax_zone: Zona de imposto do padrão
-                default_tax_calculation_strategy: Estratégia de cálculo do imposto de padrão
-            security:
-                enabled: Ativado?
         shipment_filter:
             created_at_from: De
             created_at_to: Para
@@ -97,7 +84,9 @@ sylius:
         shipping_method:
             zone: Zona
         taxon:
+            code: Código
             file: Selecione a imagem
+            images: Imagens
         taxonomy:
             file: Selecione a imagem
         user:
@@ -113,7 +102,6 @@ sylius:
         user_filter:
             query: Pesquisar
         variant:
-            available_on_demand: Disponível por demanda
             depth: Profundidade
             height: Altura
             images: Imagens
@@ -150,11 +138,19 @@ sylius:
             name: Comentários do pedido
         shipment_confirmation:
             name: Confirmação de postagem
-            content: 'Seu pedido foi enviado. <br/> Obrigado pela preferência.'
         user_confirmation:
             name: Confirmação do usuário
             subject: Bem-vindo à nossa loja
+            content: 'Bem-vindo à nossa loja <br/> <br/> você acaba de ser registrado. <br/> Obrigado %username%.'
         password_reset:
             name: Redefinir a senha
+            content: '<h3>Olá %username%</h3> Para resetar sua senha - por favor, visite %url% <br/> <br/> Atenciosamente, equipe.'
+        verification:
+            name: Verificação de endereço de e-mail
+            content: 'Para verificar o seu endereço de e-mail - por favor, visite %url%'
+    payum_gateway:
+        cash_on_delivery: Pagamento em dinheiro na entrega
+        offline: Desconectado
+        paypal_express_checkout: Pagamento Paypal Express
     shipping_method_resolver:
         by_zones_and_channel: Por zonas e canal

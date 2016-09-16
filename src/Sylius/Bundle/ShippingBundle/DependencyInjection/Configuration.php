@@ -14,8 +14,6 @@ namespace Sylius\Bundle\ShippingBundle\DependencyInjection;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Bundle\ResourceBundle\Form\Type\ResourceChoiceType;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
-use Sylius\Bundle\ShippingBundle\Controller\ShipmentController;
-use Sylius\Bundle\ShippingBundle\Form\Type\RuleType;
 use Sylius\Bundle\ShippingBundle\Form\Type\ShipmentType;
 use Sylius\Bundle\ShippingBundle\Form\Type\ShippingCategoryType;
 use Sylius\Bundle\ShippingBundle\Form\Type\ShippingMethodChoiceType;
@@ -23,8 +21,6 @@ use Sylius\Bundle\ShippingBundle\Form\Type\ShippingMethodTranslationType;
 use Sylius\Bundle\ShippingBundle\Form\Type\ShippingMethodType;
 use Sylius\Component\Resource\Factory\Factory;
 use Sylius\Component\Resource\Factory\TranslatableFactory;
-use Sylius\Component\Shipping\Model\Rule;
-use Sylius\Component\Shipping\Model\RuleInterface;
 use Sylius\Component\Shipping\Model\Shipment;
 use Sylius\Component\Shipping\Model\ShipmentInterface;
 use Sylius\Component\Shipping\Model\ShipmentUnit;
@@ -83,7 +79,7 @@ class Configuration implements ConfigurationInterface
                                     ->children()
                                         ->scalarNode('model')->defaultValue(Shipment::class)->cannotBeEmpty()->end()
                                         ->scalarNode('interface')->defaultValue(ShipmentInterface::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('controller')->defaultValue(ShipmentController::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
                                         ->scalarNode('repository')->cannotBeEmpty()->end()
                                         ->scalarNode('factory')->defaultValue(Factory::class)->end()
                                         ->arrayNode('form')
@@ -201,37 +197,6 @@ class Configuration implements ConfigurationInterface
                                             ->children()
                                                  ->scalarNode('default')->defaultValue(ShippingCategoryType::class)->cannotBeEmpty()->end()
                                                  ->scalarNode('choice')->defaultValue(ResourceChoiceType::class)->cannotBeEmpty()->end()
-                                            ->end()
-                                        ->end()
-                                    ->end()
-                                ->end()
-                                ->arrayNode('validation_groups')
-                                    ->addDefaultsIfNotSet()
-                                    ->children()
-                                        ->arrayNode('default')
-                                            ->prototype('scalar')->end()
-                                            ->defaultValue(['sylius'])
-                                        ->end()
-                                    ->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                        ->arrayNode('shipping_method_rule')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->variableNode('options')->end()
-                                ->arrayNode('classes')
-                                    ->addDefaultsIfNotSet()
-                                    ->children()
-                                        ->scalarNode('model')->defaultValue(Rule::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('interface')->defaultValue(RuleInterface::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('repository')->cannotBeEmpty()->end()
-                                        ->scalarNode('factory')->defaultValue(Factory::class)->end()
-                                        ->arrayNode('form')
-                                            ->addDefaultsIfNotSet()
-                                            ->children()
-                                                ->scalarNode('default')->defaultValue(RuleType::class)->cannotBeEmpty()->end()
                                             ->end()
                                         ->end()
                                     ->end()

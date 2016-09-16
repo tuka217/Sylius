@@ -196,6 +196,16 @@ interface ShowPageInterface extends SymfonyPageInterface
      * @return string
      */
     public function getItemTotal($itemName);
+
+    /**
+     * @return string
+     */
+    public function getPaymentAmount();
+
+    /**
+     * @return int
+     */
+    public function getPaymentsCount();
     
     /**
      * @return bool
@@ -217,4 +227,18 @@ interface ShowPageInterface extends SymfonyPageInterface
      * @return bool
      */
     public function hasNote($note);
+
+    /**
+     * @param string $provinceName
+     *
+     * @return bool
+     */
+    public function hasShippingProvinceName($provinceName);
+
+    /**
+     * @param string $provinceName
+     *
+     * @return bool
+     */
+    public function hasBillingProvinceName($provinceName);
 }

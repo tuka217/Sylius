@@ -17,7 +17,8 @@ use Sylius\Behat\Page\Admin\Customer\CreatePageInterface;
 use Sylius\Behat\Page\Admin\Customer\ShowPageInterface;
 use Sylius\Behat\Page\Admin\Customer\UpdatePageInterface;
 use Sylius\Behat\Service\SharedStorageInterface;
-use Sylius\Component\User\Model\CustomerInterface;
+use Sylius\Component\Core\Model\Customer;
+use Sylius\Component\Customer\Model\CustomerInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -485,6 +486,69 @@ final class ManagingCustomersContext implements Context
             str_replace(',', '', $billingAddress),
             $this->showPage->getBillingAddress(),
             'Customer billing address should be "%s", but it is not.'
+        );
+    }
+
+    /**
+     * @Then I should see information about no existing account for this customer
+     */
+    public function iShouldSeeInformationAboutNoExistingAccountForThisCustomer()
+    {
+        Assert::true(
+            $this->showPage->hasAccount(),
+            'There should be information about no account, but there is none.'
+        );
+    }
+
+    /**
+     * @Then I should see that this customer is subscribed to the newsletter
+     */
+    public function iShouldSeeThatThisCustomerIsSubscribedToTheNewsletter()
+    {
+        Assert::true(
+            $this->showPage->isSubscribedToNewsletter(),
+            'There should be information that this customer is subscribed to the newsletter.'
+        );
+    }
+
+    /**
+     * @When I make them subscribed to the newsletter
+     */
+    public function iMakeThemSubscribedToTheNewsletter()
+    {
+        $this->updatePage->subscribeToTheNewsletter();
+    }
+
+    /**
+     * @Then this customer should be subscribed to the newsletter
+     */
+    public function thisCustomerShouldBeSubscribedToTheNewsletter()
+    {
+        Assert::true(
+            $this->updatePage->isSubscribedToTheNewsletter(),
+            'This customer should subscribe to the newsletter.'
+        );
+    }
+
+    /**
+     * @Then the province in the shipping address should be :provinceName
+     */
+    public function theProvinceInTheShippingAddressShouldBe($provinceName)
+    {
+        Assert::true(
+            $this->showPage->hasShippingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
+        );
+    }
+
+    /**
+     * @Then the province in the billing address should be :provinceName
+     */
+    public function theProvinceInTheShippingBillingShouldBe($provinceName)
+    {
+        Assert::true(
+            $this->showPage->hasBillingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
         );
     }
 }

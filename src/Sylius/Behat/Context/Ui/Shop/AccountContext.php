@@ -359,6 +359,19 @@ final class AccountContext implements Context
     }
 
     /**
+     * @Then I should see that I have to pay :paymentAmount for this order
+     * @Then I should see :paymentTotal as payment total
+     */
+    public function iShouldSeeIHaveToPayForThisOrder($paymentAmount)
+    {
+        Assert::same(
+            $this->orderShowPage->getPaymentPrice(),
+            $paymentAmount,
+            'Payment total is %s, but should be %s.'
+        );
+    }
+
+    /**
      * @Then I should see :numberOfItems items in the list
      */
     public function iShouldSeeItemsInTheList($numberOfItems)
@@ -378,6 +391,59 @@ final class AccountContext implements Context
         Assert::true(
             $this->orderShowPage->isProductInTheList($productName),
             sprintf('Product %s is not in the item list.', $productName)
+        );
+    }
+
+    /**
+     * @Then I should see :itemPrice as item price
+     */
+    public function iShouldSeeAsItemPrice($itemPrice)
+    {
+        Assert::same(
+            $this->orderShowPage->getItemPrice(),
+            $itemPrice,
+            'Item price is %s, but should be %s.'
+        );
+    }
+
+    /**
+     * @When I subscribe to the newsletter
+     */
+    public function iSubscribeToTheNewsletter()
+    {
+        $this->profileUpdatePage->subscribeToTheNewsletter();
+    }
+
+    /**
+     * @Then I should be subscribed to the newsletter
+     */
+    public function iShouldBeSubscribedToTheNewsletter()
+    {
+        Assert::true(
+            $this->profileUpdatePage->isSubscribedToTheNewsletter(),
+            'I should be subscribed to the newsletter, but I am not'
+        );
+    }
+
+    /**
+     * @Then I should see :provinceName as province in the shipping address
+     */
+    public function iShouldSeeAsProvinceInTheShippingAddress($provinceName)
+    {
+        Assert::true(
+            $this->orderShowPage->hasShippingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
+        );
+    }
+
+    /**
+     * @Then I should see :provinceName as province in the billing address
+     */
+    public function iShouldSeeAsProvinceInTheBillingAddress($provinceName)
+    {
+        Assert::true(
+            $this->orderShowPage->hasBillingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
         );
     }
 
