@@ -11,7 +11,9 @@
 
 namespace Sylius\Bundle\ShippingBundle\Form\Type\Calculator;
 
+use Sylius\Bundle\MoneyBundle\Form\Type\MoneyType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -28,25 +30,25 @@ class FlexibleRateConfigurationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('first_unit_cost', 'sylius_money', [
+            ->add('first_unit_cost', MoneyType::class, [
                 'label' => 'sylius.form.shipping_calculator.flexible_rate_configuration.first_unit_cost',
                 'constraints' => [
-                    new NotBlank(),
-                    new Type(['type' => 'integer']),
+                    new NotBlank(['groups' => ['sylius']]),
+                    new Type(['type' => 'integer', 'groups' => ['sylius']]),
                 ],
             ])
-            ->add('additional_unit_cost', 'sylius_money', [
+            ->add('additional_unit_cost', MoneyType::class, [
                 'label' => 'sylius.form.shipping_calculator.flexible_rate_configuration.additional_unit_cost',
                 'constraints' => [
-                    new NotBlank(),
-                    new Type(['type' => 'integer']),
+                    new NotBlank(['groups' => ['sylius']]),
+                    new Type(['type' => 'integer', 'groups' => ['sylius']]),
                 ],
             ])
-            ->add('additional_unit_limit', 'integer', [
+            ->add('additional_unit_limit', IntegerType::class, [
                 'required' => false,
                 'label' => 'sylius.form.shipping_calculator.flexible_rate_configuration.additional_unit_limit',
                 'constraints' => [
-                    new Type(['type' => 'integer']),
+                    new Type(['type' => 'integer', 'groups' => ['sylius']]),
                 ],
             ])
         ;
@@ -68,6 +70,14 @@ class FlexibleRateConfigurationType extends AbstractType
      * {@inheritdoc}
      */
     public function getName()
+    {
+        return 'sylius_shipping_calculator_flexible_rate';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
     {
         return 'sylius_shipping_calculator_flexible_rate';
     }

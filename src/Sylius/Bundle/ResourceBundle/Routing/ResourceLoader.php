@@ -23,7 +23,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class ResourceLoader implements LoaderInterface
+final class ResourceLoader implements LoaderInterface
 {
     /**
      * @var RegistryInterface
@@ -71,6 +71,7 @@ class ResourceLoader implements LoaderInterface
 
         $isApi = $type === 'sylius.resource_api';
 
+        /** @var MetadataInterface $metadata */
         $metadata = $this->resourceRegistry->get($configuration['alias']);
         $routes = $this->routeFactory->createRouteCollection();
 
@@ -146,23 +147,29 @@ class ResourceLoader implements LoaderInterface
         if ($isApi && 'index' === $actionName) {
             $defaults['_sylius']['serialization_groups'] = ['Default'];
         }
-        if ($isApi && in_array($actionName, ['show', 'create', 'update'])) {
+        if ($isApi && in_array($actionName, ['show', 'create', 'update'], true)) {
             $defaults['_sylius']['serialization_groups'] = ['Default', 'Detailed'];
+        }
+        if ($isApi && 'delete' === $actionName) {
+            $defaults['_sylius']['csrf_protection'] = false;
         }
         if (isset($configuration['grid']) && 'index' === $actionName) {
             $defaults['_sylius']['grid'] = $configuration['grid'];
         }
-        if (isset($configuration['form']) && in_array($actionName, ['create', 'update'])) {
+        if (isset($configuration['form']) && in_array($actionName, ['create', 'update'], true)) {
             $defaults['_sylius']['form'] = $configuration['form'];
         }
         if (isset($configuration['section'])) {
             $defaults['_sylius']['section'] = $configuration['section'];
         }
-        if (isset($configuration['templates']) && in_array($actionName, ['show', 'index', 'create', 'update'])) {
+        if (isset($configuration['templates']) && in_array($actionName, ['show', 'index', 'create', 'update'], true)) {
             $defaults['_sylius']['template'] = sprintf('%s:%s.html.twig', $configuration['templates'], $actionName);
         }
-        if (isset($configuration['redirect']) && in_array($actionName, ['create', 'update'])) {
+        if (isset($configuration['redirect']) && in_array($actionName, ['create', 'update'], true)) {
             $defaults['_sylius']['redirect'] = $this->getRouteName($metadata, $configuration, $configuration['redirect']);
+        }
+        if (isset($configuration['permission'])) {
+            $defaults['_sylius']['permission'] = $configuration['permission'];
         }
         if (isset($configuration['vars']['all'])) {
             $defaults['_sylius']['vars'] = $configuration['vars']['all'];

@@ -6,19 +6,34 @@ sylius:
         sku:
             not_blank: Inserisci il codice SKU del prodotto.
             unique: Il codice SKU del prodotto deve essere univoco.
+        code:
+            not_blank: Inserisci il codice prodotto.
+            unique: Codice prodotto deve essere univoco.
         name:
             not_blank: Inserisci il nome del prodotto.
-            min_length: 'Il nome del prodotto deve essere lungo almeno 1 carattere. |Il nome del prodotto deve essere lungo almeno {{ limit }} caratteri.'
-            max_length: 'Il nome del prodotto non deve essere più lungo di 1 carattere. |Il nome del prodotto non deve essere più lungo di {{ limit }} caratteri.'
-    variant:
-        sku:
-            not_blank: Inserire la variante SKU.
-            unique: La variante SKU deve essere univoca.
-    archetype:
-        name:
-            not_blank: Inserire il nome del modello.
-            min_length: 'Il nome del modello deve essere lungo almeno un carattere.|Il nome del modello deve essere lungo almeno {{ limit }} caratteri.'
-            max_length: 'Il nome del modello non deve superare 1 carattere di lunghezza.|Il nome del modello non deve superare i {{ limit }} caratteri di lunghezza.'
+            min_length: Il nome del prodotto deve essere lungo almeno 1 carattere. |Il nome del prodotto deve essere lungo almeno {{ limit }} caratteri.
+            max_length: Il nome del prodotto non deve essere più lungo di 1 carattere. |Il nome del prodotto non deve essere più lungo di {{ limit }} caratteri.
+    option:
         code:
-            unique: Archetipo con il codice dato esiste già.
-            not_blank: "Inserisci codice dell'archetipo."
+            not_blank: Inserisci il codice dell'opzione.
+            unique: L'opzione con il codice dato esiste già.
+        name:
+            not_blank: Inserisci il nome dell'opzione.
+            min_length: Il nome dell'opzione deve essere lungo almeno 1 carattere. |Il nome dell'opzione deve essere lungo almeno {{ limit }} caratteri.
+            max_length: Il nome dell'opzione non deve essere più lungo di 1 carattere. |Il nome dell'opzione non deve essere più lungo di {{ limit }} caratteri.
+        values:
+            min_count: Aggiungere almeno {{ limit }} valore d'opzione. |Aggiungere almeno {{ limit }} valori di opzione.
+    option_value:
+        code:
+            not_blank: Inserisci il codice del valore dell'opzione.
+            unique: Il valore dell'opzione con il codice dato esiste già.
+        value:
+            not_blank: Inserisci il valore dell'opzione.
+    association_type:
+        name:
+            not_blank: Inserisci il nome del tipo di associazione.
+            min_length: Nome del tipo di associazione deve essere lungo almeno 1 carattere.| Il nome dell'associazione deve essere lungo almeno {{ limit }} caratteri.
+            max_length: Nome del tipo di associazione non può essere più lungo di 1 carattere.| Il nome dell'associazione non può essere lungo più di {{ limit }} caratteri.
+        code:
+            unique: Il tipo di associazione con questo codice esiste già.
+            not_blank: Inserisci il codice del tipo di associazione.

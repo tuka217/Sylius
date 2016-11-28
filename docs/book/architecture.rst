@@ -89,25 +89,27 @@ Core
 
 The Core is another component that integrates all the other components. This is the place where for example the ``ProductVariant`` finally learns that it has a ``TaxCategory``.
 The Core component is where the ``ProductVariant`` implements the ``TaxableInterface`` and other interfaces that are useful for its operation.
-As each e-commerce Sylius has here a fully integrated concept of everything that is needed to run a webshop.
+Sylius has here a fully integrated concept of everything that is needed to run a webshop.
 To get to know more about concepts applied in Sylius - keep on reading :doc:`The Book </book/index>`.
 
 Admin
 ~~~~~
 
-Every system with the security layer the functionalities of system administration need to be restricted to only some users with a certain role - Administrator.
-This is our ``AdminBundle`` that if you do not need, you can turn it off. Views have been built using the `SemanticUI <http://semantic-ui.com/>`_.
+In every system with the security layer the functionalities of system administration need to be restricted to only some users with a certain role - Administrator.
+This is the responsibility of our ``AdminBundle`` although if you do not need it, you can turn it off. Views have been built using the `SemanticUI <http://semantic-ui.com/>`_.
 
 Shop
 ~~~~
 
-Our ``ShopBundle`` is basically the user interface for everything that happens in the system. Also here views have been built using the `SemanticUI <http://semantic-ui.com/>`_.
+Our ``ShopBundle`` is basically a standard B2C interface for everything that happens in the system.
+It is made mainly of yaml configurations and templates.
+Also here views have been built using the `SemanticUI <http://semantic-ui.com/>`_.
 
 Api
 ~~~
 
-Since our controllers are format agnostic they have become reusable in the API. Therefore if you request products in the shop frontend you are using exactly the same action as when you are
-placing the api request.
+Our API uses the REST approach. Since our controllers are format agnostic they have become reusable in the API.
+Therefore if you request products in the shop frontend you are using exactly the same action as when you are placing the api request.
 Read more about our API in the :doc:`Sylius API Guide </api/index>`.
 
 Third Party Libraries

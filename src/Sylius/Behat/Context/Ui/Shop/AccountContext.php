@@ -84,7 +84,7 @@ final class AccountContext implements Context
     }
 
     /**
-     * @Given I want to modify my profile
+     * @When I want to modify my profile
      */
     public function iWantToModifyMyProfile()
     {
@@ -164,19 +164,27 @@ final class AccountContext implements Context
     }
 
     /**
-     * @Then /^I should be notified that the ([^"]+) is required$/
+     * @Then /^I should be notified that the (email|password|city|street|first name|last name) is required$/
      */
     public function iShouldBeNotifiedThatElementIsRequired($element)
     {
-        $this->assertFieldValidationMessage($this->profileUpdatePage, StringInflector::nameToCode($element), sprintf('Please enter your %s.', $element));
+        $this->assertFieldValidationMessage(
+            $this->profileUpdatePage,
+            StringInflector::nameToCode($element),
+            sprintf('Please enter your %s.', $element)
+        );
     }
 
     /**
-     * @Then /^I should be notified that the ([^"]+) is invalid$/
+     * @Then /^I should be notified that the (email) is invalid$/
      */
     public function iShouldBeNotifiedThatElementIsInvalid($element)
     {
-        $this->assertFieldValidationMessage($this->profileUpdatePage, StringInflector::nameToCode($element), sprintf('This %s is invalid.', $element));
+        $this->assertFieldValidationMessage(
+            $this->profileUpdatePage,
+            StringInflector::nameToCode($element),
+            sprintf('This %s is invalid.', $element)
+        );
     }
 
     /**
@@ -242,7 +250,11 @@ final class AccountContext implements Context
      */
     public function iShouldBeNotifiedThatProvidedPasswordIsDifferentThanTheCurrentOne()
     {
-        $this->assertFieldValidationMessage($this->changePasswordPage, 'current_password', 'Provided password is different than the current one.');
+        $this->assertFieldValidationMessage(
+            $this->changePasswordPage,
+            'current_password',
+            'Provided password is different than the current one.'
+        );
     }
 
     /**
@@ -250,7 +262,11 @@ final class AccountContext implements Context
      */
     public function iShouldBeNotifiedThatTheEnteredPasswordsDoNotMatch()
     {
-        $this->assertFieldValidationMessage($this->changePasswordPage, 'new_password', 'The entered passwords don\'t match');
+        $this->assertFieldValidationMessage(
+            $this->changePasswordPage,
+            'new_password',
+            'The entered passwords don\'t match'
+        );
     }
 
     /**
@@ -258,7 +274,11 @@ final class AccountContext implements Context
      */
     public function iShouldBeNotifiedThatThePasswordShouldBeAtLeastCharactersLong()
     {
-        $this->assertFieldValidationMessage($this->changePasswordPage, 'new_password', 'Password must be at least 4 characters long.');
+        $this->assertFieldValidationMessage(
+            $this->changePasswordPage,
+            'new_password',
+            'Password must be at least 4 characters long.'
+        );
     }
 
     /**
@@ -359,14 +379,27 @@ final class AccountContext implements Context
     }
 
     /**
+     * @Then I should see that I have to pay :paymentAmount for this order
+     * @Then I should see :paymentTotal as payment total
+     */
+    public function iShouldSeeIHaveToPayForThisOrder($paymentAmount)
+    {
+        Assert::same(
+            $this->orderShowPage->getPaymentPrice(),
+            $paymentAmount,
+            'Payment total is %s, but should be %s.'
+        );
+    }
+
+    /**
      * @Then I should see :numberOfItems items in the list
      */
     public function iShouldSeeItemsInTheList($numberOfItems)
     {
         Assert::same(
-            $numberOfItems,
+            (int) $numberOfItems,
             $this->orderShowPage->countItems(),
-            '%s items should appear on order page, but %s rows has been found'
+            '%s items should appear on order page, but %s rows has been found.'
         );
     }
 
@@ -378,6 +411,70 @@ final class AccountContext implements Context
         Assert::true(
             $this->orderShowPage->isProductInTheList($productName),
             sprintf('Product %s is not in the item list.', $productName)
+        );
+    }
+
+    /**
+     * @Then I should see :itemPrice as item price
+     */
+    public function iShouldSeeAsItemPrice($itemPrice)
+    {
+        Assert::same(
+            $this->orderShowPage->getItemPrice(),
+            $itemPrice,
+            'Item price is %s, but should be %s.'
+        );
+    }
+
+    /**
+     * @When I subscribe to the newsletter
+     */
+    public function iSubscribeToTheNewsletter()
+    {
+        $this->profileUpdatePage->subscribeToTheNewsletter();
+    }
+
+    /**
+     * @Then I should be subscribed to the newsletter
+     */
+    public function iShouldBeSubscribedToTheNewsletter()
+    {
+        Assert::true(
+            $this->profileUpdatePage->isSubscribedToTheNewsletter(),
+            'I should be subscribed to the newsletter, but I am not.'
+        );
+    }
+
+    /**
+     * @Then I should see :provinceName as province in the shipping address
+     */
+    public function iShouldSeeAsProvinceInTheShippingAddress($provinceName)
+    {
+        Assert::true(
+            $this->orderShowPage->hasShippingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
+        );
+    }
+
+    /**
+     * @Then I should see :provinceName as province in the billing address
+     */
+    public function iShouldSeeAsProvinceInTheBillingAddress($provinceName)
+    {
+        Assert::true(
+            $this->orderShowPage->hasBillingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
+        );
+    }
+
+    /**
+     * @Then /^I should be able to change payment method for (this order)$/
+     */
+    public function iShouldBeAbleToChangePaymentMethodForThisOrder(OrderInterface $order)
+    {
+        Assert::true(
+            $this->orderIndexPage->isItPossibleToChangePaymentMethodForOrder($order),
+            sprintf('I should be able to change payment method for %s.', $order->getNumber())
         );
     }
 

@@ -73,15 +73,28 @@ class ProfileUpdatePage extends SymfonyPage implements ProfileUpdatePageInterfac
         $this->getDocument()->pressButton('Save changes');
     }
 
+    public function subscribeToTheNewsletter()
+    {
+        $this->getDocument()->checkField('Subscribe to the newsletter');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSubscribedToTheNewsletter()
+    {
+        return $this->getDocument()->hasCheckedField('Subscribe to the newsletter');
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function getDefinedElements()
     {
         return array_merge(parent::getDefinedElements(), [
+            'email' => '#sylius_customer_profile_email',
             'first_name' => '#sylius_customer_profile_firstName',
             'last_name' => '#sylius_customer_profile_lastName',
-            'email' => '#sylius_customer_profile_email',
         ]);
     }
 }

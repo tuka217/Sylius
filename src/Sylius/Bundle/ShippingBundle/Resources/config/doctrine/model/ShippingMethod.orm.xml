@@ -11,9 +11,7 @@
 
 -->
 
-<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-                  xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping">
-
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping">
     <mapped-superclass name="Sylius\Component\Shipping\Model\ShippingMethod" table="sylius_shipping_method">
         <id name="id" column="id" type="integer">
             <generator strategy="AUTO" />
@@ -26,15 +24,13 @@
             <join-column name="category_id" referenced-column-name="id" nullable="true" />
         </many-to-one>
 
-        <one-to-many field="rules" target-entity="Sylius\Component\Shipping\Model\RuleInterface" mapped-by="method">
-            <cascade>
-                <cascade-all />
-            </cascade>
-        </one-to-many>
-
         <field name="categoryRequirement" column="category_requirement" type="integer" />
         <field name="calculator" column="calculator" type="string" />
         <field name="enabled" column="is_enabled" type="boolean" />
+
+        <field name="position" type="integer">
+            <gedmo:sortable-position />
+        </field>
 
         <field name="createdAt" column="created_at" type="datetime">
             <gedmo:timestampable on="create"/>
@@ -43,5 +39,4 @@
             <gedmo:timestampable on="update"/>
         </field>
     </mapped-superclass>
-
 </doctrine-mapping>

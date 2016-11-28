@@ -12,8 +12,11 @@
 namespace Sylius\Bundle\CoreBundle\Form\Type\Checkout;
 
 use Sylius\Bundle\CoreBundle\Form\EventSubscriber\AddPaymentMethodsFormSubscriber;
+use Sylius\Bundle\PaymentBundle\Form\Type\PaymentMethodChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -33,13 +36,22 @@ class PaymentType extends AbstractType
     {
         $this->dataClass = $dataClass;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->addEventSubscriber(new AddPaymentMethodsFormSubscriber());
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $form = $event->getForm();
+            $payment = $event->getData();
+
+            $form->add('method', PaymentMethodChoiceType::class, [
+                'label' => 'sylius.form.checkout.payment_method',
+                'subject' => $payment,
+                'expanded' => true,
+            ]);
+        });
     }
 
     /**
@@ -47,13 +59,23 @@ class PaymentType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefault('data_class', $this->dataClass);
+        $resolver->setDefaults([
+            'data_class' => $this->dataClass,
+        ]);
     }
 
     /**
      * {@inheritdoc}
      */
     public function getName()
+    {
+        return 'sylius_checkout_payment';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
     {
         return 'sylius_checkout_payment';
     }

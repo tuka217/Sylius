@@ -17,6 +17,7 @@ use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Sylius\Component\Taxonomy\Generator\TaxonSlugGeneratorInterface;
 use Sylius\Component\Taxonomy\Repository\TaxonRepositoryInterface;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -47,6 +48,11 @@ final class TaxonExampleFactory implements ExampleFactoryInterface
     private $faker;
 
     /**
+     * @var TaxonSlugGeneratorInterface
+     */
+    private $taxonSlugGenerator;
+
+    /**
      * @var OptionsResolver
      */
     private $optionsResolver;
@@ -56,16 +62,19 @@ final class TaxonExampleFactory implements ExampleFactoryInterface
      * @param TaxonRepositoryInterface $taxonRepository
      * @param ObjectManager $taxonManager
      * @param RepositoryInterface $localeRepository
+     * @param TaxonSlugGeneratorInterface $taxonSlugGenerator
      */
     public function __construct(
         FactoryInterface $taxonFactory,
         TaxonRepositoryInterface $taxonRepository,
         ObjectManager $taxonManager,
-        RepositoryInterface $localeRepository
+        RepositoryInterface $localeRepository,
+        TaxonSlugGeneratorInterface $taxonSlugGenerator
     ) {
         $this->taxonFactory = $taxonFactory;
         $this->taxonRepository = $taxonRepository;
         $this->localeRepository = $localeRepository;
+        $this->taxonSlugGenerator = $taxonSlugGenerator;
 
         $this->faker = \Faker\Factory::create();
         $this->optionsResolver =
@@ -75,6 +84,9 @@ final class TaxonExampleFactory implements ExampleFactoryInterface
                 })
                 ->setDefault('code', function (Options $options) {
                     return StringInflector::nameToCode($options['name']);
+                })
+                ->setDefault('slug', function (Options $options) {
+                    return $this->taxonSlugGenerator->generate($options['name']);
                 })
                 ->setDefault('description', function (Options $options) {
                     return $this->faker->paragraph;
@@ -106,6 +118,7 @@ final class TaxonExampleFactory implements ExampleFactoryInterface
 
             $taxon->setName($options['name']);
             $taxon->setDescription($options['description']);
+            $taxon->setSlug($options['slug']);
         }
 
         foreach ($options['children'] as $childOptions) {

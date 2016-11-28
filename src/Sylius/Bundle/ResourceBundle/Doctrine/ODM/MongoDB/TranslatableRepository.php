@@ -53,7 +53,7 @@ class TranslatableRepository extends DocumentRepository implements TranslatableR
     }
 
     /**
-     * {inheritdoc}.
+     * {@inheritdoc}
      */
     protected function applyCriteria(QueryBuilder $queryBuilder, array $criteria = null)
     {
@@ -75,7 +75,7 @@ class TranslatableRepository extends DocumentRepository implements TranslatableR
     }
 
     /**
-     * {inheritdoc}.
+     * {@inheritdoc}
      */
     protected function applySorting(QueryBuilder $queryBuilder, array $sorting = null)
     {
@@ -95,8 +95,8 @@ class TranslatableRepository extends DocumentRepository implements TranslatableR
      */
     protected function getPropertyName($name)
     {
-        if (in_array($name, $this->translatableFields)) {
-            return 'translations.'.$this->localeProvider->getCurrentLocale().'.'.$name;
+        if (in_array($name, $this->translatableFields, true)) {
+            return 'translations.'.$this->localeProvider->getDefaultLocaleCode().'.'.$name;
         }
 
         return $name;

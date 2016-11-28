@@ -11,15 +11,31 @@
 
 namespace Sylius\Bundle\UserBundle\Form\EventSubscriber;
 
+use Sylius\Component\User\Model\UserAwareInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Validator\Constraints\Valid;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Łukasz Chruściel <lukasz.chrusciel@lakion.com>
  */
 class AddUserFormSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var string
+     */
+    private $entryType;
+
+    /**
+     * @param string $entryType
+     */
+    public function __construct($entryType)
+    {
+        $this->entryType = $entryType;
+    }
+
     /**
      * @return array
      */
@@ -37,7 +53,7 @@ class AddUserFormSubscriber implements EventSubscriberInterface
     public function preSetData(FormEvent $event)
     {
         $form = $event->getForm();
-        $form->add('user', 'sylius_user');
+        $form->add('user', $this->entryType, ['constraints' => [new Valid()]]);
     }
 
     /**
@@ -53,6 +69,8 @@ class AddUserFormSubscriber implements EventSubscriberInterface
 
             return;
         }
+
+        Assert::isInstanceOf($normData, UserAwareInterface::class);
 
         if ($this->isUserDataEmpty($data) && null === $normData->getUser()) {
             unset($data['user']);

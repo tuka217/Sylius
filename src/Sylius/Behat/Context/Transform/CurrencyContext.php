@@ -46,6 +46,7 @@ final class CurrencyContext implements Context
     /**
      * @Transform :currency
      * @Transform /^currency "([^"]+)"$/
+     * @Transform /^"([^"]+)" currency$/
      */
     public function getCurrencyByName($currencyName)
     {
@@ -60,8 +61,8 @@ final class CurrencyContext implements Context
 
     /**
      * @Transform :currencyCode
-     * @Transform :firstCurrencyCode
      * @Transform :secondCurrencyCode
+     * @Transform :thirdCurrencyCode
      */
     public function getCurrencyCodeByName($currencyName)
     {

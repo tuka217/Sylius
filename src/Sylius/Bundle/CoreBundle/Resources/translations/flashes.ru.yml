@@ -3,7 +3,13 @@
 
 sylius:
     cart:
-        restricted_zone_removal: 'Продукт %product% удален из корзины, поскольку он не доступен в вашей стране.'
+        cart_clear_completed: Корзина успешно очищена.
+        cart_save_completed: Корзина успешно обновлена.
+        item_add_completed: Позиция добавлена в корзину.
+        item_add_error: При добавлении позиции в корзину возникла ошибка.
+        item_remove_completed: Позиция удалена из корзины.
+        item_remove_error: При удалении из корзины возникла ошибка.
+        restricted_zone_removal: Продукт %product% удален из корзины, поскольку он не доступен в вашей стране.
     checkout:
         restricted_zone: Этот продукт не доступен в вашей стране.
         success: Спасибо за Ваш заказ!
@@ -12,4 +18,4 @@ sylius:
         new: Новый платеж.
         failed: Ваш платеж отклонили.
         unknown: Неизвестная ошибка при приёме платежа.
-        out_of_stock: 'Есть только %quantity% %name% в наличии.'
+        out_of_stock: Есть только %quantity% %name% в наличии.

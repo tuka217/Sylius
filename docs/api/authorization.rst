@@ -18,13 +18,13 @@ Sylius has configured OAuth2 authorization. The authorization process is standar
 Create OAuth client
 ~~~~~~~~~~~~~~~~~~~
 
-Use sylius command:
+Use Sylius command:
 
 .. code-block:: bash
 
-    php app/console sylius:oauth-server:create-client
-        --grant-type="password"
-        --grant-type="refresh_token"
+    php app/console sylius:oauth-server:create-client \
+        --grant-type="password" \
+        --grant-type="refresh_token" \
         --grant-type="token"
 
 You will receive client public id and client secret
@@ -52,7 +52,7 @@ Definition
 
 .. code-block:: text
 
-    GET /oauth/v2/token
+    GET /api/oauth/v2/token
 
 +---------------+----------------+--------------------------------------------------------------------------------------------------+
 | Parameter     | Parameter type | Description                                                                                      |
@@ -77,19 +77,17 @@ Example
 
 .. code-block:: bash
 
-    curl http://sylius.dev/oauth/v2/token
-        -d "client_id"=demo_client
-        -d "client_secret"=secret_demo_client
-        -d "grant_type"=password
-        -d "username"=api@example.com
-        -d "password"=api
+    curl http://sylius.dev/api/oauth/v2/token \
+        -d "client_id"=demo_client \
+        -d "client_secret"=secret_demo_client \
+        -d "grant_type"=password \
+        -d "username"=api@example.com \
+        -d "password"=sylius-api
 
 .. tip::
 
-    In a developer environment there is a default API user and client data. To use this credentials you have to load `API`__ data fixtures.
+    In a developer environment there is a default API user and client data. To use this credentials you have to load data fixtures.
     Otherwise you have to use your user data and replace client id and client secret with data generated in a previous step.
-
-__ https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/CoreBundle/DataFixtures/ORM/LoadApiData.php
 
 Example Response
 ................
@@ -137,7 +135,7 @@ Definition
 
 .. code-block:: text
 
-    GET /oauth/v2/token
+    GET /api/oauth/v2/token
 
 +---------------+----------------+---------------------------------------------------+
 | Parameter     | Parameter type |  Description                                      |
@@ -156,10 +154,10 @@ Example
 
 .. code-block:: bash
 
-    curl http://sylius.dev/oauth/v2/token
-        -d "client_id"=demo_client
-        -d "client_secret"=secret_demo_client
-        -d "grant_type"=refresh_token
+    curl http://sylius.dev/api/oauth/v2/token \
+        -d "client_id"=demo_client \
+        -d "client_secret"=secret_demo_client \
+        -d "grant_type"=refresh_token \
         -d "refresh_token"=MDk2ZmIwODBkYmE3YjNjZWQ4ZTk2NTk2N2JmNjkyZDQ4NzA3YzhiZDQzMjJjODI5MmQ4ZmYxZjlkZmU1ZDNkMQ
 
 Example Response

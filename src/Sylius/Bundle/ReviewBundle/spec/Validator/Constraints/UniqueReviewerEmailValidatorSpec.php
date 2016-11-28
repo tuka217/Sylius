@@ -13,14 +13,16 @@ namespace spec\Sylius\Bundle\ReviewBundle\Validator\Constraints;
 
 use PhpSpec\ObjectBehavior;
 use Sylius\Bundle\ReviewBundle\Validator\Constraints\UniqueReviewerEmail;
+use Sylius\Bundle\ReviewBundle\Validator\Constraints\UniqueReviewerEmailValidator;
 use Sylius\Bundle\UserBundle\Doctrine\ORM\UserRepository;
 use Sylius\Component\Review\Model\ReviewInterface;
-use Sylius\Component\User\Model\CustomerInterface;
+use Sylius\Component\Customer\Model\CustomerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\Validator\ExecutionContext;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 
 /**
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
@@ -32,15 +34,15 @@ final class UniqueReviewerEmailValidatorSpec extends ObjectBehavior
         UserRepository $userRepository,
         TokenStorageInterface $tokenStorage,
         AuthorizationCheckerInterface $authorizationChecker,
-        ExecutionContext $context
+        ExecutionContextInterface $executionContextInterface
     ) {
         $this->beConstructedWith($userRepository, $tokenStorage, $authorizationChecker);
-        $this->initialize($context);
+        $this->initialize($executionContextInterface);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Sylius\Bundle\ReviewBundle\Validator\Constraints\UniqueReviewerEmailValidator');
+        $this->shouldHaveType(UniqueReviewerEmailValidator::class);
     }
 
     function it_extends_constraint_validator_class()
@@ -49,25 +51,28 @@ final class UniqueReviewerEmailValidatorSpec extends ObjectBehavior
     }
 
     function it_validates_if_user_with_given_email_is_already_registered(
-        $userRepository,
-        $tokenStorage,
-        $authorizationChecker,
-        $context,
+        UserRepository $userRepository,
+        TokenStorageInterface $tokenStorage,
+        AuthorizationCheckerInterface $authorizationChecker,
+        ExecutionContextInterface $executionContextInterface,
+        ConstraintViolationBuilderInterface $constraintViolationBuilder,
         TokenInterface $token,
-        UniqueReviewerEmail $constraint,
         ReviewInterface $review,
         CustomerInterface $customer,
         CustomerInterface $existingUser
     ) {
+        $constraint = new UniqueReviewerEmail();
+
         $tokenStorage->getToken()->willReturn($token);
         $authorizationChecker->isGranted('IS_AUTHENTICATED_REMEMBERED')->willReturn(false);
 
         $review->getAuthor()->willReturn($customer);
         $customer->getEmail()->willReturn('john.doe@example.com');
         $userRepository->findOneByEmail('john.doe@example.com')->willReturn($existingUser);
-        $constraint->message = 'This email is already registered. Please log in.';
 
-        $context->addViolationAt('author', 'This email is already registered. Please log in.', [], null)->shouldBeCalled();
+        $executionContextInterface->buildViolation($constraint->message)->shouldBeCalled()->willReturn($constraintViolationBuilder);
+        $constraintViolationBuilder->atPath('author')->shouldBeCalled()->willReturn($constraintViolationBuilder);
+        $constraintViolationBuilder->addViolation()->shouldBeCalled();
 
         $this->validate($review, $constraint);
     }

@@ -13,13 +13,14 @@ namespace spec\Sylius\Component\Shipping\Calculator;
 
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Shipping\Calculator\CalculatorInterface;
-use Sylius\Component\Shipping\Model\ShippingSubjectInterface;
+use Sylius\Component\Shipping\Calculator\VolumeRateCalculator;
+use Sylius\Component\Shipping\Model\ShipmentInterface;
 
 final class VolumeRateCalculatorSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Sylius\Component\Shipping\Calculator\VolumeRateCalculator');
+        $this->shouldHaveType(VolumeRateCalculator::class);
     }
 
     function it_should_implement_Sylius_shipping_calculator_interface()
@@ -32,14 +33,14 @@ final class VolumeRateCalculatorSpec extends ObjectBehavior
         $this->getType()->shouldReturn('volume_rate');
     }
 
-    function it_should_calculate_the_flat_rate_amount_configured_on_the_method(ShippingSubjectInterface $subject)
+    function it_should_calculate_the_flat_rate_amount_configured_on_the_method(ShipmentInterface $subject)
     {
         $subject->getShippingVolume()->willReturn(100);
 
         $this->calculate($subject, ['amount' => 500, 'division' => 2])->shouldReturn(500 * 100 / 2);
     }
 
-    function its_calculated_value_should_be_an_integer(ShippingSubjectInterface $subject)
+    function its_calculated_value_should_be_an_integer(ShipmentInterface $subject)
     {
         $subject->getShippingVolume()->willReturn(100);
 

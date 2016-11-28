@@ -11,36 +11,38 @@
 
 namespace Sylius\Bundle\ResourceBundle\Form\Type;
 
-use Sylius\Component\Resource\Provider\AvailableLocalesProviderInterface;
-use Sylius\Bundle\ResourceBundle\Form\EventSubscriber\ResourceTranslationsSubscriber;
+use Sylius\Component\Resource\Model\TranslationInterface;
 use Sylius\Component\Resource\Provider\LocaleProviderInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @author Anna Walasek <anna.walasek@lakion.com>
  */
-class ResourceTranslationsType extends AbstractType
+final class ResourceTranslationsType extends AbstractType implements EventSubscriberInterface
 {
     /**
-     * @var LocaleProviderInterface
+     * @var string[]
      */
-    protected $localeProvider;
+    private $definedLocalesCodes;
 
     /**
-     * @var AvailableLocalesProviderInterface
+     * @var string
      */
-    protected $availableLocalesProvider;
+    private $defaultLocaleCode;
 
     /**
      * @param LocaleProviderInterface $localeProvider
-     * @param AvailableLocalesProviderInterface $availableLocalesProvider
      */
-    public function __construct(LocaleProviderInterface $localeProvider, AvailableLocalesProviderInterface $availableLocalesProvider)
+    public function __construct(LocaleProviderInterface $localeProvider)
     {
-        $this->localeProvider = $localeProvider;
-        $this->availableLocalesProvider = $availableLocalesProvider;
+        $this->definedLocalesCodes = $localeProvider->getDefinedLocalesCodes();
+        $this->defaultLocaleCode = $localeProvider->getDefaultLocaleCode();
     }
 
     /**
@@ -48,18 +50,73 @@ class ResourceTranslationsType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $locales = $this->availableLocalesProvider->getAvailableLocales();
-        $localesWithRequirement = [];
+        $builder->addEventSubscriber($this);
+    }
 
-        foreach ($locales as $locale) {
-            $localesWithRequirement[$locale] = false;
-            if ($this->localeProvider->getDefaultLocale() === $locale) {
-                $localesWithRequirement[$locale] = true;
-                $localesWithRequirement = array_reverse($localesWithRequirement, true);
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        parent::configureOptions($resolver);
+
+        $resolver->setDefaults([
+            'choices_as_values' => true,
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            FormEvents::PRE_SET_DATA => 'preSetData',
+            FormEvents::SUBMIT => 'submit',
+        ];
+    }
+
+    /**
+     * @param FormEvent $event
+     */
+    public function preSetData(FormEvent $event)
+    {
+        $form = $event->getForm();
+        $type = $form->getConfig()->getOption('entry_type');
+
+        foreach ($this->definedLocalesCodes as $localeCode) {
+            if ($form->has($localeCode)) {
+                continue;
             }
+
+            $required = $localeCode === $this->defaultLocaleCode;
+            $form->add($localeCode, $type, [
+                'required' => $required,
+            ]);
+        }
+    }
+
+    /**
+     * @param FormEvent $event
+     */
+    public function submit(FormEvent $event)
+    {
+        /** @var TranslationInterface[] $translations */
+        $translations = $event->getData();
+        $translatable = $event->getForm()->getParent()->getData();
+
+        foreach ($translations as $localeCode => $translation) {
+            if (null === $translation) {
+                unset($translations[$localeCode]);
+
+                continue;
+            }
+
+            $translation->setLocale($localeCode);
+            $translation->setTranslatable($translatable);
         }
 
-        $builder->addEventSubscriber(new ResourceTranslationsSubscriber($localesWithRequirement));
+        $event->setData($translations);
     }
 
     /**
@@ -67,13 +124,21 @@ class ResourceTranslationsType extends AbstractType
      */
     public function getParent()
     {
-        return 'collection';
+        return CollectionType::class;
     }
 
     /**
      * {@inheritdoc}
      */
     public function getName()
+    {
+        return 'sylius_translations';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
     {
         return 'sylius_translations';
     }

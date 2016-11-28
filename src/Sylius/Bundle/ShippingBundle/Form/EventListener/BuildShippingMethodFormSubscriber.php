@@ -11,51 +11,50 @@
 
 namespace Sylius\Bundle\ShippingBundle\Form\EventListener;
 
+use Sylius\Bundle\ResourceBundle\Form\Registry\FormTypeRegistryInterface;
 use Sylius\Component\Registry\ServiceRegistryInterface;
+use Sylius\Component\Shipping\Calculator\CalculatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormRegistryInterface;
 
 /**
- * This listener adds configuration form to a method, if
- * selected calculator requires one.
+ * @internal
  *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
 class BuildShippingMethodFormSubscriber implements EventSubscriberInterface
 {
     /**
-     * It hold registry of all calculators.
-     *
      * @var ServiceRegistryInterface
      */
     private $calculatorRegistry;
 
     /**
-     * Form factory.
-     *
      * @var FormFactoryInterface
      */
     private $factory;
 
     /**
-     * @var FormRegistryInterface
+     * @var FormTypeRegistryInterface
      */
-    private $formRegistry;
+    private $formTypeRegistry;
 
     /**
      * @param ServiceRegistryInterface $calculatorRegistry
-     * @param FormFactoryInterface     $factory
-     * @param FormRegistryInterface    $formRegistry
+     * @param FormFactoryInterface $factory
+     * @param FormTypeRegistryInterface $formTypeRegistry
      */
-    public function __construct(ServiceRegistryInterface $calculatorRegistry, FormFactoryInterface $factory, FormRegistryInterface $formRegistry)
-    {
+    public function __construct(
+        ServiceRegistryInterface $calculatorRegistry,
+        FormFactoryInterface $factory,
+        FormTypeRegistryInterface $formTypeRegistry
+    ) {
         $this->calculatorRegistry = $calculatorRegistry;
         $this->factory = $factory;
-        $this->formRegistry = $formRegistry;
+        $this->formTypeRegistry = $formTypeRegistry;
     }
 
     /**
@@ -70,8 +69,6 @@ class BuildShippingMethodFormSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Add the calculator configuration if any.
-     *
      * @param FormEvent $event
      */
     public function preSetData(FormEvent $event)
@@ -86,8 +83,6 @@ class BuildShippingMethodFormSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Add the calculator configuration if any.
-     *
      * @param FormEvent $event
      */
     public function preSubmit(FormEvent $event)
@@ -102,25 +97,23 @@ class BuildShippingMethodFormSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Add the calculator configuration fields.
-     *
      * @param FormInterface $form
-     * @param string        $calculatorName
-     * @param array         $data
+     * @param string $calculatorName
+     * @param array $data
      */
     protected function addConfigurationFields(FormInterface $form, $calculatorName, array $data = [])
     {
+        /** @var CalculatorInterface $calculator */
         $calculator = $this->calculatorRegistry->get($calculatorName);
 
-        $calculatorTypeName = sprintf('sylius_shipping_calculator_%s', $calculator->getType());
-
-        if (!$this->formRegistry->hasType($calculatorTypeName)) {
+        $calculatorType = $calculator->getType();
+        if (!$this->formTypeRegistry->has($calculatorType, 'default')) {
             return;
         }
 
         $configurationField = $this->factory->createNamed(
             'configuration',
-            $calculatorTypeName,
+            $this->formTypeRegistry->get($calculatorType, 'default'),
             $data,
             ['auto_initialize' => false]
         );

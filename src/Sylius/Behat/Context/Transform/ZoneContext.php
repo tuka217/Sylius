@@ -13,7 +13,7 @@ namespace Sylius\Behat\Context\Transform;
 
 use Behat\Behat\Context\Context;
 use Sylius\Component\Addressing\Model\ZoneInterface;
-use Sylius\Component\Addressing\Repository\ZoneRepositoryInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -22,14 +22,14 @@ use Webmozart\Assert\Assert;
 final class ZoneContext implements Context
 {
     /**
-     * @var ZoneRepositoryInterface
+     * @var RepositoryInterface
      */
     private $zoneRepository;
 
     /**
-     * @param ZoneRepositoryInterface $zoneRepository
+     * @param RepositoryInterface $zoneRepository
      */
-    public function __construct(ZoneRepositoryInterface $zoneRepository)
+    public function __construct(RepositoryInterface $zoneRepository)
     {
         $this->zoneRepository = $zoneRepository;
     }
@@ -54,14 +54,14 @@ final class ZoneContext implements Context
 
     /**
      * @Transform /^rest of the world$/
-     * @Transform /^the rest of the world$/
      */
     public function getRestOfTheWorldZone()
     {
         $zone = $this->zoneRepository->findOneBy(['code' => 'RoW']);
-        if (null === $zone) {
-            throw new \Exception('Rest of the world zone does not exist.');
-        }
+        Assert::notNull(
+            $zone,
+            'Rest of the world zone does not exist.'
+        );
 
         return $zone;
     }

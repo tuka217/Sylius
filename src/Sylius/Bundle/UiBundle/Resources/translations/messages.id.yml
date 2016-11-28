@@ -10,32 +10,28 @@ sylius:
     ui:
         add_member: Tambah anggota
         add_province: Tambah Provinsi
-        available_on_demand: Tersedia
         billing_address: Alamat Penagihan
         body: Body
         city: Kota
         code: Kode
         company: Perusahaan
+        content: Konten
+        country: Negara
         coupon: Kupon
         currency: Mata Uang
         current_stock: Stok
-        default_currency: Mata uang default
         email: Email
         enabled: Diaktifkan
         first_name: Nama Depan
-        firstname: Nama Depan
-        groups: Kelompok
         id: ID
         image: Gambar
         images: Gambar
-        label: Label
         last_name: Nama belakang
         lastname: Nama belakang
         members: Anggota
         menu_nodes: Menu node
         message: Pesan
         name: Nama
-        "no": false
         number: Nomor
         password: Kata sandi
         phone_number: Nomor telepon
@@ -45,7 +41,6 @@ sylius:
         province: Provinsi
         provinces: Provinsi
         roles: Peran
-        routes: Rute
         scope: Lingkup
         search: Cari
         shipping_address: Alamat pengiriman
@@ -55,8 +50,8 @@ sylius:
         tax_category: Kategori Pajak
         title: Judul
         topic: Topik
+        type: Jenis
         unit_price: Harga Satuan
         variant: Varian
         variant_selection_method: Metode Pilih Varian
-        "yes": true
         zone: Zona

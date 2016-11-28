@@ -15,12 +15,15 @@ use Behat\Behat\Context\Context;
 use Sylius\Behat\NotificationType;
 use Sylius\Behat\Page\Admin\Crud\IndexPageInterface;
 use Sylius\Behat\Page\Admin\Order\ShowPageInterface;
+use Sylius\Behat\Page\Admin\Order\UpdatePageInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
-use Sylius\Behat\Service\SecurityServiceInterface;
+use Sylius\Behat\Service\SharedSecurityServiceInterface;
+use Sylius\Behat\Service\SharedStorageInterface;
+use Sylius\Component\Addressing\Model\AddressInterface;
+use Sylius\Component\Core\Formatter\StringInflector;
+use Sylius\Component\Core\Model\AdminUserInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\Component\Core\Model\UserInterface;
-use Sylius\Behat\Service\SharedStorageInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -45,37 +48,46 @@ final class ManagingOrdersContext implements Context
     private $showPage;
 
     /**
+     * @var UpdatePageInterface
+     */
+    private $updatePage;
+
+    /**
      * @var NotificationCheckerInterface
      */
     private $notificationChecker;
 
     /**
-     * @var SecurityServiceInterface
+     * @var SharedSecurityServiceInterface
      */
-    private $securityService;
+    private $sharedSecurityService;
 
     /**
      * @param SharedStorageInterface $sharedStorage
      * @param IndexPageInterface $indexPage
      * @param ShowPageInterface $showPage
+     * @param UpdatePageInterface $updatePage
      * @param NotificationCheckerInterface $notificationChecker
-     * @param SecurityServiceInterface $securityService
+     * @param SharedSecurityServiceInterface $sharedSecurityService
      */
     public function __construct(
         SharedStorageInterface $sharedStorage,
         IndexPageInterface $indexPage,
         ShowPageInterface $showPage,
+        UpdatePageInterface $updatePage,
         NotificationCheckerInterface $notificationChecker,
-        SecurityServiceInterface $securityService
+        SharedSecurityServiceInterface $sharedSecurityService
     ) {
         $this->sharedStorage = $sharedStorage;
         $this->indexPage = $indexPage;
         $this->showPage = $showPage;
+        $this->updatePage = $updatePage;
         $this->notificationChecker = $notificationChecker;
-        $this->securityService = $securityService;
+        $this->sharedSecurityService = $sharedSecurityService;
     }
 
     /**
+     * @Given I am browsing orders
      * @When I browse orders
      */
     public function iBrowseOrders()
@@ -84,7 +96,9 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
+     * @Given /^I am viewing the summary of (this order)$/
      * @When I view the summary of the order :order
+     * @When /^I view the summary of (this order made by "[^"]+")$/
      */
     public function iSeeTheOrder(OrderInterface $order)
     {
@@ -92,11 +106,19 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
-     * @When /^I mark (this order) as a paid$/
+     * @When /^I mark (this order) as paid$/
      */
     public function iMarkThisOrderAsAPaid(OrderInterface $order)
     {
         $this->showPage->completeOrderLastPayment($order);
+    }
+
+    /**
+     * @When /^I mark (this order)'s payment as refunded$/
+     */
+    public function iMarkThisOrderSPaymentAsRefunded(OrderInterface $order)
+    {
+        $this->showPage->refundOrderLastPayment($order);
     }
 
     /**
@@ -105,14 +127,23 @@ final class ManagingOrdersContext implements Context
     public function specifyItsTrackingCodeAs($trackingCode)
     {
         $this->showPage->specifyTrackingCode($trackingCode);
+        $this->sharedStorage->set('tracking_code', $trackingCode);
     }
 
     /**
-     * @Given /^I ship (this order)$/
+     * @When /^I ship (this order)$/
      */
     public function iShipThisOrder(OrderInterface $order)
     {
         $this->showPage->shipOrder($order);
+    }
+
+    /**
+     * @When I switch the way orders are sorted by :fieldName
+     */
+    public function iSwitchSortingBy($fieldName)
+    {
+        $this->indexPage->sortBy($fieldName);
     }
 
     /**
@@ -139,9 +170,20 @@ final class ManagingOrdersContext implements Context
 
     /**
      * @Then it should be shipped to :customerName, :street, :postcode, :city, :countryName
+     * @Then /^(this order) should (?:|still )be shipped to "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)"$/
      */
-    public function itShouldBeShippedTo($customerName, $street, $postcode, $city, $countryName)
-    {
+    public function itShouldBeShippedTo(
+        OrderInterface $order = null,
+        $customerName,
+        $street,
+        $postcode,
+        $city,
+        $countryName
+    ) {
+        if (null !== $order) {
+            $this->iSeeTheOrder($order);
+        }
+
         Assert::true(
             $this->showPage->hasShippingAddress($customerName, $street, $postcode, $city, $countryName),
             sprintf('Cannot find shipping address "%s, %s %s, %s".', $street, $postcode, $city, $countryName)
@@ -150,9 +192,20 @@ final class ManagingOrdersContext implements Context
 
     /**
      * @Then it should be billed to :customerName, :street, :postcode, :city, :countryName
+     * @Then /^(this order) bill should (?:|still )be shipped to "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)"$/
      */
-    public function itShouldBeBilledTo($customerName, $street, $postcode, $city, $countryName)
-    {
+    public function itShouldBeBilledTo(
+        OrderInterface $order = null,
+        $customerName,
+        $street,
+        $postcode,
+        $city,
+        $countryName
+    ) {
+        if (null !== $order) {
+            $this->iSeeTheOrder($order);
+        }
+
         Assert::true(
             $this->showPage->hasBillingAddress($customerName, $street, $postcode, $city, $countryName),
             sprintf('Cannot find shipping address "%s, %s %s, %s".', $street, $postcode, $city, $countryName)
@@ -188,8 +241,8 @@ final class ManagingOrdersContext implements Context
     {
         $itemsCount = $this->showPage->countItems();
 
-        Assert::eq(
-            $amount,
+        Assert::same(
+            (int)$amount,
             $itemsCount,
             sprintf('There should be %d items, but get %d.', $amount, $itemsCount)
         );
@@ -221,7 +274,7 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
-     * @Then the order's total should be :total
+     * @Then /^the order's total should(?:| still) be "([^"]+)"$/
      */
     public function theOrdersTotalShouldBe($total)
     {
@@ -260,6 +313,16 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
+     * @Then the order's payment should (also) be :paymentAmount
+     */
+    public function theOrdersPaymentShouldBe($paymentAmount)
+    {
+        $actualPaymentAmount = $this->showPage->getPaymentAmount();
+
+        Assert::eq($paymentAmount, $actualPaymentAmount);
+    }
+
+    /**
      * @Then the order should have tax :tax
      */
     public function theOrderShouldHaveTax($tax)
@@ -271,7 +334,7 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
-     * @Then the order's tax total should be :taxTotal
+     * @Then /^the order's tax total should(?:| still) be "([^"]+)"$/
      */
     public function theOrdersTaxTotalShouldBe($taxTotal)
     {
@@ -296,7 +359,7 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
-     * @Then the order's promotion total should be :promotionTotal
+     * @Then /^the order's promotion total should(?:| still) be "([^"]+)"$/
      */
     public function theOrdersPromotionTotalShouldBe($promotionTotal)
     {
@@ -315,6 +378,20 @@ final class ManagingOrdersContext implements Context
     public function iCheckData($itemName)
     {
         $this->sharedStorage->set('item', $itemName);
+    }
+
+    /**
+     * @Then /^(its) code should be "([^"]+)"$/
+     */
+    public function itemCodeShouldBe($itemName, $code)
+    {
+        $itemCodeOnPage = $this->showPage->getItemCode($itemName);
+
+        Assert::same(
+            $itemCodeOnPage,
+            $code,
+            'Item code is %s, but should be %s.'
+        );
     }
 
     /**
@@ -417,45 +494,46 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
-     * @When I delete the order :order
-     */
-    public function iDeleteOrder(OrderInterface $order)
-    {
-        $this->sharedStorage->set('order', $order);
-
-        $this->showPage->open(['id' => $order->getId()]);
-        $this->showPage->deleteOrder();
-    }
-
-    /**
-     * @Then /^(this order) should not exist in the registry$/
-     */
-    public function orderShouldNotExistInTheRegistry(OrderInterface $order)
-    {
-        $this->indexPage->open();
-
-        Assert::false(
-            $this->indexPage->isSingleResourceOnPage(['number' => $order->getNumber()]),
-            sprintf('Order with number %s exists but should not.', $order->getNumber())
-        );
-    }
-
-    /**
      * @Then I should be notified that the order's payment has been successfully completed
      */
     public function iShouldBeNotifiedThatTheOrderSPaymentHasBeenSuccessfullyCompleted()
     {
-        $this->notificationChecker->checkNotification('Payment has been successfully updated.', NotificationType::success());
+        $this
+            ->notificationChecker
+            ->checkNotification('Payment has been successfully updated.', NotificationType::success());
+    }
+
+    /**
+     * @Then I should be notified that the order's payment has been successfully refunded
+     */
+    public function iShouldBeNotifiedThatTheOrderSPaymentHasBeenSuccessfullyRefunded()
+    {
+        $this
+            ->notificationChecker
+            ->checkNotification('Payment has been successfully refunded.', NotificationType::success());
     }
 
     /**
      * @Then it should have payment state :paymentState
+     * @Then it should have payment with state :paymentState
      */
     public function itShouldHavePaymentState($paymentState)
     {
         Assert::true(
             $this->showPage->hasPayment($paymentState),
             sprintf('It should have payment with %s state', $paymentState)
+        );
+    }
+
+    /**
+     * @Then it's payment state should be refunded
+     */
+    public function orderPaymentStateShouldBeRefunded()
+    {
+        Assert::same(
+            $this->showPage->getPaymentState(),
+            'Refunded',
+            'Order payment state should be refunded, but it is not.'
         );
     }
 
@@ -471,21 +549,13 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
-     * @Then I should be notified that the order's shipment has been successfully shipped
+     * @Then I should be notified that the order has been successfully shipped
      */
-    public function iShouldBeNotifiedThatTheOrderSShipmentHasBeenSuccessfullyShipped()
+    public function iShouldBeNotifiedThatTheOrderHasBeenSuccessfullyShipped()
     {
-        $this->notificationChecker->checkNotification('Shipment has been successfully updated.', NotificationType::success());
-    }
-
-    /**
-     * @Then its shipment state should be :shipmentState
-     */
-    public function itsShipmentStateShouldBe($shipmentState)
-    {
-        Assert::true(
-            $this->showPage->hasShipment($shipmentState),
-            sprintf('It should have shipment with %s state', $shipmentState)
+        $this->notificationChecker->checkNotification(
+            'Shipment has been successfully updated.',
+            NotificationType::success()
         );
     }
 
@@ -531,6 +601,7 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
+     * @Then this order should have state :state
      * @Then its state should be :state
      */
     public function itsStateShouldBe($state)
@@ -543,22 +614,31 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
-     * @Then it should have a :state state
+     * @Then it should( still) have a :state state
      */
     public function itShouldHaveState($state)
     {
-        $this->indexPage->isSingleResourceOnPage(['state' => $state]);
+        Assert::true(
+            $this->indexPage->isSingleResourceOnPage(['state' => $state]),
+            sprintf('Cannot find order with "%s" state in the list.', $state)
+        );
     }
 
     /**
      * @Then /^(the administrator) should know about (this additional note) for (this order made by "[^"]+")$/
      */
-    public function theCustomerServiceShouldKnowAboutThisAdditionalNotes(UserInterface $user, $note, OrderInterface $order)
-    {
-        $this->securityService->performActionAs($user, function () use ($note, $order) {
-            $this->showPage->open(['id' => $order->getId()]);
-            Assert::true($this->showPage->hasNote($note), sprintf('I should see %s note, but I do not see', $note));
-        });
+    public function theCustomerServiceShouldKnowAboutThisAdditionalNotes(
+        AdminUserInterface $user,
+        $note,
+        OrderInterface $order
+    ) {
+        $this->sharedSecurityService->performActionAsAdminUser(
+            $user,
+            function () use ($note, $order) {
+                $this->showPage->open(['id' => $order->getId()]);
+                Assert::true($this->showPage->hasNote($note), sprintf('I should see %s note, but I do not see', $note));
+            }
+        );
     }
 
     /**
@@ -573,13 +653,213 @@ final class ManagingOrdersContext implements Context
     }
 
     /**
-     * @Given it should have shipment in state :shipmentState
+     * @Then the first order should have number :number
+     */
+    public function theFirstOrderShouldHaveNumber($number)
+    {
+        $actualNumber = $this->indexPage->getColumnFields('number')[0];
+
+        Assert::eq(
+            $actualNumber,
+            $number,
+            sprintf('Expected first order\'s number to be %s, but it is %s.', $number, $actualNumber)
+        );
+    }
+
+    /**
+     * @Then it should have shipment in state :shipmentState
      */
     public function itShouldHaveShipmentState($shipmentState)
     {
         Assert::true(
             $this->showPage->hasShipment($shipmentState),
             sprintf('It should have shipment with %s state', $shipmentState)
+        );
+    }
+
+    /**
+     * @Then order :orderNumber should have shipment state :shippingState
+     */
+    public function thisOrderShipmentStateShouldBe($shippingState)
+    {
+        Assert::true(
+            $this->indexPage->isSingleResourceOnPage(['shippingState' => $shippingState]),
+            sprintf('Order should have %s shipping state', $shippingState)
+        );
+    }
+
+    /**
+     * @Then the order :order should have order payment state :orderPaymentState
+     * @Then /^(this order) should have order payment state "([^"]+)"$/
+     * @Then /^(its) payment state should be "([^"]+)"$/
+     */
+    public function theOrderShouldHavePaymentState(OrderInterface $order, $orderPaymentState)
+    {
+        Assert::true(
+            $this->indexPage->isSingleResourceOnPage(['paymentState' => $orderPaymentState]),
+            sprintf('Cannot find order with "%s" order payment state in the list.', $orderPaymentState)
+        );
+    }
+
+    /**
+     * @Then the order :order should have order shipping state :orderShipmentState
+     * @Then /^(this order) should have order shipping state "([^"]+)"$/
+     * @Then /^(its) shipping state should be "([^"]+)"$/
+     */
+    public function theOrderShouldHaveShipmentState(OrderInterface $order, $orderShipmentState)
+    {
+        Assert::true(
+            $this->indexPage->isSingleResourceOnPage(['shippingState' => $orderShipmentState]),
+            sprintf('Cannot find order with "%s" order shipping state on the list.', $orderShipmentState)
+        );
+    }
+
+    /**
+     * @Then /^there should be(?:| only) (\d+) payments?$/
+     */
+    public function theOrderShouldHaveNumberOfPayments($number)
+    {
+        $actualNumberOfPayments = $this->showPage->getPaymentsCount();
+
+        Assert::same((int)$number, $actualNumberOfPayments);
+    }
+
+    /**
+     * @Then I should see the order :orderNumber with total :total
+     */
+    public function iShouldSeeTheOrderWithTotal($orderNumber, $total)
+    {
+        Assert::true(
+            $this->indexPage->isSingleResourceOnPage(['total' => $total]),
+            sprintf('The total of order "%s" is not "%s".', $orderNumber, $total)
+        );
+    }
+
+    /**
+     * @When /^I want to modify a customer's (?:billing|shipping) address of (this order)$/
+     */
+    public function iWantToModifyACustomerSShippingAddress(OrderInterface $order)
+    {
+        $this->updatePage->open(['id' => $order->getId()]);
+    }
+
+    /**
+     * @When I save my changes
+     * @When I try to save my changes
+     */
+    public function iSaveMyChanges()
+    {
+        $this->updatePage->saveChanges();
+    }
+
+    /**
+     * @When /^I specify their (?:|new )shipping (address as "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)" for "([^"]+)")$/
+     */
+    public function iSpecifyTheirShippingAddressAsFor(AddressInterface $address)
+    {
+        $this->updatePage->specifyShippingAddress($address);
+    }
+
+    /**
+     * @When /^I specify their (?:|new )billing (address as "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)" for "([^"]+)")$/
+     */
+    public function iSpecifyTheirBillingAddressAsFor(AddressInterface $address)
+    {
+        $this->updatePage->specifyBillingAddress($address);
+    }
+
+    /**
+     * @Then /^I should be notified that the "([^"]+)", the "([^"]+)", the "([^"]+)" and the "([^"]+)" in (shipping|billing) details are required$/
+     */
+    public function iShouldBeNotifiedThatTheAndTheInShippingDetailsAreRequired($firstElement, $secondElement, $thirdElement, $fourthElement, $type)
+    {
+        $this->assertElementValidationMessage($type, $firstElement, sprintf('Please enter %s.', $firstElement));
+        $this->assertElementValidationMessage($type, $secondElement, sprintf('Please enter %s.', $secondElement));
+        $this->assertElementValidationMessage($type, $thirdElement, sprintf('Please enter %s.', $thirdElement));
+        $this->assertElementValidationMessage($type, $fourthElement, sprintf('Please enter %s.', $fourthElement));
+
+    }
+
+    /**
+     * @Then I should see :provinceName as province in the shipping address
+     */
+    public function iShouldSeeAsProvinceInTheShippingAddress($provinceName)
+    {
+        Assert::true(
+            $this->showPage->hasShippingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
+        );
+    }
+
+    /**
+     * @Then I should see :provinceName ad province in the billing address
+     */
+    public function iShouldSeeAdProvinceInTheBillingAddress($provinceName)
+    {
+        Assert::true(
+            $this->showPage->hasBillingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
+        );
+    }
+
+    /**
+     * @Then /^(the administrator) should know about IP address of (this order made by "[^"]+")$/
+     */
+    public function theAdministratorShouldKnowAboutIPAddressOfThisOrderMadeBy(
+        AdminUserInterface $user,
+        OrderInterface $order
+    ) {
+        $this->sharedSecurityService->performActionAsAdminUser(
+            $user,
+            function () use ($order) {
+                $this->showPage->open(['id' => $order->getId()]);
+
+                Assert::notSame(
+                    $this->showPage->getIpAddressAssigned(),
+                    '',
+                    'There should be IP address assigned to order, but there is not.'
+                );
+            }
+        );
+    }
+
+    /**
+     * @When /^I (clear old billing address) information$/
+     */
+    public function iSpecifyTheBillingAddressAs(AddressInterface $address)
+    {
+        $this->updatePage->specifyBillingAddress($address);
+    }
+
+    /**
+     * @When /^I (clear old shipping address) information$/
+     */
+    public function iSpecifyTheShippingAddressAs(AddressInterface $address)
+    {
+        $this->updatePage->specifyShippingAddress($address);
+    }
+
+    /**
+     * @When /^I do not specify new information$/
+     */
+    public function iDoNotSpecifyNewInformation()
+    {
+        // Intentionally left blank to fulfill context expectation
+    }
+
+    /**
+     * @param string $type
+     * @param string $element
+     * @param string $expectedMessage
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function assertElementValidationMessage($type, $element, $expectedMessage)
+    {
+        $element = sprintf('%s_%s', $type, implode('_', explode(' ', $element)));
+        Assert::true(
+            $this->updatePage->checkValidationMessageFor($element, $expectedMessage),
+            sprintf('The %s should be required.', $element)
         );
     }
 }

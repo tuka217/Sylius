@@ -18,13 +18,12 @@ use Sylius\Behat\Page\Shop\Account\ResetPasswordPageInterface;
 use Sylius\Behat\Page\Shop\HomePageInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
 use Sylius\Behat\Service\Resolver\CurrentPageResolverInterface;
-use Sylius\Component\Core\Test\Services\EmailCheckerInterface;
 use Webmozart\Assert\Assert;
 
 /**
  * @author Arkadiusz Krakowiak <arkadiusz.krakowiak@lakion.com>
  */
-class LoginContext implements Context
+final class LoginContext implements Context
 {
     /**
      * @var HomePageInterface
@@ -47,11 +46,6 @@ class LoginContext implements Context
     private $currentPageResolver;
 
     /**
-     * @var EmailCheckerInterface
-     */
-    private $emailChecker;
-
-    /**
      * @var NotificationCheckerInterface
      */
     private $notificationChecker;
@@ -61,7 +55,6 @@ class LoginContext implements Context
      * @param LoginPageInterface $loginPage
      * @param ResetPasswordPageInterface $resetPasswordPage
      * @param CurrentPageResolverInterface $currentPageResolver
-     * @param EmailCheckerInterface $emailChecker
      * @param NotificationCheckerInterface $notificationChecker
      */
     public function __construct(
@@ -69,19 +62,17 @@ class LoginContext implements Context
         LoginPageInterface $loginPage,
         ResetPasswordPageInterface $resetPasswordPage,
         CurrentPageResolverInterface $currentPageResolver,
-        EmailCheckerInterface $emailChecker,
         NotificationCheckerInterface $notificationChecker
     ) {
         $this->homePage = $homePage;
         $this->loginPage = $loginPage;
         $this->resetPasswordPage = $resetPasswordPage;
         $this->currentPageResolver = $currentPageResolver;
-        $this->emailChecker = $emailChecker;
         $this->notificationChecker = $notificationChecker;
     }
 
     /**
-     * @Given I want to log in
+     * @When I want to log in
      */
     public function iWantToLogIn()
     {
@@ -89,7 +80,7 @@ class LoginContext implements Context
     }
 
     /**
-     * @Given I want to reset password
+     * @When I want to reset password
      */
     public function iWantToResetPassword()
     {
@@ -125,6 +116,7 @@ class LoginContext implements Context
 
     /**
      * @When I log in
+     * @When I try to log in
      */
     public function iLogIn()
     {
@@ -133,6 +125,7 @@ class LoginContext implements Context
 
     /**
      * @When I reset it
+     * @When I try to reset it
      */
     public function iResetIt()
     {
@@ -155,8 +148,12 @@ class LoginContext implements Context
     public function iShouldBeLoggedIn()
     {
         Assert::true(
+            $this->homePage->isOpen(),
+            'I should be on the homepage.'
+        );
+        Assert::true(
             $this->homePage->hasLogoutButton(),
-            'I should be on home page and, also i should be able to sign out.'
+            'I should be able to sign out.'
         );
     }
 
@@ -191,17 +188,6 @@ class LoginContext implements Context
     }
 
     /**
-     * @Then the email with reset token should be sent to :email
-     */
-    public function theEmailWithResetTokenShouldBeSentTo($email)
-    {
-        Assert::true(
-            $this->emailChecker->hasRecipient($email),
-            sprintf('Email should have been sent to %s.', $email)
-        );
-    }
-
-    /**
      * @Then I should be notified that the :elementName is required
      */
     public function iShouldBeNotifiedThatElementIsRequired($elementName)
@@ -210,5 +196,18 @@ class LoginContext implements Context
             $this->resetPasswordPage->checkValidationMessageFor($elementName, sprintf('Please enter your %s.', $elementName)),
             sprintf('The %s should be required.', $elementName)
         );
+    }
+
+    /**
+     * @Then I should be able to log in as :email with :password password
+     */
+    public function iShouldBeAbleToLogInAsWithPassword($email, $password)
+    {
+        $this->loginPage->open();
+        $this->loginPage->specifyUsername($email);
+        $this->loginPage->specifyPassword($password);
+        $this->loginPage->logIn();
+
+        $this->iShouldBeLoggedIn();
     }
 }

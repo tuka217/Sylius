@@ -4,4 +4,7 @@
 sylius:
     form:
         currency:
+            base: Moeda base
+            code: Nome
             enabled: Activo
+            exchange_rate: Taxa de câmbio

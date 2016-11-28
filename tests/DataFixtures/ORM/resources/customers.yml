@@ -1,9 +1,9 @@
-Sylius\Component\Core\Model\User:
+Sylius\Component\Core\Model\ShopUser:
     user_{Oliver, Roy, Thea}:
-        plainPassword: <password()>
+        plainPassword: '123pa$$word'
         roles: [ROLE_USER]
         enabled: true
-        customer: @customer_<current()>
+        customer: "@customer_<current()>"
         username: <current()>@doe.com
         usernameCanonical: <current()>@doe.com
 
@@ -11,6 +11,6 @@ Sylius\Component\Core\Model\Customer:
     customer_{Oliver, Roy, Thea, Barry, Joe}:
         firstName: <current()>
         lastName: Doe
-        email (unique): <current()>@doe.com
+        email: <current()>@doe.com
         emailCanonical: <current()>@doe.com
         birthday: <date()>

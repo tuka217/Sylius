@@ -12,18 +12,17 @@
 namespace Sylius\Bundle\PaymentBundle\Form\Type;
 
 use Sylius\Component\Payment\Model\PaymentInterface;
-use Sylius\Component\Payment\Resolver\MethodsResolverInterface;
+use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Bridge\Doctrine\Form\DataTransformer\CollectionToArrayTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\ChoiceList\ObjectChoiceList;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Payment method choice type for document/entity/phpcr_document choice form types.
- *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  * @author Arnaud Langlade <arn0d.dev@gmail.com>
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
@@ -32,7 +31,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class PaymentMethodChoiceType extends AbstractType
 {
     /**
-     * @var MethodsResolverInterface
+     * @var PaymentMethodsResolverInterface
      */
     protected $paymentMethodsResolver;
 
@@ -42,11 +41,11 @@ class PaymentMethodChoiceType extends AbstractType
     protected $paymentMethodRepository;
 
     /**
-     * @param MethodsResolverInterface $paymentMethodsResolver
+     * @param PaymentMethodsResolverInterface $paymentMethodsResolver
      * @param RepositoryInterface $paymentMethodRepository
      */
     public function __construct(
-        MethodsResolverInterface $paymentMethodsResolver,
+        PaymentMethodsResolverInterface $paymentMethodsResolver,
         RepositoryInterface $paymentMethodRepository
     ) {
         $this->paymentMethodsResolver = $paymentMethodsResolver;
@@ -68,11 +67,19 @@ class PaymentMethodChoiceType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $choiceList = $this->createChoiceList();
-
         $resolver
             ->setDefaults([
-                'choice_list' => $choiceList,
+                'choices' => function (Options $options) {
+                    if (isset($options['subject'])) {
+                        return $this->paymentMethodsResolver->getSupportedMethods($options['subject']);
+                    }
+
+                    return $this->paymentMethodRepository->findAll();
+                },
+                'choice_value' => 'id',
+                'choice_label' => 'name',
+                'choice_translation_domain' => false,
+                'choices_as_values' => true,
             ])
             ->setDefined([
                 'subject',
@@ -86,7 +93,7 @@ class PaymentMethodChoiceType extends AbstractType
      */
     public function getParent()
     {
-        return 'choice';
+        return ChoiceType::class;
     }
 
     /**
@@ -98,19 +105,10 @@ class PaymentMethodChoiceType extends AbstractType
     }
 
     /**
-     * @return \Closure
+     * {@inheritdoc}
      */
-    private function createChoiceList()
+    public function getBlockPrefix()
     {
-        return function (Options $options) 
-        {
-            if (isset($options['subject'])) {
-                $resolvedMethods = $this->paymentMethodsResolver->getSupportedMethods($options['subject']);
-            } else {
-                $resolvedMethods = $this->paymentMethodRepository->findAll();
-            }
-
-            return new ObjectChoiceList($resolvedMethods, null, [], null, 'id');
-        };
+        return 'sylius_payment_method_choice';
     }
 }

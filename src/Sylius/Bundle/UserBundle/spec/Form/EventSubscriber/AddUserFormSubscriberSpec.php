@@ -12,8 +12,10 @@
 namespace spec\Sylius\Bundle\UserBundle\Form\EventSubscriber;
 
 use PhpSpec\ObjectBehavior;
-use Sylius\Component\User\Model\CustomerInterface;
+use Prophecy\Argument;
+use Sylius\Bundle\UserBundle\Form\EventSubscriber\AddUserFormSubscriber;
 use Sylius\Component\User\Model\UserInterface;
+use Sylius\Component\User\Model\UserAwareInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormEvent;
@@ -23,9 +25,14 @@ use Symfony\Component\Form\FormEvent;
  */
 final class AddUserFormSubscriberSpec extends ObjectBehavior
 {
+    function let()
+    {
+        $this->beConstructedWith('\Fully\Qualified\ClassName');
+    }
+
     function it_is_initializable()
     {
-        $this->shouldHaveType('Sylius\Bundle\UserBundle\Form\EventSubscriber\AddUserFormSubscriber');
+        $this->shouldHaveType(AddUserFormSubscriber::class);
     }
 
     function it_is_event_subscriber_instance()
@@ -39,7 +46,7 @@ final class AddUserFormSubscriberSpec extends ObjectBehavior
     ) {
         $event->getForm()->willReturn($form);
 
-        $form->add('user', 'sylius_user')->shouldBeCalled();
+        $form->add('user', '\Fully\Qualified\ClassName', Argument::type('array'))->shouldBeCalled();
 
         $this->preSetData($event);
     }
@@ -47,7 +54,7 @@ final class AddUserFormSubscriberSpec extends ObjectBehavior
     function it_removes_user_form_type_by_default(
         FormEvent $event,
         Form $form,
-        CustomerInterface $customer
+        UserAwareInterface $customer
     ) {
         $event->getData()->willReturn([], ['user' => ['plainPassword' => '']]);
         $event->getForm()->willReturn($form);
@@ -64,7 +71,7 @@ final class AddUserFormSubscriberSpec extends ObjectBehavior
     function it_does_not_remove_user_form_type_if_users_data_is_submitted_and_user_data_is_created(
         FormEvent $event,
         Form $form,
-        CustomerInterface $customer,
+        UserAwareInterface $customer,
         UserInterface $user
     ) {
         $event->getData()->willReturn(['user' => ['plainPassword' => 'test']]);
@@ -80,7 +87,7 @@ final class AddUserFormSubscriberSpec extends ObjectBehavior
     function it_remove_user_form_type_if_users_data_is_not_submitted_and_user_is_not_created(
         FormEvent $event,
         Form $form,
-        CustomerInterface $customer
+        UserAwareInterface $customer
     ) {
         $event->getData()->willReturn(['user' => ['plainPassword' => '']]);
         $event->getForm()->willReturn($form);
@@ -96,7 +103,7 @@ final class AddUserFormSubscriberSpec extends ObjectBehavior
     function it_does_not_remove_user_form_type_if_users_data_is_submitted_and_user_is_not_created(
         FormEvent $event,
         Form $form,
-        CustomerInterface $customer
+        UserAwareInterface $customer
     ) {
         $event->getData()->willReturn(['user' => ['plainPassword' => 'test']]);
         $event->getForm()->willReturn($form);
@@ -111,7 +118,7 @@ final class AddUserFormSubscriberSpec extends ObjectBehavior
     function it_does_not_remove_user_form_type_if_users_data_is_not_submitted_and_user_is_created(
         FormEvent $event,
         Form $form,
-        CustomerInterface $customer,
+        UserAwareInterface $customer,
         UserInterface $user
     ) {
         $event->getData()->willReturn(['user' => ['plainPassword' => '']]);
@@ -122,5 +129,17 @@ final class AddUserFormSubscriberSpec extends ObjectBehavior
         $form->remove('user')->shouldNotBeCalled();
 
         $this->preSubmit($event);
+    }
+
+    function it_throws_invalid_argument_exception_when_forms_normalized_data_does_not_implement_user_aware_interface(
+        FormEvent $event,
+        Form $form,
+        UserInterface $user
+    ) {
+        $event->getData()->willReturn(['user' => ['plainPassword' => '']]);
+        $event->getForm()->willReturn($form);
+        $form->getNormData()->willReturn($user);
+
+        $this->shouldThrow(\InvalidArgumentException::class)->during('preSubmit', [$event]);
     }
 }

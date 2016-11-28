@@ -18,6 +18,40 @@ Feature: Products validation
         And product with name "Dice Brewing" should not be added
 
     @ui
+    Scenario: Adding a new simple product with duplicated code among products
+        Given the store has a product "7 Wonders" with code "AWESOME_GAME"
+        And I want to create a new simple product
+        When I specify its code as "AWESOME_GAME"
+        And I name it "Dice Brewing" in "English (United States)"
+        And I set its price to "$10.00"
+        And I try to add it
+        Then I should be notified that code has to be unique
+        And product with name "Dice Brewing" should not be added
+
+    @ui
+    Scenario: Adding a new simple product with duplicated code among product variants
+        Given the store has a product "7 Wonders"
+        And this product has "7 Wonders: Cities" variant priced at "$30" identified by "AWESOME_GAME"
+        And I want to create a new simple product
+        When I specify its code as "AWESOME_GAME"
+        And I name it "Dice Brewing" in "English (United States)"
+        And I set its price to "$10.00"
+        And I try to add it
+        Then I should be notified that simple product code has to be unique
+        And product with name "Dice Brewing" should not be added
+
+    @ui
+    Scenario: Adding a new simple product without specifying its slug
+        Given I want to create a new simple product
+        When I specify its code as "BOARD_DICE_BREWING"
+        And I name it "Dice Brewing" in "English (United States)"
+        And I set its price to "$10.00"
+        And I remove its slug
+        And I try to add it
+        Then I should be notified that slug is required
+        And product with name "Dice Brewing" should not be added
+
+    @ui
     Scenario: Adding a new simple product without specifying its name
         Given I want to create a new simple product
         When I specify its code as "BOARD_DICE_BREWING"
@@ -41,6 +75,16 @@ Feature: Products validation
         When I name it "Dice Brewing" in "English (United States)"
         And I try to add it
         Then I should be notified that code is required
+        And product with name "Dice Brewing" should not be added
+
+    @ui
+    Scenario: Adding a new configurable product with duplicated code
+        Given the store has a product "7 Wonders" with code "AWESOME_GAME"
+        And I want to create a new configurable product
+        When I specify its code as "AWESOME_GAME"
+        And I name it "Dice Brewing" in "English (United States)"
+        And I try to add it
+        Then I should be notified that code has to be unique
         And product with name "Dice Brewing" should not be added
 
     @ui

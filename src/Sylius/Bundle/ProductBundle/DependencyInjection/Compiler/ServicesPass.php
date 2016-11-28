@@ -23,7 +23,7 @@ use Symfony\Component\DependencyInjection\Reference;
  * @author Magdalena Banasiak <magdalena.banasiak@lakion.com>
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class ServicesPass implements CompilerPassInterface
+final class ServicesPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
@@ -39,14 +39,12 @@ class ServicesPass implements CompilerPassInterface
         $translatableFactoryDefinition->setClass(TranslatableFactory::class);
         $translatableFactoryDefinition->setArguments([
             $factoryDefinition,
-            new Reference('sylius.translation.locale_provider'),
+            new Reference('sylius.locale_provider'),
         ]);
 
         $decoratedProductFactoryDefinition = new Definition($productFactoryClass);
         $decoratedProductFactoryDefinition->setArguments([
             $translatableFactoryDefinition,
-            new Reference('sylius.repository.product_archetype'),
-            new Reference('sylius.builder.product_archetype'),
             new Reference('sylius.factory.product_variant'),
         ]);
 
@@ -59,7 +57,6 @@ class ServicesPass implements CompilerPassInterface
         $decoratedProductVariantFactoryDefinition = new Definition($variantFactoryClass);
         $decoratedProductVariantFactoryDefinition
             ->addArgument($variantFactoryDefinition)
-            ->addArgument(new Reference('sylius.repository.product'))
         ;
 
         $container->setDefinition('sylius.factory.product_variant', $decoratedProductVariantFactoryDefinition);

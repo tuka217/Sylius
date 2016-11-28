@@ -11,11 +11,9 @@
 
 namespace Sylius\Bundle\GridBundle\Doctrine\PHPCRODM;
 
-use Sylius\Component\Grid\Data\ExpressionBuilderInterface;
-use Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder;
-use Doctrine\Common\Collections\ExpressionBuilder as CollectionsExpressionBuilder;
-use Sylius\Bundle\GridBundle\Doctrine\PHPCRODM\ExtraComparison;
 use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Common\Collections\ExpressionBuilder as CollectionsExpressionBuilder;
+use Sylius\Component\Grid\Data\ExpressionBuilderInterface;
 
 /**
  * Creates an object graph (using Doctrine\Commons\Collections\Expr\*) which we
@@ -33,6 +31,9 @@ class ExpressionBuilder implements ExpressionBuilderInterface
      */
     private $orderBys = [];
 
+    /**
+     * @param CollectionsExpressionBuilder|null $expressionBuilder
+     */
     public function __construct(CollectionsExpressionBuilder $expressionBuilder = null)
     {
         $this->expressionBuilder = $expressionBuilder ?: new CollectionsExpressionBuilder();
@@ -41,17 +42,17 @@ class ExpressionBuilder implements ExpressionBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function andX($expressions)
+    public function andX(...$expressions)
     {
-        return $this->expressionBuilder->andX($expressions);
+        return $this->expressionBuilder->andX(...$expressions);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function orX($expressions)
+    public function orX(...$expressions)
     {
-        return $this->expressionBuilder->orX($expressions);
+        return $this->expressionBuilder->orX(...$expressions);
     }
 
     /**
@@ -175,7 +176,7 @@ class ExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
     public function getOrderBys()
     {

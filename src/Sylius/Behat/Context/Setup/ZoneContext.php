@@ -18,10 +18,10 @@ use Sylius\Component\Addressing\Model\CountryInterface;
 use Sylius\Component\Addressing\Model\ProvinceInterface;
 use Sylius\Component\Addressing\Model\ZoneInterface;
 use Sylius\Component\Addressing\Model\ZoneMemberInterface;
-use Sylius\Component\Addressing\Repository\ZoneRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Model\CodeAwareInterface;
 use Symfony\Component\Intl\Intl;
 
@@ -31,21 +31,12 @@ use Symfony\Component\Intl\Intl;
 final class ZoneContext implements Context
 {
     /**
-     * @var array
-     */
-    private $euMembers = [
-        'BE', 'BG', 'CZ', 'DK', 'DE', 'EE', 'IE', 'GR', 'ES',
-        'FR', 'IT', 'CY', 'LV', 'LT', 'LU', 'HU', 'MT', 'NL',
-        'AT', 'PL', 'PT', 'RO', 'SI', 'SK', 'FI', 'SE', 'GB',
-    ];
-
-    /**
      * @var SharedStorageInterface
      */
     private $sharedStorage;
 
     /**
-     * @var ZoneRepositoryInterface
+     * @var RepositoryInterface
      */
     private $zoneRepository;
 
@@ -66,14 +57,14 @@ final class ZoneContext implements Context
 
     /**
      * @param SharedStorageInterface $sharedStorage
-     * @param ZoneRepositoryInterface $zoneRepository
+     * @param RepositoryInterface $zoneRepository
      * @param ObjectManager $objectManager
      * @param ZoneFactoryInterface $zoneFactory
      * @param FactoryInterface $zoneMemberFactory
      */
     public function __construct(
         SharedStorageInterface $sharedStorage,
-        ZoneRepositoryInterface $zoneRepository,
+        RepositoryInterface $zoneRepository,
         ObjectManager $objectManager,
         ZoneFactoryInterface $zoneFactory,
         FactoryInterface $zoneMemberFactory
@@ -86,30 +77,14 @@ final class ZoneContext implements Context
     }
 
     /**
-     * @Given /^there is a zone "EU" containing all members of the European Union$/
-     */
-    public function thereIsAZoneEUContainingAllMembersOfEuropeanUnion()
-    {
-        $zone = $this->zoneFactory->createWithMembers($this->euMembers);
-        $zone->setType(ZoneInterface::TYPE_COUNTRY);
-        $zone->setCode('EU');
-        $zone->setName('European Union');
-
-        $this->zoneRepository->add($zone);
-        $this->sharedStorage->set('zone', $zone);
-    }
-
-    /**
      * @Given /^there is a zone "The Rest of the World" containing all other countries$/
      */
     public function thereIsAZoneTheRestOfTheWorldContainingAllOtherCountries()
     {
-        $restOfWorldCountries = array_diff(
-            array_keys(Intl::getRegionBundle()->getCountryNames('en')),
-            array_merge($this->euMembers, ['US'])
-        );
+        $restOfWorldCountries = Intl::getRegionBundle()->getCountryNames('en');
+        unset($restOfWorldCountries['US']);
 
-        $zone = $this->zoneFactory->createWithMembers($restOfWorldCountries);
+        $zone = $this->zoneFactory->createWithMembers(array_keys($restOfWorldCountries));
         $zone->setType(ZoneInterface::TYPE_COUNTRY);
         $zone->setCode('RoW');
         $zone->setName('The Rest of the World');

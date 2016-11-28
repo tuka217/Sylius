@@ -11,22 +11,14 @@
 
 namespace Sylius\Component\Inventory\Model;
 
-use Sylius\Component\Resource\Model\TimestampableInterface;
+use Sylius\Component\Resource\Model\ResourceInterface;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
+ * @author Grzegorz Sadowski <grzegorz.sadowski@lakion.com>
  */
-interface InventoryUnitInterface extends TimestampableInterface
+interface InventoryUnitInterface extends ResourceInterface
 {
-    /**
-     * Default states.
-     */
-    const STATE_CHECKOUT = 'checkout';
-    const STATE_ONHOLD = 'onhold';
-    const STATE_SOLD = 'sold';
-    const STATE_BACKORDERED = 'backordered';
-    const STATE_RETURNED = 'returned';
-
     /**
      * @return StockableInterface
      */
@@ -36,24 +28,4 @@ interface InventoryUnitInterface extends TimestampableInterface
      * @return string
      */
     public function getInventoryName();
-
-    /**
-     * @return string
-     */
-    public function getInventoryState();
-
-    /**
-     * @param string $state
-     */
-    public function setInventoryState($state);
-
-    /**
-     * @return bool
-     */
-    public function isSold();
-
-    /**
-     * @return bool
-     */
-    public function isBackordered();
 }

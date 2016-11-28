@@ -1,6 +1,9 @@
 The Book
 ========
 
+The Developer's guide to leveraging the flexibility of Sylius. Here you will find all the concepts used in Sylius.
+The Books helps to understand how Sylius works.
+
 .. toctree::
     :hidden:
 
@@ -16,18 +19,28 @@ The Book
     currencies
     countries
     zones
-    products
     addresses
+    address_book
+    customer_and_shopuser
+    adminuser
+    products
+    product_reviews
+    product_associations
+    attributes
+    taxons
     inventory
     orders
+    adjustments
+    checkout
     shipments
     payments
     taxation
     pricing
     promotions
-    users_and_groups
-    content
+    coupons
     emails
+    content
     settings
+    fixtures
 
 .. include:: /book/map.rst.inc

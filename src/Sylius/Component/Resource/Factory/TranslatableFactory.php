@@ -18,7 +18,7 @@ use Sylius\Component\Resource\Provider\LocaleProviderInterface;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class TranslatableFactory implements TranslatableFactoryInterface
+final class TranslatableFactory implements TranslatableFactoryInterface
 {
     /**
      * @var FactoryInterface
@@ -42,6 +42,8 @@ class TranslatableFactory implements TranslatableFactoryInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws UnexpectedTypeException
      */
     public function createNew()
     {
@@ -51,8 +53,8 @@ class TranslatableFactory implements TranslatableFactoryInterface
             throw new UnexpectedTypeException($resource, TranslatableInterface::class);
         }
 
-        $resource->setCurrentLocale($this->localeProvider->getCurrentLocale());
-        $resource->setFallbackLocale($this->localeProvider->getFallbackLocale());
+        $resource->setCurrentLocale($this->localeProvider->getDefaultLocaleCode());
+        $resource->setFallbackLocale($this->localeProvider->getDefaultLocaleCode());
 
         return $resource;
     }

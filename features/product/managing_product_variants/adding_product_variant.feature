@@ -7,6 +7,8 @@ Feature: Adding a new product variant
     Background:
         Given the store is available in "English (United States)"
         And the store has a "Wyborowa Vodka" configurable product
+        And this product has option "Taste" with values "Orange" and "Melon"
+        And the store has "Fragile" shipping category
         And I am logged in as an administrator
 
     @ui
@@ -16,4 +18,24 @@ Feature: Adding a new product variant
         And I set its price to "$100.00"
         And I add it
         Then I should be notified that it has been successfully created
-        And the "VODKA_WYBOROWA_PREMIUM" variant of the "Wyborowa Vodka" product should appear in the shop
+        And the "VODKA_WYBOROWA_PREMIUM" variant of the "Wyborowa Vodka" product should appear in the store
+
+    @ui
+    Scenario: Adding a new product variant with specific option's value
+        Given I want to create a new variant of this product
+        When I specify its code as "VODKA_WYBOROWA_MELON"
+        And I set its price to "$80.00"
+        And I set its "Taste" option to "Melon"
+        And I add it
+        Then I should be notified that it has been successfully created
+        And the "VODKA_WYBOROWA_MELON" variant of the "Wyborowa Vodka" product should appear in the store
+
+    @ui
+    Scenario: Adding a new product variant with specific shipping category
+        Given I want to create a new variant of this product
+        When I specify its code as "VODKA_WYBOROWA_PREMIUM"
+        And I set its price to "$100.00"
+        And I set its shipping category as "Fragile"
+        And I add it
+        Then I should be notified that it has been successfully created
+        And the "VODKA_WYBOROWA_PREMIUM" variant of the "Wyborowa Vodka" product should appear in the store

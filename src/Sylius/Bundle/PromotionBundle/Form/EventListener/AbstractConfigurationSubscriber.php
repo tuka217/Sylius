@@ -27,15 +27,22 @@ abstract class AbstractConfigurationSubscriber implements EventSubscriberInterfa
      * @var ServiceRegistryInterface
      */
     protected $registry;
+
     /**
      * @var FormFactoryInterface
      */
     protected $factory;
+
     /**
-     * @var string
+     * @var string|null
      */
     protected $registryIdentifier;
 
+    /**
+     * @param ServiceRegistryInterface $actionRegistry
+     * @param FormFactoryInterface $factory
+     * @param string|null $registryIdentifier
+     */
     public function __construct(
         ServiceRegistryInterface $actionRegistry,
         FormFactoryInterface $factory,
@@ -107,6 +114,7 @@ abstract class AbstractConfigurationSubscriber implements EventSubscriberInterfa
      */
     protected function addConfigurationFields(FormInterface $form, $registryIdentifier, array $data = [])
     {
+        // FIXME: Unknown type of $model, may crash in any moment!
         $model = $this->registry->get($registryIdentifier);
 
         // temporary solution to prevent errors while rendering unexisting rule configuration type
@@ -128,15 +136,11 @@ abstract class AbstractConfigurationSubscriber implements EventSubscriberInterfa
     }
 
     /**
-     * Return the identifier of the rule/action registered in the registry
-     *
      * @return string
      */
     abstract protected function getRegistryIdentifier($model);
 
     /**
-     * Return the rule/action configuration
-     *
      * @return array
      */
     abstract protected function getConfiguration($model);

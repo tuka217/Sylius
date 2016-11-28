@@ -11,7 +11,9 @@
 
 namespace Sylius\Bundle\ShippingBundle\Form\Type\Calculator;
 
+use Sylius\Bundle\MoneyBundle\Form\Type\MoneyType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -28,25 +30,25 @@ class WeightRateConfigurationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fixed', 'sylius_money', [
+            ->add('fixed', MoneyType::class, [
                 'label' => 'sylius.form.shipping_calculator.weight_rate_configuration.fixed',
                 'constraints' => [
-                    new NotBlank(),
-                    new Type(['type' => 'integer']),
+                    new NotBlank(['groups' => ['sylius']]),
+                    new Type(['type' => 'integer', 'groups' => ['sylius']]),
                 ],
             ])
-            ->add('variable', 'sylius_money', [
+            ->add('variable', MoneyType::class, [
                 'label' => 'sylius.form.shipping_calculator.weight_rate_configuration.variable',
                 'constraints' => [
-                    new NotBlank(),
-                    new Type(['type' => 'integer']),
+                    new NotBlank(['groups' => ['sylius']]),
+                    new Type(['type' => 'integer', 'groups' => ['sylius']]),
                 ],
             ])
-            ->add('division', 'number', [
+            ->add('division', NumberType::class, [
                 'label' => 'sylius.form.shipping_calculator.weight_rate_configuration.division',
                 'constraints' => [
-                    new NotBlank(),
-                    new Type(['type' => 'numeric']),
+                    new NotBlank(['groups' => ['sylius']]),
+                    new Type(['type' => 'numeric', 'groups' => ['sylius']]),
                 ],
             ])
         ;
@@ -68,6 +70,14 @@ class WeightRateConfigurationType extends AbstractType
      * {@inheritdoc}
      */
     public function getName()
+    {
+        return 'sylius_shipping_calculator_weight_rate';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
     {
         return 'sylius_shipping_calculator_weight_rate';
     }

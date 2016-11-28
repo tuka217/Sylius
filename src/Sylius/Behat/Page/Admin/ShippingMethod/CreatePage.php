@@ -11,6 +11,7 @@
 
 namespace Sylius\Behat\Page\Admin\ShippingMethod;
 
+use Behat\Mink\Driver\Selenium2Driver;
 use Sylius\Behat\Behaviour\ChoosesCalculator;
 use Sylius\Behat\Behaviour\SpecifiesItsAmount;
 use Sylius\Behat\Behaviour\SpecifiesItsCode;
@@ -22,6 +23,14 @@ use Sylius\Behat\Page\Admin\Crud\CreatePage as BaseCreatePage;
 class CreatePage extends BaseCreatePage implements CreatePageInterface
 {
     use SpecifiesItsCode;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function specifyPosition($position)
+    {
+        $this->getDocument()->fillField('Position', $position);
+    }
 
     /**
      * {@inheritdoc}
@@ -53,7 +62,7 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
      * {@inheritdoc}
      */
     public function chooseZone($name)
-    {        
+    {
         $this->getDocument()->selectFieldOption('Zone', $name);
     }
 
@@ -61,8 +70,22 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
      * {@inheritdoc}
      */
     public function chooseCalculator($name)
-    {        
+    {
         $this->getDocument()->selectFieldOption('Calculator', $name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function checkChannel($channelName)
+    {
+        if ($this->getDriver() instanceof Selenium2Driver) {
+            $this->getElement('channel', ['%channel%' => $channelName])->click();
+
+            return;
+        }
+
+        $this->getDocument()->checkField($channelName);
     }
 
     /**
@@ -72,6 +95,7 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
     {
         return array_merge(parent::getDefinedElements(), [
             'amount' => '#sylius_shipping_method_configuration_amount',
+            'channel' => '#sylius_shipping_method_channels .ui.checkbox:contains("%channel%")',
             'calculator' => '#sylius_shipping_method_calculator',
             'code' => '#sylius_shipping_method_code',
             'name' => '#sylius_shipping_method_translations_en_US_name',

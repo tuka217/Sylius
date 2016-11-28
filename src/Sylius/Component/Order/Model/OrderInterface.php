@@ -20,7 +20,6 @@ use Sylius\Component\Resource\Model\TimestampableInterface;
  */
 interface OrderInterface extends
     AdjustableInterface,
-    CommentAwareInterface,
     ResourceInterface,
     TimestampableInterface
 {
@@ -30,21 +29,21 @@ interface OrderInterface extends
     const STATE_FULFILLED = 'fulfilled';
 
     /**
-     * @return bool
-     */
-    public function isCompleted();
-
-    public function complete();
-
-    /**
      * @return \DateTime
      */
-    public function getCompletedAt();
+    public function getCheckoutCompletedAt();
 
     /**
-     * @param null|\DateTime $completedAt
+     * @param null|\DateTime $checkoutCompletedAt
      */
-    public function setCompletedAt(\DateTime $completedAt = null);
+    public function setCheckoutCompletedAt(\DateTime $checkoutCompletedAt = null);
+
+    /**
+     * @return bool
+     */
+    public function isCheckoutCompleted();
+
+    public function completeCheckout();
 
     /**
      * @return string
@@ -67,7 +66,7 @@ interface OrderInterface extends
     public function setNotes($notes);
 
     /**
-     * @return Collection|OrderItemInterface[] An array or collection of OrderItemInterface
+     * @return Collection|OrderItemInterface[]
      */
     public function getItems();
 
@@ -126,28 +125,6 @@ interface OrderInterface extends
      * @param string $state
      */
     public function setState($state);
-
-    /**
-     * Add an identity to this order. Eg. external identity to refer to an ebay order id.
-     *
-     * @param IdentityInterface $identity
-     */
-    public function addIdentity(IdentityInterface $identity);
-
-    /**
-     * @param IdentityInterface $identity
-     */
-    public function removeIdentity(IdentityInterface $identity);
-
-    /**
-     * @param IdentityInterface $identity
-     */
-    public function hasIdentity(IdentityInterface $identity);
-
-    /**
-     * @return Collection|IdentityInterface[]
-     */
-    public function getIdentities();
 
     /**
      * @param string|null $type

@@ -17,17 +17,12 @@ namespace Sylius\Component\Resource\Provider;
 interface LocaleProviderInterface
 {
     /**
-     * @return string
+     * @return string[]
      */
-    public function getCurrentLocale();
+    public function getDefinedLocalesCodes();
 
     /**
      * @return string
      */
-    public function getFallbackLocale();
-
-    /**
-     * @return string
-     */
-    public function getDefaultLocale();
+    public function getDefaultLocaleCode();
 }

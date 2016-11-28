@@ -15,23 +15,16 @@ use Sylius\Component\Pricing\Model\PriceableInterface;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 
 /**
- * This class delegates the calculation of charge for particular subject
- * to a correct calculator instance, based on the type defined on the priceable.
- *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class DelegatingCalculator implements DelegatingCalculatorInterface
+final class DelegatingCalculator implements DelegatingCalculatorInterface
 {
     /**
-     * Calculator registry.
-     *
      * @var ServiceRegistryInterface
      */
     protected $registry;
 
     /**
-     * Constructor.
-     *
      * @param ServiceRegistryInterface $registry
      */
     public function __construct(ServiceRegistryInterface $registry)
@@ -48,6 +41,7 @@ class DelegatingCalculator implements DelegatingCalculatorInterface
             throw new \InvalidArgumentException('Cannot calculate the price for PriceableInterface instance without calculator defined.');
         }
 
+        /** @var CalculatorInterface $calculator */
         $calculator = $this->registry->get($type);
 
         return $calculator->calculate($subject, $subject->getPricingConfiguration(), $context);

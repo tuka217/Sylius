@@ -5,5 +5,5 @@ sylius:
     menu:
         admin:
             main:
-                content:
-                    routes: Rute
+                customers:
+                    groups: Kelompok

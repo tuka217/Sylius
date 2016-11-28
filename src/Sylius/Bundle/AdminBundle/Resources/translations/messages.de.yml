@@ -6,12 +6,14 @@ sylius:
         admin:
             main:
                 catalog:
+                    association_types: Verbindungstypen
                     attributes: Attribute
                     header: Katalog
                     options: Optionen
                     products: Produkte
-                    taxons: Gruppen
+                    taxons: Produktgruppen
                 configuration:
+                    admin_users: Administratoren
                     channels: Ausgabekanäle
                     countries: Länder
                     currencies: Währungen
@@ -24,13 +26,12 @@ sylius:
                     zones: Versandgebiete
                 marketing:
                     header: Marketing
+                    product_reviews: Produkt-Bewertung
                     promotions: Aktionen
                 customers:
                     customers: Kunden
+                    groups: Gruppen
                     header: Kunde
                 sales:
                     header: Verkäufe
                     orders: Aufträge
-                content:
-                    header: Inhalt
-                    routes: Pfade

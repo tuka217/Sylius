@@ -45,15 +45,11 @@ final class ChannelExampleFactory implements ExampleFactoryInterface
      * @param ChannelFactoryInterface $channelFactory
      * @param RepositoryInterface $localeRepository
      * @param RepositoryInterface $currencyRepository
-     * @param RepositoryInterface $paymentMethodRepository
-     * @param RepositoryInterface $shippingMethodRepository
      */
     public function __construct(
         ChannelFactoryInterface $channelFactory,
         RepositoryInterface $localeRepository,
-        RepositoryInterface $currencyRepository,
-        RepositoryInterface $paymentMethodRepository,
-        RepositoryInterface $shippingMethodRepository
+        RepositoryInterface $currencyRepository
     ) {
         $this->channelFactory = $channelFactory;
 
@@ -81,25 +77,20 @@ final class ChannelExampleFactory implements ExampleFactoryInterface
                 ->setDefault('default_locale', function (Options $options) {
                     return $this->faker->randomElement($options['locales']);
                 })
-                ->setAllowedTypes('default_locale', LocaleInterface::class)
+                ->setAllowedTypes('default_locale', ['string', LocaleInterface::class])
                 ->setNormalizer('default_locale', LazyOption::findOneBy($localeRepository, 'code'))
                 ->setDefault('locales', LazyOption::all($localeRepository))
                 ->setAllowedTypes('locales', 'array')
                 ->setNormalizer('locales', LazyOption::findBy($localeRepository, 'code'))
-                ->setDefault('default_currency', function (Options $options) {
+                ->setDefault('base_currency', function (Options $options) {
                     return $this->faker->randomElement($options['currencies']);
                 })
-                ->setAllowedTypes('default_currency', CurrencyInterface::class)
-                ->setNormalizer('default_currency', LazyOption::findOneBy($currencyRepository, 'code'))
+                ->setAllowedTypes('base_currency', ['string', CurrencyInterface::class])
+                ->setNormalizer('base_currency', LazyOption::findOneBy($currencyRepository, 'code'))
                 ->setDefault('currencies', LazyOption::all($currencyRepository))
                 ->setAllowedTypes('currencies', 'array')
                 ->setNormalizer('currencies', LazyOption::findBy($currencyRepository, 'code'))
-                ->setDefault('payment_methods', LazyOption::all($paymentMethodRepository))
-                ->setAllowedTypes('payment_methods', 'array')
-                ->setNormalizer('payment_methods', LazyOption::findBy($paymentMethodRepository, 'code'))
-                ->setDefault('shipping_methods', LazyOption::all($shippingMethodRepository))
-                ->setAllowedTypes('shipping_methods', 'array')
-                ->setNormalizer('shipping_methods', LazyOption::findBy($shippingMethodRepository, 'code'))
+                ->setDefault('theme_name', null)
         ;
     }
 
@@ -117,23 +108,16 @@ final class ChannelExampleFactory implements ExampleFactoryInterface
         $channel->setEnabled($options['enabled']);
         $channel->setColor($options['color']);
         $channel->setTaxCalculationStrategy($options['tax_calculation_strategy']);
+        $channel->setThemeName($options['theme_name']);
 
         $channel->setDefaultLocale($options['default_locale']);
         foreach ($options['locales'] as $locale) {
             $channel->addLocale($locale);
         }
 
-        $channel->setDefaultCurrency($options['default_currency']);
+        $channel->setBaseCurrency($options['base_currency']);
         foreach ($options['currencies'] as $currency) {
             $channel->addCurrency($currency);
-        }
-
-        foreach ($options['payment_methods'] as $paymentMethod) {
-            $channel->addPaymentMethod($paymentMethod);
-        }
-
-        foreach ($options['shipping_methods'] as $shippingMethod) {
-            $channel->addShippingMethod($shippingMethod);
         }
 
         return $channel;

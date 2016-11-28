@@ -15,13 +15,13 @@
     <services>
         <service id="sylius.form.type.money" class="Sylius\Bundle\MoneyBundle\Form\Type\MoneyType">
             <argument>%sylius_money.currency%</argument>
-            <tag name="form.type" alias="sylius_money" />
+            <tag name="form.type" />
         </service>
 
-        <service id="sylius.formatter.money" class="Sylius\Bundle\MoneyBundle\Formatter\MoneyFormatter" />
+        <service id="sylius.money_formatter" class="Sylius\Bundle\MoneyBundle\Formatter\MoneyFormatter" />
 
         <service id="sylius.templating.helper.money" class="Sylius\Bundle\MoneyBundle\Templating\Helper\MoneyHelper" lazy="true">
-            <argument type="service" id="sylius.formatter.money" />
+            <argument type="service" id="sylius.money_formatter" />
             <argument>%sylius_money.currency%</argument>
             <argument>%sylius_money.locale%</argument>
             <tag name="templating.helper" alias="sylius_money" />

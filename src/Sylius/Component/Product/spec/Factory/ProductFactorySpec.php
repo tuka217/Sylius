@@ -12,13 +12,11 @@
 namespace spec\Sylius\Component\Product\Factory;
 
 use PhpSpec\ObjectBehavior;
-use Sylius\Component\Archetype\Builder\ArchetypeBuilderInterface;
+use Sylius\Component\Product\Factory\ProductFactory;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
-use Sylius\Component\Product\Model\ArchetypeInterface;
 use Sylius\Component\Product\Model\ProductInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Sylius\Component\Variation\Model\VariantInterface;
+use Sylius\Component\Product\Model\ProductVariantInterface;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
@@ -28,16 +26,14 @@ final class ProductFactorySpec extends ObjectBehavior
 {
     function let(
         FactoryInterface $factory,
-        RepositoryInterface $archetypeRepository,
-        ArchetypeBuilderInterface $archetypeBuilder,
         FactoryInterface $variantFactory
     ) {
-        $this->beConstructedWith($factory, $archetypeRepository, $archetypeBuilder, $variantFactory);
+        $this->beConstructedWith($factory, $variantFactory);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Sylius\Component\Product\Factory\ProductFactory');
+        $this->shouldHaveType(ProductFactory::class);
     }
 
     function it_implements_product_factory_interface()
@@ -54,9 +50,9 @@ final class ProductFactorySpec extends ObjectBehavior
 
     function it_creates_new_product_with_variant(
         FactoryInterface $factory,
+        FactoryInterface $variantFactory,
         ProductInterface $product,
-        VariantInterface $variant,
-        FactoryInterface $variantFactory
+        ProductVariantInterface $variant
     ) {
         $variantFactory->createNew()->willReturn($variant);
 
@@ -64,31 +60,5 @@ final class ProductFactorySpec extends ObjectBehavior
         $product->addVariant($variant)->shouldBeCalled();
 
         $this->createWithVariant()->shouldReturn($product);
-    }
-
-    function it_creates_new_product_from_archetype(
-        FactoryInterface $factory,
-        ProductInterface $product,
-        RepositoryInterface $archetypeRepository,
-        ArchetypeBuilderInterface $archetypeBuilder,
-        ArchetypeInterface $archetype
-    ) {
-        $factory->createNew()->willReturn($product);
-
-        $archetypeRepository->findOneBy(['code' => 'book'])->willReturn($archetype);
-        $product->setArchetype($archetype)->shouldBeCalled();
-        $archetypeBuilder->build($product)->shouldBeCalled();
-
-        $this->createFromArchetype('book')->shouldReturn($product);
-    }
-
-    function it_throws_an_exception_if_archetype_does_not_exist(RepositoryInterface $archetypeRepository)
-    {
-        $archetypeRepository->findOneBy(['code' => 'book'])->willReturn(null);
-
-        $this
-            ->shouldThrow(\InvalidArgumentException::class)
-            ->during('createFromArchetype', ['book'])
-        ;
     }
 }

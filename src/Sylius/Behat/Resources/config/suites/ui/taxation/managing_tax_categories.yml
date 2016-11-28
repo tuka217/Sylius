@@ -4,13 +4,13 @@
 default:
     suites:
         ui_managing_tax_categories:
-            contexts_as_services:
+            contexts_services:
                 - sylius.behat.context.hook.doctrine_orm
 
                 - sylius.behat.context.transform.shared_storage
                 - sylius.behat.context.transform.tax_category
 
-                - sylius.behat.context.setup.security
+                - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.taxation
 
                 - sylius.behat.context.ui.admin.managing_tax_categories

@@ -57,7 +57,10 @@ final class ThemeAwareTranslator implements TranslatorInterface, TranslatorBagIn
      */
     public function __call($method, array $arguments)
     {
-        return call_user_func_array([$this->translator, $method], $arguments);
+        $translator = $this->translator;
+        $arguments = array_values($arguments);
+
+        return $translator->$method(...$arguments);
     }
 
     /**
@@ -127,7 +130,7 @@ final class ThemeAwareTranslator implements TranslatorInterface, TranslatorBagIn
             $locale = $this->getLocale();
         }
 
-        $locale = $locale . '_' . str_replace('/', '-', $theme->getName());
+        $locale = $locale . '@' . str_replace('/', '-', $theme->getName());
 
         return $locale;
     }

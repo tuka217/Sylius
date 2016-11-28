@@ -3,7 +3,13 @@
 
 sylius:
     cart:
-        restricted_zone_removal: 'Тавар %product% выдалены з кошыка, бо ён не прадаецца ў Вашай краіне.'
+        cart_clear_completed: Кошык ачышчаны.
+        cart_save_completed: Кошык быў абноўлены.
+        item_add_completed: Пакупка дададзена у кошык.
+        item_add_error: Памылка здарылася падчас дадання тавару да кошыка.
+        item_remove_completed: Тавар выдалены з кошыка.
+        item_remove_error: Памылка здарылася падчас выдаленна тавару з кошыка.
+        restricted_zone_removal: Тавар %product% выдалены з кошыка, бо ён не прадаецца ў Вашай краіне.
     checkout:
         restricted_zone: Тавар не прадаецца ў Вашай краіне.
         success: Дзякуй за заказ!
@@ -12,4 +18,4 @@ sylius:
         new: Ваша аплата толькі што створана.
         failed: Ваша аплата адменена.
         unknown: Невядомая памылка аплаты.
-        out_of_stock: 'Толькі %quantity% %name% у наяўнасці.'
+        out_of_stock: Толькі %quantity% %name% у наяўнасці.

@@ -12,8 +12,10 @@
 namespace spec\Sylius\Component\Core\Model;
 
 use PhpSpec\ObjectBehavior;
-use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Model\ProductVariant;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Product\Model\ProductVariant as BaseProductVariant;
+use Sylius\Component\Shipping\Model\ShippableInterface;
 use Sylius\Component\Shipping\Model\ShippingCategoryInterface;
 use Sylius\Component\Taxation\Model\TaxableInterface;
 use Sylius\Component\Taxation\Model\TaxCategoryInterface;
@@ -25,42 +27,27 @@ final class ProductVariantSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Sylius\Component\Core\Model\ProductVariant');
+        $this->shouldHaveType(ProductVariant::class);
     }
 
-    function it_implements_Sylius_product_variant_interface()
+    function it_implements_a_product_variant_interface()
     {
         $this->shouldImplement(ProductVariantInterface::class);
     }
 
-    function it_implements_Sylius_taxable_interface()
+    function it_implements_a_taxable_interface()
     {
         $this->shouldImplement(TaxableInterface::class);
     }
 
-    function it_extends_Sylius_product_variant_model()
+    function it_extends_a_product_variant_model()
     {
-        $this->shouldHaveType('Sylius\Component\Product\Model\Variant');
+        $this->shouldHaveType(BaseProductVariant::class);
     }
 
-    function it_has_metadata_class_identifier()
-    {
-        $this->getMetadataClassIdentifier()->shouldReturn('ProductVariant');
-    }
-
-    function it_should_not_have_price_by_default()
+    function it_does_not_have_price_by_default()
     {
         $this->getPrice()->shouldReturn(null);
-    }
-
-    function it_should_not_have_original_price_by_default()
-    {
-        $this->getOriginalPrice()->shouldReturn(null);
-    }
-
-    function it_initializes_image_collection_by_default()
-    {
-        $this->getImages()->shouldHaveType('Doctrine\Common\Collections\Collection');
     }
 
     function its_price_should_be_mutable()
@@ -69,54 +56,21 @@ final class ProductVariantSpec extends ObjectBehavior
         $this->getPrice()->shouldReturn(499);
     }
 
-    function its_original_price_should_be_mutable()
-    {
-        $this->setOriginalPrice(399);
-        $this->getOriginalPrice()->shouldReturn(399);
-    }
-
     function its_price_should_accept_only_integer()
     {
         $this->setPrice(410);
         $this->getPrice()->shouldBeInteger();
 
-        $this->shouldThrow('\InvalidArgumentException')->duringSetPrice(4.1 * 100);
-        $this->shouldThrow('\InvalidArgumentException')->duringSetPrice('410');
-        $this->shouldThrow('\InvalidArgumentException')->duringSetPrice(round(4.1 * 100));
-        $this->shouldThrow('\InvalidArgumentException')->duringSetPrice([410]);
-        $this->shouldThrow('\InvalidArgumentException')->duringSetPrice(new \stdClass());
+        $this->shouldThrow(\InvalidArgumentException::class)->duringSetPrice(4.1 * 100);
+        $this->shouldThrow(\InvalidArgumentException::class)->duringSetPrice('410');
+        $this->shouldThrow(\InvalidArgumentException::class)->duringSetPrice(round(4.1 * 100));
+        $this->shouldThrow(\InvalidArgumentException::class)->duringSetPrice([410]);
+        $this->shouldThrow(\InvalidArgumentException::class)->duringSetPrice(new \stdClass());
     }
 
-    function its_original_price_should_accept_only_integer()
+    function it_implements_a_shippable_interface()
     {
-        $this->shouldThrow(\InvalidArgumentException::class)->duringSetOriginalPrice(3.1 * 100);
-        $this->shouldThrow(\InvalidArgumentException::class)->duringSetOriginalPrice('310');
-        $this->shouldThrow(\InvalidArgumentException::class)->duringSetOriginalPrice(round(3.1 * 100));
-        $this->shouldThrow(\InvalidArgumentException::class)->duringSetOriginalPrice([310]);
-        $this->shouldThrow(\InvalidArgumentException::class)->duringSetOriginalPrice(new \stdClass());
-    }
-
-    function it_implements_Sylius_shippable_interface()
-    {
-        $this->shouldImplement('Sylius\Component\Shipping\Model\ShippableInterface');
-    }
-
-    function it_returns_null_if_product_has_no_shipping_category(ProductInterface $product)
-    {
-        $this->setProduct($product);
-
-        $product->getShippingCategory()->willReturn(null)->shouldBeCalled();
-        $this->getShippingCategory()->shouldReturn(null);
-    }
-
-    function it_returns_the_product_shipping_category(
-        ProductInterface $product,
-        ShippingCategoryInterface $shippingCategory
-    ) {
-        $this->setProduct($product);
-
-        $product->getShippingCategory()->willReturn($shippingCategory)->shouldBeCalled();
-        $this->getShippingCategory()->shouldReturn($shippingCategory);
+        $this->shouldImplement(ShippableInterface::class);
     }
 
     function it_has_no_weight_by_default()
@@ -185,10 +139,8 @@ final class ProductVariantSpec extends ObjectBehavior
 
     function its_code_is_mutable()
     {
-        $sku = 'dummy-sku123';
-
-        $this->setCode($sku);
-        $this->getCode()->shouldReturn($sku);
+        $this->setCode('dummy-sku123');
+        $this->getCode()->shouldReturn('dummy-sku123');
     }
 
     function it_does_not_have_tax_category_by_default()
@@ -209,5 +161,16 @@ final class ProductVariantSpec extends ObjectBehavior
 
         $this->setTaxCategory(null);
         $this->getTaxCategory()->shouldReturn(null);
+    }
+
+    function it_has_no_shipping_category_by_default()
+    {
+        $this->getShippingCategory()->shouldReturn(null);
+    }
+
+    function its_shipping_category_is_mutable(ShippingCategoryInterface $shippingCategory)
+    {
+        $this->setShippingCategory($shippingCategory);
+        $this->getShippingCategory()->shouldReturn($shippingCategory);
     }
 }

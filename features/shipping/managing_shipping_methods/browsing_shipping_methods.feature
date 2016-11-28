@@ -5,8 +5,7 @@ Feature: Browsing shipping methods
     I want to be able to browse list of them
 
     Background:
-        Given the store is available in "English (United States)"
-        And there is a zone "EU" containing all members of the European Union
+        Given the store operates on a single channel in "United States"
         And the store allows shipping with "UPS Carrier" and "FedEx Carrier"
         And I am logged in as an administrator
 
@@ -14,4 +13,4 @@ Feature: Browsing shipping methods
     Scenario: Browsing defined shipping methods
         When I want to browse shipping methods
         Then I should see 2 shipping methods in the list
-        And the shipment method "FedEx Carrier" should be in the registry
+        And the shipping method "FedEx Carrier" should be in the registry

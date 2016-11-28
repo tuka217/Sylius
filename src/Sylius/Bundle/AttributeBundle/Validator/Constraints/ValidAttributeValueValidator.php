@@ -11,6 +11,7 @@
 
 namespace Sylius\Bundle\AttributeBundle\Validator\Constraints;
 
+use Sylius\Component\Attribute\AttributeType\AttributeTypeInterface;
 use Sylius\Component\Attribute\Model\AttributeValueInterface;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 use Sylius\Component\Resource\Exception\UnexpectedTypeException;
@@ -20,7 +21,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 /**
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
  */
-class ValidAttributeValueValidator extends ConstraintValidator
+final class ValidAttributeValueValidator extends ConstraintValidator
 {
     /**
      * @var ServiceRegistryInterface
@@ -44,6 +45,7 @@ class ValidAttributeValueValidator extends ConstraintValidator
             throw new UnexpectedTypeException(get_class($value), AttributeValueInterface::class);
         }
 
+        /** @var AttributeTypeInterface $attributeType */
         $attributeType = $this->attributeTypeRegistry->get($value->getType());
 
         $attributeType->validate($value, $this->context, $value->getAttribute()->getConfiguration());

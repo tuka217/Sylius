@@ -11,7 +11,9 @@
 
 namespace Sylius\Bundle\ShippingBundle\Form\Type\Calculator;
 
+use Sylius\Bundle\MoneyBundle\Form\Type\MoneyType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -28,18 +30,18 @@ class VolumeRateConfigurationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('amount', 'sylius_money', [
+            ->add('amount', MoneyType::class, [
                 'label' => 'sylius.form.shipping_calculator.volume_rate_configuration.amount',
                 'constraints' => [
-                    new NotBlank(),
-                    new Type(['type' => 'integer']),
+                    new NotBlank(['groups' => ['sylius']]),
+                    new Type(['type' => 'integer', 'groups' => ['sylius']]),
                 ],
             ])
-            ->add('division', 'number', [
+            ->add('division', NumberType::class, [
                 'label' => 'sylius.form.shipping_calculator.volume_rate_configuration.division',
                 'constraints' => [
-                    new NotBlank(),
-                    new Type(['type' => 'numeric']),
+                    new NotBlank(['groups' => ['sylius']]),
+                    new Type(['type' => 'numeric', 'groups' => ['sylius']]),
                 ],
             ])
         ;
@@ -61,6 +63,14 @@ class VolumeRateConfigurationType extends AbstractType
      * {@inheritdoc}
      */
     public function getName()
+    {
+        return 'sylius_shipping_calculator_volume_rate';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
     {
         return 'sylius_shipping_calculator_volume_rate';
     }

@@ -11,57 +11,62 @@
 
 namespace Sylius\Bundle\PricingBundle\Form\Extension;
 
+use Sylius\Bundle\PricingBundle\Form\Type\CalculatorChoiceType;
+use Sylius\Bundle\ResourceBundle\Form\Registry\FormTypeRegistryInterface;
 use Sylius\Component\Pricing\Calculator\CalculatorInterface;
+use Sylius\Component\Pricing\Calculator\Calculators;
+use Sylius\Component\Pricing\Model\PriceableInterface;
 use Sylius\Component\Registry\ServiceRegistryInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
 /**
- * Priceable form extension.
- *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
 class PriceableTypeExtension extends AbstractTypeExtension
 {
     /**
-     * Priceable object form type.
-     *
      * @var string
      */
     protected $extendedType;
 
     /**
-     * Calculator registry.
-     *
-     * @var ServiceRegistryInterface
-     */
-    protected $formSubscriber;
-
-    /**
-     * Calculator registry.
-     *
      * @var ServiceRegistryInterface
      */
     protected $calculatorRegistry;
 
     /**
-     * Constructor.
-     *
-     * @param string                   $extendedType
+     * @var FormFactoryInterface
+     */
+    protected $formFactory;
+
+    /**
+     * @var FormTypeRegistryInterface
+     */
+    protected $formTypeRegistry;
+
+    /**
+     * @param string $extendedType
      * @param ServiceRegistryInterface $calculatorRegistry
-     * @param EventSubscriberInterface $formSubscriber
+     * @param FormFactoryInterface $formFactory
+     * @param FormTypeRegistryInterface $formTypeRegistry
      */
     public function __construct(
         $extendedType,
         ServiceRegistryInterface $calculatorRegistry,
-        EventSubscriberInterface $formSubscriber
+        FormFactoryInterface $formFactory,
+        FormTypeRegistryInterface $formTypeRegistry
     ) {
         $this->extendedType = $extendedType;
         $this->calculatorRegistry = $calculatorRegistry;
-        $this->formSubscriber = $formSubscriber;
+        $this->formFactory = $formFactory;
+        $this->formTypeRegistry = $formTypeRegistry;
     }
 
     /**
@@ -69,31 +74,34 @@ class PriceableTypeExtension extends AbstractTypeExtension
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->addEventSubscriber($this->formSubscriber)
-            ->add('pricingCalculator', 'sylius_price_calculator_choice', [
-                'label' => 'sylius.form.priceable.calculator',
-            ])
-        ;
+        $builder->add('pricingCalculator', CalculatorChoiceType::class, [
+            'label' => 'sylius.form.priceable.calculator',
+        ]);
 
-        $prototypes = [];
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $priceable = $event->getData();
 
-        /** @var CalculatorInterface $calculator */
-        foreach ($this->calculatorRegistry->all() as $type => $calculator) {
-            $formType = sprintf('sylius_price_calculator_%s', $calculator->getType());
-
-            if (!$formType) {
-                continue;
+            if (null === $priceable) {
+                return;
             }
 
-            try {
-                $prototypes[$type] = $builder->create('pricingConfiguration', $formType)->getForm();
-            } catch (\InvalidArgumentException $e) {
-                continue;
+            if (!$priceable instanceof PriceableInterface) {
+                throw new UnexpectedTypeException($priceable, PriceableInterface::class);
             }
-        }
 
-        $builder->setAttribute('prototypes', $prototypes);
+            $this->addPricingConfigurationField($event->getForm(), $priceable->getPricingCalculator());
+        });
+
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+            $data = $event->getData();
+
+            if (empty($data) || !array_key_exists('pricingCalculator', $data)) {
+                return;
+            }
+
+            $this->addPricingConfigurationField($event->getForm(), $data['pricingCalculator']);
+        });
     }
 
     /**
@@ -101,10 +109,22 @@ class PriceableTypeExtension extends AbstractTypeExtension
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['prototypes'] = [];
+        if (!isset($view->vars['prototypes'])) {
+            $view->vars['prototypes'] = [];
+        }
 
-        foreach ($form->getConfig()->getAttribute('prototypes') as $type => $prototype) {
-            $view->vars['prototypes'][$type] = $prototype->createView($view);
+        /** @var CalculatorInterface $calculator */
+        foreach ($this->calculatorRegistry->all() as $calculator) {
+            $calculatorType = $calculator->getType();
+
+            if (!$this->formTypeRegistry->has($calculatorType, 'default')) {
+                continue;
+            }
+
+            $view->vars['prototypes'][$calculatorType] = $this->formFactory->createNamed(
+                'pricingConfiguration',
+                $this->formTypeRegistry->get($calculatorType, 'default')
+            )->createView($view);
         }
     }
 
@@ -114,5 +134,22 @@ class PriceableTypeExtension extends AbstractTypeExtension
     public function getExtendedType()
     {
         return $this->extendedType;
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param string $calculatorType
+     */
+    protected function addPricingConfigurationField(FormInterface $form, $calculatorType)
+    {
+        if (!$this->formTypeRegistry->has($calculatorType, 'default')) {
+            return;
+        }
+
+        $form->add(
+            'pricingConfiguration',
+            $this->formTypeRegistry->get($calculatorType, 'default'),
+            ['auto_initialize' => false]
+        );
     }
 }

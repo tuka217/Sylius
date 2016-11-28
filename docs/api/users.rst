@@ -60,7 +60,7 @@ Response will contain a paginated list of users.
                     "email_canonical": "chelsie.witting@example.com",
                     "enabled": true,
                     "expired": false,
-                    "groups": [],
+                    "group": [],
                     "id": 481,
                     "locked": false,
                     "password": "EbOLtGHYxJKotA+bdb9BElhXPd8qZsnlo8CjDdCk+qFR22EEZJoOTntBX/M5GUXw2vnEqOKIEVPaJr66yxXqqQ==",
@@ -97,7 +97,7 @@ Response
         "email_canonical": "chelsie.witting@example.com",
         "enabled": true,
         "expired": false,
-        "groups": [],
+        "group": [],
         "id": 481,
         "locked": false,
         "password": "EbOLtGHYxJKotA+bdb9BElhXPd8qZsnlo8CjDdCk+qFR22EEZJoOTntBX/M5GUXw2vnEqOKIEVPaJr66yxXqqQ==",
@@ -145,7 +145,7 @@ Response
         "email_canonical": "chelsie.witting@example.com",
         "enabled": true,
         "expired": false,
-        "groups": [],
+        "group": [],
         "id": 481,
         "locked": false,
         "password": "EbOLtGHYxJKotA+bdb9BElhXPd8qZsnlo8CjDdCk+qFR22EEZJoOTntBX/M5GUXw2vnEqOKIEVPaJr66yxXqqQ==",
@@ -238,7 +238,7 @@ The successful response will contain the user object with a confirmation token a
         "email_canonical": "sylius@example.com",
         "enabled": true,
         "expired": false,
-        "groups": [],
+        "group": [],
         "id": 1,
         "last_login": "2014-12-08T13:08:02+0000",
         "locked": false,
@@ -249,20 +249,3 @@ The successful response will contain the user object with a confirmation token a
         "username": "sylius@example.com",
         "username_canonical": "sylius@example.com"
     }
-
-Index of all user orders
-------------------------
-
-To browse all orders for specific user, you can do the following call:
-
-.. code-block:: text
-
-    GET /api/users/14/orders/
-
-Parameters
-~~~~~~~~~~
-
-page
-    Number of the page, by default = 1
-limit
-    Number of items to display per page

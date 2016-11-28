@@ -11,12 +11,11 @@
 
 namespace Sylius\Component\Core\Model;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Core\Pricing\Calculators;
-use Sylius\Component\Product\Model\Variant as BaseVariant;
+use Sylius\Component\Product\Model\ProductVariant as BaseVariant;
+use Sylius\Component\Shipping\Model\ShippingCategoryInterface;
 use Sylius\Component\Taxation\Model\TaxCategoryInterface;
-use Sylius\Component\Variation\Model\VariantInterface as BaseVariantInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
@@ -27,11 +26,6 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
      * @var int
      */
     protected $price;
-
-    /**
-     * @var int
-     */
-    protected $originalPrice;
 
     /**
      * @var string
@@ -54,19 +48,9 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     protected $onHand = 0;
 
     /**
-     * @var int
-     */
-    protected $sold = 0;
-
-    /**
      * @var bool
      */
-    protected $availableOnDemand = true;
-
-    /**
-     * @var Collection|ProductVariantImageInterface[]
-     */
-    protected $images;
+    protected $tracked = false;
 
     /**
      * @var float
@@ -93,12 +77,10 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
      */
     protected $taxCategory;
 
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->images = new ArrayCollection();
-    }
+    /**
+     * @var ShippingCategoryInterface
+     */
+    protected $shippingCategory;
 
     /**
      * @return string
@@ -107,10 +89,10 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     {
         $string = $this->getProduct()->getName();
 
-        if (!$this->getOptions()->isEmpty()) {
+        if (!$this->getOptionValues()->isEmpty()) {
             $string .= '(';
 
-            foreach ($this->getOptions() as $option) {
+            foreach ($this->getOptionValues() as $option) {
                 $string .= $option->getOption()->getName().': '.$option->getValue().', ';
             }
 
@@ -118,22 +100,6 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
         }
 
         return $string;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMetadataClassIdentifier()
-    {
-        return self::METADATA_CLASS_IDENTIFIER;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMetadataIdentifier()
-    {
-        return $this->getMetadataClassIdentifier().'-'.$this->getId();
     }
 
     /**
@@ -154,26 +120,6 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
         }
 
         $this->price = $price;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setOriginalPrice($originalPrice)
-    {
-        if (null !== $originalPrice && !is_int($originalPrice)) {
-            throw new \InvalidArgumentException('Original price must be an integer.');
-        }
-
-        $this->originalPrice = $originalPrice;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getOriginalPrice()
-    {
-        return $this->originalPrice;
     }
 
     /**
@@ -251,17 +197,19 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     /**
      * {@inheritdoc}
      */
-    public function getSold()
+    public function isTracked()
     {
-        return $this->sold;
+        return $this->tracked;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setSold($sold)
+    public function setTracked($tracked)
     {
-        $this->sold = (int) $sold;
+        Assert::boolean($tracked);
+
+        $this->tracked = $tracked;
     }
 
     /**
@@ -271,77 +219,21 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     {
         return $this->getProduct()->getName();
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isAvailableOnDemand()
-    {
-        return $this->availableOnDemand;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setAvailableOnDemand($availableOnDemand)
-    {
-        $this->availableOnDemand = (bool) $availableOnDemand;
-    }
-
+    
     /**
      * {@inheritdoc}
      */
     public function getShippingCategory()
     {
-        return $this->getProduct()->getShippingCategory();
+        return $this->shippingCategory;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hasImage(ProductVariantImageInterface $image)
+    public function setShippingCategory(ShippingCategoryInterface $category = null)
     {
-        return $this->images->contains($image);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getImages()
-    {
-        return $this->images;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getImage()
-    {
-        if ($this->images->isEmpty()) {
-            return null;
-        }
-
-        return $this->images->first();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addImage(ProductVariantImageInterface $image)
-    {
-        if (!$this->hasImage($image)) {
-            $image->setVariant($this);
-            $this->images->add($image);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeImage(ProductVariantImageInterface $image)
-    {
-        $image->setVariant(null);
-        $this->images->removeElement($image);
+        $this->shippingCategory = $category;
     }
 
     /**
@@ -446,14 +338,6 @@ class ProductVariant extends BaseVariant implements ProductVariantInterface
     public function getShippingVolume()
     {
         return $this->depth * $this->height * $this->width;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isPriceReduced()
-    {
-        return $this->originalPrice > $this->price;
     }
 
     /**

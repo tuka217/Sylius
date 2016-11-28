@@ -1,5 +1,5 @@
-Using the Installer commands
-============================
+How to use installer commands?
+==============================
 
 Sylius platform ships with the ``sylius:install`` command, which takes care of creating the database, schema, dumping the assets and basic store configuration.
 
@@ -44,8 +44,8 @@ To configure your store, use this command and answer all questions:
 
     $ php app/console sylius:install:setup
 
-Installing assets and dumping Assetic
--------------------------------------
+Installing assets
+-----------------
 
 You can reinstall all web assets by simply calling:
 

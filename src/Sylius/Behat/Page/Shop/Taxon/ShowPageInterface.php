@@ -21,10 +21,49 @@ interface ShowPageInterface
      *
      * @return bool
      */
-    public function isProductInList($productName);
+    public function isProductOnList($productName);
 
     /**
      * @return bool
      */
     public function isEmpty();
+
+    /**
+     * @param string $productName
+     * @param string $productPrice
+     * 
+     * @return bool
+     */
+    public function isProductWithPriceOnList($productName, $productPrice);
+
+    /**
+     * @return int
+     */
+    public function countProductsItems();
+
+    /**
+     * @param string $name
+     * 
+     * @return bool
+     */
+    public function isProductOnPageWithName($name);
+
+    /**
+     * @return string
+     */
+    public function getFirstProductNameFromList();
+
+    /**
+     * @param string $name
+     */
+    public function search($name);
+
+    public function clearFilter();
+
+    /**
+     * @param array $productNames
+     * 
+     * @return bool
+     */
+    public function hasProductsInOrder(array $productNames);
 }

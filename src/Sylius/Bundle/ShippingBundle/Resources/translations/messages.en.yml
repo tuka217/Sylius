@@ -55,10 +55,12 @@ sylius:
             calculator: Calculator
             category: Category
             category_requirement: Category requirement
+            channels: Channels
             configuration: Configuration
             description: Description
             enabled: Enabled
             name: Name
             tax_category: Tax category
             translations: Translations
+            position: Position
 

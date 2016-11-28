@@ -41,8 +41,6 @@ Don't worry, everything was automatically installed via Composer.
             new Sylius\Bundle\ProductBundle\SyliusProductBundle(),
             new Sylius\Bundle\ResourceBundle\SyliusResourceBundle(),
             new Sylius\Bundle\AttributeBundle\SyliusAttributeBundle(),
-            new Sylius\Bundle\VariationBundle\SyliusVariationBundle(),
-            new Sylius\Bundle\TranslationBundle\SyliusTranslationBundle(),
 
             // Other bundles...
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
@@ -72,16 +70,6 @@ And configure doctrine extensions which are used by the bundle.
             default:
                 sluggable: true
                 timestampable: true
-
-Routing configuration
----------------------
-
-Add the following to your ``app/config/routing.yml``.
-
-.. code-block:: yaml
-
-    sylius_product:
-        resource: "@SyliusProductBundle/Resources/config/routing.yml"
 
 Updating database schema
 ------------------------

@@ -15,16 +15,15 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Core\Model\AdjustmentInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
+use Sylius\Component\Core\Model\OrderItemUnit;
 use Sylius\Component\Core\Model\OrderItemUnitInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Inventory\Model\InventoryUnitInterface;
-use Sylius\Component\Order\Model\OrderItemUnit;
+use Sylius\Component\Order\Model\OrderItemUnit as BaseOrderItemUnit;
 use Sylius\Component\Shipping\Model\ShipmentInterface;
 use Sylius\Component\Shipping\Model\ShipmentUnitInterface;
 
 /**
- * @mixin \Sylius\Component\Core\Model\OrderItemUnit
- *
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
  */
 final class OrderItemUnitSpec extends ObjectBehavior
@@ -38,33 +37,27 @@ final class OrderItemUnitSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Sylius\Component\Core\Model\OrderItemUnit');
+        $this->shouldHaveType(OrderItemUnit::class);
     }
 
-    function it_implements_order_item_unit_interface()
+    function it_implements_an_order_item_unit_interface()
     {
         $this->shouldImplement(OrderItemUnitInterface::class);
     }
 
-    function it_implements_inventory_unit_interface()
+    function it_implements_an_inventory_unit_interface()
     {
         $this->shouldImplement(InventoryUnitInterface::class);
     }
 
-    function it_implements_shipment_unit_interface()
+    function it_implements_a_shipment_unit_interface()
     {
         $this->shouldImplement(ShipmentUnitInterface::class);
     }
 
-    function it_is_order_item_unit()
+    function it_is_an_order_item_unit()
     {
-        $this->shouldHaveType(OrderItemUnit::class);
-    }
-
-    function its_inventory_state_is_mutable()
-    {
-        $this->setInventoryState('state');
-        $this->getInventoryState()->shouldReturn('state');
+        $this->shouldHaveType(BaseOrderItemUnit::class);
     }
 
     function its_shipment_is_mutable(ShipmentInterface $shipment)
@@ -85,34 +78,18 @@ final class OrderItemUnitSpec extends ObjectBehavior
         $this->getUpdatedAt()->shouldReturn($updatedAt);
     }
 
-    function it_stockable_is_order_item_variant(OrderItemInterface $orderItem, ProductVariantInterface $variant)
+    function its_stockable_is_an_order_item_variant(OrderItemInterface $orderItem, ProductVariantInterface $variant)
     {
         $orderItem->getVariant()->willReturn($variant);
 
         $this->getStockable()->shouldReturn($variant);
     }
 
-    function it_can_be_sold_or_backorderded()
-    {
-        $this->setInventoryState(InventoryUnitInterface::STATE_SOLD);
-        $this->shouldBeSold();
-
-        $this->setInventoryState(InventoryUnitInterface::STATE_BACKORDERED);
-        $this->shouldBeBackordered();
-        $this->shouldNotBeSold();
-    }
-
-    function its_shippable_is_order_item_variant(OrderItemInterface $orderItem, ProductVariantInterface $variant)
+    function its_shippable_is_an_order_item_variant(OrderItemInterface $orderItem, ProductVariantInterface $variant)
     {
         $orderItem->getVariant()->willReturn($variant);
 
         $this->getShippable()->shouldReturn($variant);
-    }
-
-    function its_shipping_state_is_mutable()
-    {
-        $this->setShippingState(ShipmentInterface::STATE_SHIPPED);
-        $this->getShippingState()->shouldReturn(ShipmentInterface::STATE_SHIPPED);
     }
 
     function it_returns_0_tax_total_when_there_are_no_tax_adjustments()
@@ -120,7 +97,7 @@ final class OrderItemUnitSpec extends ObjectBehavior
         $this->getTaxTotal()->shouldReturn(0);
     }
 
-    function it_returns_sum_of_neutral_and_non_neutral_tax_adjustments_as_tax_total(
+    function it_returns_a_sum_of_neutral_and_non_neutral_tax_adjustments_as_tax_total(
         OrderItemInterface $orderItem,
         AdjustmentInterface $nonNeutralTaxAdjustment,
         AdjustmentInterface $neutralTaxAdjustment

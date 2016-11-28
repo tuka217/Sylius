@@ -11,6 +11,7 @@
 
 namespace Sylius\Bundle\PromotionBundle\Form\Type\Rule;
 
+use Sylius\Bundle\MoneyBundle\Form\Type\MoneyType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -27,11 +28,11 @@ class ItemTotalConfigurationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('amount', 'sylius_money', [
-                'label' => 'sylius.form.rule.item_total_configuration.amount',
+            ->add('amount', MoneyType::class, [
+                'label' => 'sylius.form.promotion_rule.item_total_configuration.amount',
                 'constraints' => [
-                    new NotBlank(),
-                    new Type(['type' => 'numeric']),
+                    new NotBlank(['groups' => ['sylius']]),
+                    new Type(['type' => 'numeric', 'groups' => ['sylius']]),
                 ],
             ])
         ;
@@ -41,6 +42,14 @@ class ItemTotalConfigurationType extends AbstractType
      * {@inheritdoc}
      */
     public function getName()
+    {
+        return 'sylius_promotion_rule_item_total_configuration';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
     {
         return 'sylius_promotion_rule_item_total_configuration';
     }
