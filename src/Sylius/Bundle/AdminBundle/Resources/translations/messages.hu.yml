@@ -6,12 +6,13 @@ sylius:
         admin:
             main:
                 catalog:
+                    association_types: Kapcsolódó típusok
                     attributes: Tulajdonságok
                     header: Katalógus
                     options: Beállítások
                     products: Termékek
-                    taxons: Taxonok
                 configuration:
+                    admin_users: Adminisztrátorok
                     channels: Csatornák
                     countries: Országok
                     currencies: Pénznemek
@@ -24,14 +25,12 @@ sylius:
                     zones: Zónák
                 marketing:
                     header: Marketing
+                    product_reviews: Termék értékelések
                     promotions: Promóciók
                 customers:
                     customers: Ügyfelek
+                    groups: Csoportok
                     header: Ügyfél
                 sales:
                     header: Értékesítés
                     orders: Rendelések
-                content:
-                    header: Tartalom
-                    static_contents: Állandó tartalom
-                    routes: Útvonalak

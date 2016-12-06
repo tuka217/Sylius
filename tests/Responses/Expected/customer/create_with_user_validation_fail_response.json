@@ -17,7 +17,8 @@
                 ]
             },
             "phoneNumber": {},
-            "groups": {},
+            "subscribedToNewsletter": {},
+            "group": {},
             "user": {
                 "children": {
                     "plainPassword": {

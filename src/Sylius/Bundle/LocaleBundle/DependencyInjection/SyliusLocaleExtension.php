@@ -14,6 +14,7 @@ namespace Sylius\Bundle\LocaleBundle\DependencyInjection;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -36,9 +37,6 @@ final class SyliusLocaleExtension extends AbstractResourceExtension
 
         $container->setParameter('sylius_locale.locale', $config['locale']);
 
-        $container
-            ->getDefinition('sylius.form.type.locale_choice')
-            ->setArguments([new Reference('sylius.repository.locale')])
-        ;
+        $container->findDefinition('sylius.repository.locale')->setLazy(true);
     }
 }

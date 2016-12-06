@@ -23,7 +23,11 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         $bundles = [
+            new \Sylius\Bundle\AdminBundle\SyliusAdminBundle(),
+            new \Sylius\Bundle\ShopBundle\SyliusShopBundle(),
 
+            new \FOS\OAuthServerBundle\FOSOAuthServerBundle(), // Required by SyliusApiBundle.
+            new \Sylius\Bundle\ApiBundle\SyliusApiBundle(),
         ];
 
         return array_merge(parent::registerBundles(), $bundles);

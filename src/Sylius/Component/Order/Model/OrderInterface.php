@@ -18,11 +18,7 @@ use Sylius\Component\Resource\Model\TimestampableInterface;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-interface OrderInterface extends
-    AdjustableInterface,
-    CommentAwareInterface,
-    ResourceInterface,
-    TimestampableInterface
+interface OrderInterface extends AdjustableInterface, ResourceInterface, TimestampableInterface
 {
     const STATE_CART = 'cart';
     const STATE_NEW = 'new';
@@ -30,21 +26,21 @@ interface OrderInterface extends
     const STATE_FULFILLED = 'fulfilled';
 
     /**
-     * @return bool
-     */
-    public function isCompleted();
-
-    public function complete();
-
-    /**
      * @return \DateTime
      */
-    public function getCompletedAt();
+    public function getCheckoutCompletedAt();
 
     /**
-     * @param null|\DateTime $completedAt
+     * @param null|\DateTime $checkoutCompletedAt
      */
-    public function setCompletedAt(\DateTime $completedAt = null);
+    public function setCheckoutCompletedAt(\DateTime $checkoutCompletedAt = null);
+
+    /**
+     * @return bool
+     */
+    public function isCheckoutCompleted();
+
+    public function completeCheckout();
 
     /**
      * @return string
@@ -67,9 +63,11 @@ interface OrderInterface extends
     public function setNotes($notes);
 
     /**
-     * @return Collection|OrderItemInterface[] An array or collection of OrderItemInterface
+     * @return Collection|OrderItemInterface[]
      */
     public function getItems();
+
+    public function clearItems();
 
     /**
      * @return int
@@ -111,13 +109,6 @@ interface OrderInterface extends
     public function getTotalQuantity();
 
     /**
-     * @return bool
-     */
-    public function isEmpty();
-
-    public function clearItems();
-
-    /**
      * @return string
      */
     public function getState();
@@ -128,26 +119,9 @@ interface OrderInterface extends
     public function setState($state);
 
     /**
-     * Add an identity to this order. Eg. external identity to refer to an ebay order id.
-     *
-     * @param IdentityInterface $identity
+     * @return bool
      */
-    public function addIdentity(IdentityInterface $identity);
-
-    /**
-     * @param IdentityInterface $identity
-     */
-    public function removeIdentity(IdentityInterface $identity);
-
-    /**
-     * @param IdentityInterface $identity
-     */
-    public function hasIdentity(IdentityInterface $identity);
-
-    /**
-     * @return Collection|IdentityInterface[]
-     */
-    public function getIdentities();
+    public function isEmpty();
 
     /**
      * @param string|null $type

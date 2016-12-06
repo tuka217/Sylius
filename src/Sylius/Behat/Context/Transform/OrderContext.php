@@ -14,7 +14,7 @@ namespace Sylius\Behat\Context\Transform;
 use Behat\Behat\Context\Context;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
-use Sylius\Component\User\Repository\CustomerRepositoryInterface;
+use Sylius\Component\Core\Repository\CustomerRepositoryInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -59,6 +59,8 @@ final class OrderContext implements Context
 
     /**
      * @Transform /^this order made by "([^"]+)"$/
+     * @Transform /^order placed by "([^"]+)"$/
+     * @Transform /^the order of "([^"]+)"$/
      */
     public function getOrderByCustomer($email)
     {
@@ -74,6 +76,7 @@ final class OrderContext implements Context
     /**
      * @Transform :orderNumber
      * @Transform /^an order "([^"]+)"$/
+     * @Transform /^the order "([^"]+)"$/
      */
     public function getOrderNumber($orderNumber)
     {

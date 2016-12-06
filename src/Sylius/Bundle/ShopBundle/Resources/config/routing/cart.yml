@@ -5,38 +5,34 @@ sylius_shop_cart_summary:
     path: /
     methods: [GET]
     defaults:
-        _controller: sylius.controller.cart:summaryAction
+        _controller: sylius.controller.order:summaryAction
         _sylius:
-            template: SyliusShopBundle:Cart:summary.html.twig
+            template: "@SyliusShop/Cart/summary.html.twig"
+            form: Sylius\Bundle\OrderBundle\Form\Type\CartType
 
 sylius_shop_cart_save:
     path: /
-    methods: [POST]
+    methods: [PUT, PATCH]
     defaults:
-        _controller: sylius.controller.cart:saveAction
+        _controller: sylius.controller.order:saveAction
         _sylius:
-            template: SyliusShopBundle:Cart:summary.html.twig
+            template: "@SyliusShop/Cart/summary.html.twig"
             redirect: sylius_shop_cart_summary
+            form: Sylius\Bundle\OrderBundle\Form\Type\CartType
+            flash: sylius.cart.save
 
 sylius_shop_cart_clear:
     path: /
     methods: [DELETE]
     defaults:
-        _controller: sylius.controller.cart:clearAction
-        _sylius:
-            redirect: sylius_shop_cart_summary
-
-sylius_shop_cart_item_add:
-    path: /add
-    methods: [POST]
-    defaults:
-        _controller: sylius.controller.cart_item:addAction
+        _controller: sylius.controller.order:clearAction
         _sylius:
             redirect: sylius_shop_cart_summary
 
 sylius_shop_cart_item_remove:
     path: /{id}/remove
     defaults:
-        _controller: sylius.controller.cart_item:removeAction
+        _controller: sylius.controller.order_item:removeAction
         _sylius:
             redirect: sylius_shop_cart_summary
+            flash: sylius.cart.remove_item

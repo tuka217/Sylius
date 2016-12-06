@@ -11,19 +11,20 @@
 
 namespace Sylius\Bundle\CoreBundle\EventListener;
 
-use Sylius\Component\Core\Model\ProductInterface;
-use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Core\Model\ImageAwareInterface;
 use Sylius\Component\Core\Uploader\ImageUploaderInterface;
-use Sylius\Component\Taxonomy\Model\TaxonInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Webmozart\Assert\Assert;
 
-class ImageUploadListener
+/**
+ * @author Grzegorz Sadowski <grzegorz.sadowski@lakion.com>
+ */
+final class ImageUploadListener
 {
     /**
      * @var ImageUploaderInterface
      */
-    protected $uploader;
+    private $uploader;
 
     /**
      * @param ImageUploaderInterface $uploader
@@ -36,46 +37,20 @@ class ImageUploadListener
     /**
      * @param GenericEvent $event
      */
-    public function uploadProductVariantImage(GenericEvent $event)
+    public function uploadImage(GenericEvent $event)
     {
         $subject = $event->getSubject();
-        Assert::isInstanceOf($subject, ProductVariantInterface::class);
+        Assert::isInstanceOf($subject, ImageAwareInterface::class);
 
-        $this->uploadProductVariantImages($subject);
+        $this->uploadImages($subject);
     }
 
     /**
-     * @param GenericEvent $event
+     * @param ImageAwareInterface $subject
      */
-    public function uploadProductImage(GenericEvent $event)
+    private function uploadImages(ImageAwareInterface $subject)
     {
-        $subject = $event->getSubject();
-        Assert::isInstanceOf($subject, ProductInterface::class);
-
-        if ($subject->isSimple()) {
-            $this->uploadProductVariantImages($subject->getFirstVariant());
-        }
-    }
-
-    /**
-     * @param GenericEvent $event
-     */
-    public function uploadTaxonImage(GenericEvent $event)
-    {
-        $subject = $event->getSubject();
-        Assert::isInstanceOf($subject, TaxonInterface::class);
-
-        if ($subject->hasFile()) {
-            $this->uploader->upload($subject);
-        }
-    }
-
-    /**
-     * @param ProductVariantInterface $productVariant
-     */
-    private function uploadProductVariantImages(ProductVariantInterface $productVariant)
-    {
-        $images = $productVariant->getImages();
+        $images = $subject->getImages();
         foreach ($images as $image) {
             if ($image->hasFile()) {
                 $this->uploader->upload($image);

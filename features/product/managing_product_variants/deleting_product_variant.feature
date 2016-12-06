@@ -5,9 +5,9 @@ Feature: Deleting a product variant
     I want to be able to delete product variant from the product catalog
 
     Background:
-        Given the store is available in "English (United States)"
+        Given the store operates on a single channel in "United States"
         And the store has a product "PHP Mug"
-        And the product "PHP Mug" has "Medium PHP Mug" variant priced at "€40.00"
+        And the product "PHP Mug" has "Medium PHP Mug" variant priced at "$40.00"
         And I am logged in as an administrator
 
     @domain @ui

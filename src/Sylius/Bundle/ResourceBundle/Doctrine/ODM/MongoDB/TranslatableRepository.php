@@ -12,7 +12,7 @@
 namespace Sylius\Bundle\ResourceBundle\Doctrine\ODM\MongoDB;
 
 use Doctrine\MongoDB\Query\Builder as QueryBuilder;
-use Sylius\Component\Resource\Provider\LocaleProviderInterface;
+use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Sylius\Component\Resource\Repository\TranslatableRepositoryInterface;
 
 /**
@@ -23,7 +23,7 @@ use Sylius\Component\Resource\Repository\TranslatableRepositoryInterface;
 class TranslatableRepository extends DocumentRepository implements TranslatableRepositoryInterface
 {
     /**
-     * @var LocaleProviderInterface
+     * @var TranslationLocaleProviderInterface
      */
     protected $localeProvider;
 
@@ -35,7 +35,7 @@ class TranslatableRepository extends DocumentRepository implements TranslatableR
     /**
      * {@inheritdoc}
      */
-    public function setLocaleProvider(LocaleProviderInterface $localeProvider)
+    public function setLocaleProvider(TranslationLocaleProviderInterface $localeProvider)
     {
         $this->localeProvider = $localeProvider;
 
@@ -53,7 +53,7 @@ class TranslatableRepository extends DocumentRepository implements TranslatableR
     }
 
     /**
-     * {inheritdoc}.
+     * {@inheritdoc}
      */
     protected function applyCriteria(QueryBuilder $queryBuilder, array $criteria = null)
     {
@@ -75,7 +75,7 @@ class TranslatableRepository extends DocumentRepository implements TranslatableR
     }
 
     /**
-     * {inheritdoc}.
+     * {@inheritdoc}
      */
     protected function applySorting(QueryBuilder $queryBuilder, array $sorting = null)
     {
@@ -95,8 +95,8 @@ class TranslatableRepository extends DocumentRepository implements TranslatableR
      */
     protected function getPropertyName($name)
     {
-        if (in_array($name, $this->translatableFields)) {
-            return 'translations.'.$this->localeProvider->getCurrentLocale().'.'.$name;
+        if (in_array($name, $this->translatableFields, true)) {
+            return 'translations.'.$this->localeProvider->getDefaultLocaleCode().'.'.$name;
         }
 
         return $name;

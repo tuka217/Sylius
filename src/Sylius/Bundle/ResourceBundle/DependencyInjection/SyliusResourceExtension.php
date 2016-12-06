@@ -13,20 +13,18 @@ namespace Sylius\Bundle\ResourceBundle\DependencyInjection;
 
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Driver\DriverProvider;
 use Sylius\Component\Resource\Metadata\Metadata;
-use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  * @author Gonzalo Vilaseca <gvilaseca@reiss.co.uk>
  */
-class SyliusResourceExtension extends Extension
+final class SyliusResourceExtension extends Extension
 {
     /**
      * {@inheritdoc}
@@ -35,32 +33,18 @@ class SyliusResourceExtension extends Extension
     {
         $config = $this->processConfiguration($this->getConfiguration($config, $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        
-        $configFiles = [
-            'services.xml',
-            'controller.xml',
-            'storage.xml',
-            'routing.xml',
-            'twig.xml',
-            'console.xml',
-        ];
 
-        foreach ($configFiles as $configFile) {
-            $loader->load($configFile);
-        }
+        $loader->load('services.xml');
 
         $bundles = $container->getParameter('kernel.bundles');
         if (array_key_exists('SyliusGridBundle', $bundles)) {
-            $loader->load('grid.xml');
+            $loader->load('services/integrations/grid.xml');
         }
 
         if ($config['translation']['enabled']) {
-            $loader->load('translation.xml');
+            $loader->load('services/integrations/translation.xml');
 
-            $container->setParameter('sylius.translation.default_locale', $config['translation']['default_locale']);
-            $container->setAlias('sylius.translation.locale_provider', $config['translation']['locale_provider']);
-            $container->setAlias('sylius.translation.available_locales_provider', $config['translation']['available_locales_provider']);
-            $container->setParameter('sylius.translation.available_locales', $config['translation']['available_locales']);
+            $container->setAlias('sylius.translation_locale_provider', $config['translation']['locale_provider']);
         }
 
         $container->setParameter('sylius.resource.settings', $config['settings']);
@@ -70,19 +54,20 @@ class SyliusResourceExtension extends Extension
         $this->loadResources($config['resources'], $container);
     }
 
-    private function loadPersistence(array $enabledDrivers, array $resources, LoaderInterface $loader)
+    private function loadPersistence(array $drivers, array $resources, LoaderInterface $loader)
     {
         foreach ($resources as $alias => $resource) {
-            if (!in_array($resource['driver'], $enabledDrivers)) {
+            if (!in_array($resource['driver'], $drivers, true)) {
                 throw new InvalidArgumentException(sprintf(
                     'Resource "%s" uses driver "%s", but this driver has not been enabled.',
-                    $alias, $resource['driver']
+                    $alias,
+                    $resource['driver']
                 ));
             }
         }
 
-        foreach ($enabledDrivers as $enabledDriver) {
-            $loader->load(sprintf('driver/%s.xml', $enabledDriver));
+        foreach ($drivers as $driver) {
+            $loader->load(sprintf('services/integrations/%s.xml', $driver));
         }
     }
 

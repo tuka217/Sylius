@@ -13,21 +13,22 @@ namespace Sylius\Component\Core\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Sylius\Component\Cart\Model\Cart;
 use Sylius\Component\Channel\Model\ChannelInterface as BaseChannelInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
-use Sylius\Component\Inventory\Model\InventoryUnitInterface;
+use Sylius\Component\Core\OrderPaymentStates;
+use Sylius\Component\Core\OrderShippingStates;
+use Sylius\Component\Customer\Model\CustomerInterface as BaseCustomerInterface;
+use Sylius\Component\Order\Model\Order as BaseOrder;
 use Sylius\Component\Payment\Model\PaymentInterface as BasePaymentInterface;
-use Sylius\Component\Promotion\Model\CouponInterface as BaseCouponInterface;
+use Sylius\Component\Promotion\Model\PromotionCouponInterface as BaseCouponInterface;
 use Sylius\Component\Promotion\Model\PromotionInterface as BasePromotionInterface;
-use Sylius\Component\User\Model\CustomerInterface as BaseCustomerInterface;
 use Webmozart\Assert\Assert;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  * @author Michał Marcinkowski <michal.marcinkowski@lakion.com>
  */
-class Order extends Cart implements OrderInterface
+class Order extends BaseOrder implements OrderInterface
 {
     /**
      * @var BaseCustomerInterface
@@ -65,9 +66,9 @@ class Order extends Cart implements OrderInterface
     protected $currencyCode;
 
     /**
-     * @var float
+     * @var string
      */
-    protected $exchangeRate = 1.0;
+    protected $localeCode;
 
     /**
      * @var BaseCouponInterface
@@ -82,19 +83,27 @@ class Order extends Cart implements OrderInterface
     /**
      * @var string
      */
-    protected $paymentState = BasePaymentInterface::STATE_CART;
+    protected $paymentState = OrderPaymentStates::STATE_CART;
 
     /**
-     * It depends on the status of all order shipments.
-     *
      * @var string
      */
-    protected $shippingState = OrderShippingStates::CHECKOUT;
+    protected $shippingState = OrderShippingStates::STATE_CART;
 
     /**
      * @var Collection|BasePromotionInterface[]
      */
     protected $promotions;
+
+    /**
+     * @var string
+     */
+    protected $tokenValue;
+
+    /**
+     * @var string
+     */
+    protected $customerIp;
 
     public function __construct()
     {
@@ -265,8 +274,6 @@ class Order extends Cart implements OrderInterface
         if (!$this->hasPayment($payment)) {
             $this->payments->add($payment);
             $payment->setOrder($this);
-
-            $this->setPaymentState($payment->getState());
         }
     }
 
@@ -293,14 +300,14 @@ class Order extends Cart implements OrderInterface
     /**
      * {@inheritdoc}
      */
-    public function getLastPayment($state = BasePaymentInterface::STATE_NEW)
+    public function getLastNewPayment()
     {
         if ($this->payments->isEmpty()) {
             return null;
         }
 
-        $payment = $this->payments->filter(function (BasePaymentInterface $payment) use ($state) {
-            return $payment->getState() === $state;
+        $payment = $this->payments->filter(function (BasePaymentInterface $payment) {
+            return $payment->getState() === BasePaymentInterface::STATE_NEW;
         })->last();
 
         return $payment !== false ? $payment : null;
@@ -347,13 +354,21 @@ class Order extends Cart implements OrderInterface
     /**
      * {@inheritdoc}
      */
+    public function removeShipments()
+    {
+        $this->shipments->clear();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hasShipment(ShipmentInterface $shipment)
     {
         return $this->shipments->contains($shipment);
     }
 
     /**
-     * @return null|BaseCouponInterface
+     * {@inheritdoc}
      */
     public function getPromotionCoupon()
     {
@@ -405,17 +420,19 @@ class Order extends Cart implements OrderInterface
     /**
      * {@inheritdoc}
      */
-    public function getExchangeRate()
+    public function getLocaleCode()
     {
-        return $this->exchangeRate;
+        return $this->localeCode;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setExchangeRate($exchangeRate)
+    public function setLocaleCode($localeCode)
     {
-        $this->exchangeRate = (float) $exchangeRate;
+        Assert::string($localeCode);
+
+        $this->localeCode = $localeCode;
     }
 
     /**
@@ -432,53 +449,6 @@ class Order extends Cart implements OrderInterface
     public function setShippingState($state)
     {
         $this->shippingState = $state;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isBackorder()
-    {
-        foreach ($this->getItemUnits() as $itemUnit) {
-            if (InventoryUnitInterface::STATE_BACKORDERED === $itemUnit->getInventoryState()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Gets the last updated shipment of the order
-     *
-     * @return false|ShipmentInterface
-     */
-    public function getLastShipment()
-    {
-        if ($this->shipments->isEmpty()) {
-            return false;
-        }
-
-        $last = $this->shipments->first();
-        foreach ($this->shipments as $shipment) {
-            if ($shipment->getUpdatedAt() > $last->getUpdatedAt()) {
-                $last = $shipment;
-            }
-        }
-
-        return $last;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isInvoiceAvailable()
-    {
-        if (false !== $lastShipment = $this->getLastShipment()) {
-            return in_array($lastShipment->getState(), [ShipmentInterface::STATE_RETURNED, ShipmentInterface::STATE_SHIPPED]);
-        }
-
-        return false;
     }
 
     /**
@@ -564,5 +534,37 @@ class Order extends Cart implements OrderInterface
         }
 
         return $orderPromotionTotal;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTokenValue()
+    {
+        return $this->tokenValue;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTokenValue($tokenValue)
+    {
+        $this->tokenValue = $tokenValue;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCustomerIp()
+    {
+        return $this->customerIp;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setCustomerIp($customerIp)
+    {
+        $this->customerIp = $customerIp;
     }
 }

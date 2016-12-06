@@ -17,7 +17,7 @@ use Sylius\Component\Grid\Data\ExpressionBuilderInterface;
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class ExpressionBuilder implements ExpressionBuilderInterface
+final class ExpressionBuilder implements ExpressionBuilderInterface
 {
     /**
      * @var QueryBuilder
@@ -27,7 +27,7 @@ class ExpressionBuilder implements ExpressionBuilderInterface
     /**
      * @param QueryBuilder $queryBuilder
      */
-    function __construct(QueryBuilder $queryBuilder)
+    public function __construct(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
     }
@@ -35,29 +35,17 @@ class ExpressionBuilder implements ExpressionBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function andX($expressions)
+    public function andX(...$expressions)
     {
-        $expr = $this->queryBuilder->expr();
-
-        if (is_array($expressions)) {
-            return call_user_func_array([$expr, 'andX'], $expressions);
-        }
-
-        return $this->queryBuilder->expr()->andX(func_get_args());
+        return $this->queryBuilder->expr()->andX(...$expressions);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function orX($expressions)
+    public function orX(...$expressions)
     {
-        $expr = $this->queryBuilder->expr();
-
-        if (is_array($expressions)) {
-            return call_user_func_array([$expr, 'orX'], $expressions);
-        }
-
-        return $this->queryBuilder->expr()->orX(func_get_args());
+        return $this->queryBuilder->expr()->orX(...$expressions);
     }
 
     /**

@@ -5,13 +5,10 @@ Sylius\Component\Core\Model\ProductVariant:
         sku:
             expose: true
             type: string
-        price:
-            expose: true
-            type: integer
         onHold:
             expose: true
             type: integer
-        availableOnDemand:
+        tracked:
             expose: true
             type: boolean
         width:

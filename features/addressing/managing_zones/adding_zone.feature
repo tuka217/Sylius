@@ -13,8 +13,8 @@ Feature: Adding a new zone with country type members
 
     @ui @javascript
     Scenario: Adding a zone with a country type member
-        Given I want to create a new zone consisting of country
-        When I name it "European Union"
+        When I want to create a new zone consisting of country
+        And I name it "European Union"
         And I specify its code as "EU"
         And I add a country "France"
         And I add it
@@ -23,18 +23,18 @@ Feature: Adding a new zone with country type members
 
     @ui @javascript
     Scenario: Adding a zone with province type member
-        Given I want to create a new zone consisting of province
-        When I name it "United States of America"
+        When I want to create a new zone consisting of province
+        And I name it "United States"
         And I specify its code as "USA"
         And I add a province "Alabama"
         And I add it
         Then I should be notified that it has been successfully created
-        And the zone named "United States of America" with the "Alabama" province member should appear in the registry
+        And the zone named "United States" with the "Alabama" province member should appear in the registry
 
     @ui @javascript
     Scenario: Adding a zone with zone type member
-        Given I want to create a new zone consisting of zone
-        When I name it "America"
+        When I want to create a new zone consisting of zone
+        And I name it "America"
         And I specify its code as "AM"
         And I add a zone "North America"
         And I add it

@@ -1,3 +1,5 @@
-<span class="ui huge header">
-    {{ product.price|sylius_price }}
+{% import "@SyliusShop/Common/Macro/money.html.twig" as money %}
+
+<span class="ui huge header" id="product-price">
+    {{ money.calculatePrice(product|sylius_resolve_variant) }}
 </span>

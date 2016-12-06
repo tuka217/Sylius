@@ -45,18 +45,13 @@ final class ChannelBasedCurrencyProvider implements CurrencyProviderInterface
             /** @var ChannelInterface $channel */
             $channel = $this->channelContext->getChannel();
 
-            $currencies = $channel
+            return $channel
                 ->getCurrencies()
-                ->filter(function (CurrencyInterface $currency) {
-                    return $currency->isEnabled();
+                ->map(function (CurrencyInterface $currency) {
+                    return $currency->getCode();
                 })
                 ->toArray()
             ;
-
-            return array_map(
-                function (CurrencyInterface $currency) { return $currency->getCode(); },
-                $currencies
-            );
         } catch (ChannelNotFoundException $exception) {
             throw new CurrencyNotFoundException(null, $exception);
         }
@@ -71,7 +66,7 @@ final class ChannelBasedCurrencyProvider implements CurrencyProviderInterface
             /** @var ChannelInterface $channel */
             $channel = $this->channelContext->getChannel();
 
-            return $channel->getDefaultCurrency()->getCode();
+            return $channel->getBaseCurrency()->getCode();
         } catch (ChannelNotFoundException $exception) {
             throw new CurrencyNotFoundException(null, $exception);
         }

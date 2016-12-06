@@ -12,8 +12,9 @@
 namespace Sylius\Component\Core\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Sylius\Component\User\Model\Customer as BaseCustomer;
-use Webmozart\Assert\Assert;
+use Doctrine\Common\Collections\Collection;
+use Sylius\Component\Customer\Model\Customer as BaseCustomer;
+use Sylius\Component\User\Model\UserInterface as BaseUserInterface;
 
 /**
  * @author Michał Marcinkowski <michal.marcinkowski@lakion.com>
@@ -21,24 +22,24 @@ use Webmozart\Assert\Assert;
 class Customer extends BaseCustomer implements CustomerInterface, ProductReviewerInterface
 {
     /**
-     * @var ArrayCollection
+     * @var Collection|OrderInterface[]
      */
     protected $orders;
 
     /**
      * @var AddressInterface
      */
-    protected $billingAddress;
+    protected $defaultAddress;
 
     /**
-     * @var AddressInterface
-     */
-    protected $shippingAddress;
-
-    /**
-     * @var ArrayCollection
+     * @var Collection|AddressInterface[]
      */
     protected $addresses;
+
+    /**
+     * @var ShopUserInterface
+     */
+    protected $user;
 
     public function __construct()
     {
@@ -59,41 +60,21 @@ class Customer extends BaseCustomer implements CustomerInterface, ProductReviewe
     /**
      * {@inheritdoc}
      */
-    public function setBillingAddress(AddressInterface $billingAddress = null)
+    public function getDefaultAddress()
     {
-        $this->billingAddress = $billingAddress;
+        return $this->defaultAddress;
+    }
 
-        if (null !== $billingAddress) {
-            $this->addAddress($billingAddress);
+    /**
+     * {@inheritdoc}
+     */
+    public function setDefaultAddress(AddressInterface $defaultAddress = null)
+    {
+        $this->defaultAddress = $defaultAddress;
+
+        if (null !== $defaultAddress) {
+            $this->addAddress($defaultAddress);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBillingAddress()
-    {
-        return $this->billingAddress;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setShippingAddress(AddressInterface $shippingAddress = null)
-    {
-        $this->shippingAddress = $shippingAddress;
-
-        if (null !== $shippingAddress) {
-            $this->addAddress($shippingAddress);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getShippingAddress()
-    {
-        return $this->shippingAddress;
     }
 
     /**
@@ -130,5 +111,42 @@ class Customer extends BaseCustomer implements CustomerInterface, ProductReviewe
     public function getAddresses()
     {
         return $this->addresses;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function setUser(BaseUserInterface $user = null)
+    {
+        if ($this->user !== $user) {
+            $this->user = $user;
+            $this->assignCustomer($user);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasUser()
+    {
+        return null !== $this->user;
+    }
+
+    /**
+     * @param ShopUserInterface|null $user
+     */
+    protected function assignCustomer(ShopUserInterface $user = null)
+    {
+        if (null !== $user) {
+            $user->setCustomer($this);
+        }
     }
 }

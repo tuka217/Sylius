@@ -14,17 +14,17 @@ namespace Sylius\Behat\Context\Ui\Shop;
 use Behat\Behat\Context\Context;
 use Sylius\Behat\NotificationType;
 use Sylius\Behat\Page\Shop\Account\LoginPageInterface;
+use Sylius\Behat\Page\Shop\Account\RegisterPageInterface;
 use Sylius\Behat\Page\Shop\Account\ResetPasswordPageInterface;
 use Sylius\Behat\Page\Shop\HomePageInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
 use Sylius\Behat\Service\Resolver\CurrentPageResolverInterface;
-use Sylius\Component\Core\Test\Services\EmailCheckerInterface;
 use Webmozart\Assert\Assert;
 
 /**
  * @author Arkadiusz Krakowiak <arkadiusz.krakowiak@lakion.com>
  */
-class LoginContext implements Context
+final class LoginContext implements Context
 {
     /**
      * @var HomePageInterface
@@ -37,6 +37,11 @@ class LoginContext implements Context
     private $loginPage;
 
     /**
+     * @var RegisterPageInterface
+     */
+    private $registerPage;
+
+    /**
      * @var ResetPasswordPageInterface
      */
     private $resetPasswordPage;
@@ -47,11 +52,6 @@ class LoginContext implements Context
     private $currentPageResolver;
 
     /**
-     * @var EmailCheckerInterface
-     */
-    private $emailChecker;
-
-    /**
      * @var NotificationCheckerInterface
      */
     private $notificationChecker;
@@ -59,29 +59,29 @@ class LoginContext implements Context
     /**
      * @param HomePageInterface $homePage
      * @param LoginPageInterface $loginPage
+     * @param RegisterPageInterface $registerPage
      * @param ResetPasswordPageInterface $resetPasswordPage
      * @param CurrentPageResolverInterface $currentPageResolver
-     * @param EmailCheckerInterface $emailChecker
      * @param NotificationCheckerInterface $notificationChecker
      */
     public function __construct(
         HomePageInterface $homePage,
         LoginPageInterface $loginPage,
+        RegisterPageInterface $registerPage,
         ResetPasswordPageInterface $resetPasswordPage,
         CurrentPageResolverInterface $currentPageResolver,
-        EmailCheckerInterface $emailChecker,
         NotificationCheckerInterface $notificationChecker
     ) {
         $this->homePage = $homePage;
         $this->loginPage = $loginPage;
+        $this->registerPage = $registerPage;
         $this->resetPasswordPage = $resetPasswordPage;
         $this->currentPageResolver = $currentPageResolver;
-        $this->emailChecker = $emailChecker;
         $this->notificationChecker = $notificationChecker;
     }
 
     /**
-     * @Given I want to log in
+     * @When I want to log in
      */
     public function iWantToLogIn()
     {
@@ -89,7 +89,7 @@ class LoginContext implements Context
     }
 
     /**
-     * @Given I want to reset password
+     * @When I want to reset password
      */
     public function iWantToResetPassword()
     {
@@ -125,6 +125,7 @@ class LoginContext implements Context
 
     /**
      * @When I log in
+     * @When I try to log in
      */
     public function iLogIn()
     {
@@ -133,6 +134,7 @@ class LoginContext implements Context
 
     /**
      * @When I reset it
+     * @When I try to reset it
      */
     public function iResetIt()
     {
@@ -150,13 +152,31 @@ class LoginContext implements Context
     }
 
     /**
+     * @When I register with email :email and password :password
+     */
+    public function iRegisterWithEmailAndPassword($email, $password)
+    {
+        $this->registerPage->open();
+        $this->registerPage->specifyEmail($email);
+        $this->registerPage->specifyPassword($password);
+        $this->registerPage->verifyPassword($password);
+        $this->registerPage->specifyFirstName('Carrot');
+        $this->registerPage->specifyLastName('Ironfoundersson');
+        $this->registerPage->register();
+    }
+
+    /**
      * @Then I should be logged in
      */
     public function iShouldBeLoggedIn()
     {
         Assert::true(
+            $this->homePage->isOpen(),
+            'I should be on the homepage.'
+        );
+        Assert::true(
             $this->homePage->hasLogoutButton(),
-            'I should be on home page and, also i should be able to sign out.'
+            'I should be able to sign out.'
         );
     }
 
@@ -183,22 +203,22 @@ class LoginContext implements Context
     }
 
     /**
+     * @Then I should be notified about disabled account
+     */
+    public function iShouldBeNotifiedAboutDisabledAccount()
+    {
+        Assert::true(
+            $this->loginPage->hasValidationErrorWith('Error Account is disabled.'),
+            'I should see validation error.'
+        );
+    }
+
+    /**
      * @Then I should be notified that email with reset instruction has been send
      */
     public function iShouldBeNotifiedThatEmailWithResetInstructionWasSend()
     {
         $this->notificationChecker->checkNotification('If the email you have specified exists in our system, we have sent there an instruction on how to reset your password.', NotificationType::success());
-    }
-
-    /**
-     * @Then the email with reset token should be sent to :email
-     */
-    public function theEmailWithResetTokenShouldBeSentTo($email)
-    {
-        Assert::true(
-            $this->emailChecker->hasRecipient($email),
-            sprintf('Email should have been sent to %s.', $email)
-        );
     }
 
     /**
@@ -210,5 +230,18 @@ class LoginContext implements Context
             $this->resetPasswordPage->checkValidationMessageFor($elementName, sprintf('Please enter your %s.', $elementName)),
             sprintf('The %s should be required.', $elementName)
         );
+    }
+
+    /**
+     * @Then I should be able to log in as :email with :password password
+     */
+    public function iShouldBeAbleToLogInAsWithPassword($email, $password)
+    {
+        $this->loginPage->open();
+        $this->loginPage->specifyUsername($email);
+        $this->loginPage->specifyPassword($password);
+        $this->loginPage->logIn();
+
+        $this->iShouldBeLoggedIn();
     }
 }

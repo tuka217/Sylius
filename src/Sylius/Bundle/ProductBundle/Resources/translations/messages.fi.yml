@@ -3,5 +3,5 @@
 
 sylius:
     form:
-        product_archetype:
-            parent: Vanhempi
+        option_value:
+            add_value: Lisää arvo

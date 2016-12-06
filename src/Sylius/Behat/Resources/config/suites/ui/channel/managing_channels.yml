@@ -4,7 +4,7 @@
 default:
     suites:
         ui_managing_channels:
-            contexts_as_services:
+            contexts_services:
                 - sylius.behat.context.hook.doctrine_orm
 
                 - sylius.behat.context.transform.channel
@@ -17,7 +17,7 @@ default:
                 - sylius.behat.context.setup.currency
                 - sylius.behat.context.setup.locale
                 - sylius.behat.context.setup.payment
-                - sylius.behat.context.setup.security
+                - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.shipping
                 - sylius.behat.context.setup.zone
 

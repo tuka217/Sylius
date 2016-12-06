@@ -32,7 +32,7 @@ abstract class AbstractRoleCommand extends ContainerAwareCommand
             $email = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 'Please enter an email:',
-                function($email) {
+                function ($email) {
                     if (empty($email)) {
                         throw new \Exception('Email can not be empty');
                     }
@@ -97,7 +97,7 @@ abstract class AbstractRoleCommand extends ContainerAwareCommand
      */
     protected function getEntityManager()
     {
-        return $this->getContainer()->get('sylius.manager.user');
+        return $this->getContainer()->get('sylius.manager.shop_user');
     }
 
     /**
@@ -105,7 +105,7 @@ abstract class AbstractRoleCommand extends ContainerAwareCommand
      */
     protected function getUserRepository()
     {
-        return $this->getContainer()->get('sylius.repository.user');
+        return $this->getContainer()->get('sylius.repository.shop_user');
     }
 
     /**

@@ -27,15 +27,35 @@ sylius_api_customer_create:
         _controller: sylius.controller.customer:createAction
         _sylius:
             serialization_groups: [Detailed]
+            form:
+                type: Sylius\Bundle\ApiBundle\Form\Extension\ApiCustomerType
 
 sylius_api_customer_update:
     path: /{id}
     methods: [PUT, PATCH]
     defaults:
         _controller: sylius.controller.customer:updateAction
+        _sylius:
+            form:
+                type: Sylius\Bundle\ApiBundle\Form\Extension\ApiCustomerType
 
 sylius_api_customer_delete:
     path: /{id}
     methods: [DELETE]
     defaults:
         _controller: sylius.controller.customer:deleteAction
+        _sylius:
+            csrf_protection: false
+
+sylius_api_customer_order_index:
+    path: /{id}/orders/
+    methods: [GET]
+    defaults:
+        _controller: sylius.controller.order:indexAction
+        _sylius:
+            paginate: $limit
+            filterable: true
+            criteria: { customer: $id }
+            sortable: true
+            sorting: { updatedAt: desc }
+            csrf_protection: false

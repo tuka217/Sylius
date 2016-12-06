@@ -52,8 +52,8 @@ final class ManagingTaxRateContext implements Context
      */
     public function __construct(
         IndexPageInterface $indexPage,
-        CreatePageInterface $createPage, 
-        UpdatePageInterface $updatePage, 
+        CreatePageInterface $createPage,
+        UpdatePageInterface $updatePage,
         CurrentPageResolverInterface $currentPageResolver
     ) {
         $this->indexPage = $indexPage;
@@ -328,5 +328,13 @@ final class ManagingTaxRateContext implements Context
         $currentPage = $this->currentPageResolver->getCurrentPageWithForm([$this->createPage, $this->updatePage]);
 
         Assert::same($currentPage->getValidationMessage($element), $expectedMessage);
+    }
+
+    /**
+     * @Given I choose "Included in price" option
+     */
+    public function iChooseOption()
+    {
+        $this->createPage->chooseIncludedInPrice();
     }
 }

@@ -91,6 +91,11 @@ interface ShowPageInterface extends SymfonyPageInterface
     public function completeOrderLastPayment(OrderInterface $order);
 
     /**
+     * @param OrderInterface $order
+     */
+    public function refundOrderLastPayment(OrderInterface $order);
+
+    /**
      * @return int
      */
     public function countItems();
@@ -153,6 +158,13 @@ interface ShowPageInterface extends SymfonyPageInterface
      *
      * @return string
      */
+    public function getItemCode($itemName);
+
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
     public function getItemUnitPrice($itemName);
 
     /**
@@ -196,6 +208,16 @@ interface ShowPageInterface extends SymfonyPageInterface
      * @return string
      */
     public function getItemTotal($itemName);
+
+    /**
+     * @return string
+     */
+    public function getPaymentAmount();
+
+    /**
+     * @return int
+     */
+    public function getPaymentsCount();
     
     /**
      * @return bool
@@ -207,14 +229,43 @@ interface ShowPageInterface extends SymfonyPageInterface
      */
     public function getOrderState();
 
+    /**
+     * @return string
+     */
+    public function getPaymentState();
+
     public function cancelOrder();
 
     public function deleteOrder();
 
     /**
      * @param string $note
-     * 
+     *
      * @return bool
      */
     public function hasNote($note);
+
+    /**
+     * @param string $provinceName
+     *
+     * @return bool
+     */
+    public function hasShippingProvinceName($provinceName);
+
+    /**
+     * @param string $provinceName
+     *
+     * @return bool
+     */
+    public function hasBillingProvinceName($provinceName);
+
+    /**
+     * @return string
+     */
+    public function getIpAddressAssigned();
+
+    /**
+     * @return string
+     */
+    public function getOrderCurrency();
 }

@@ -13,42 +13,31 @@ namespace Sylius\Bundle\CoreBundle\Fixture;
 
 use Sylius\Bundle\FixturesBundle\Fixture\AbstractFixture;
 use Sylius\Component\Attribute\AttributeType\TextAttributeType;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @author Kamil Kokot <kamil.kokot@lakion.com>
  */
-final class MugProductFixture extends AbstractFixture
+class MugProductFixture extends AbstractFixture
 {
     /**
-     * @var TaxonFixture
+     * @var AbstractResourceFixture
      */
     private $taxonFixture;
 
     /**
-     * @var RepositoryInterface
-     */
-    private $taxonRepository;
-
-    /**
-     * @var ProductAttributeFixture
+     * @var AbstractResourceFixture
      */
     private $productAttributeFixture;
 
     /**
-     * @var ProductOptionFixture
+     * @var AbstractResourceFixture
      */
     private $productOptionFixture;
 
     /**
-     * @var ProductArchetypeFixture
-     */
-    private $productArchetypeFixture;
-
-    /**
-     * @var ProductFixture
+     * @var AbstractResourceFixture
      */
     private $productFixture;
 
@@ -63,26 +52,20 @@ final class MugProductFixture extends AbstractFixture
     private $optionsResolver;
 
     /**
-     * @param TaxonFixture $taxonFixture
-     * @param RepositoryInterface $taxonRepository
-     * @param ProductAttributeFixture $productAttributeFixture
-     * @param ProductOptionFixture $productOptionFixture
-     * @param ProductArchetypeFixture $productArchetypeFixture
-     * @param ProductFixture $productFixture
+     * @param AbstractResourceFixture $taxonFixture
+     * @param AbstractResourceFixture $productAttributeFixture
+     * @param AbstractResourceFixture $productOptionFixture
+     * @param AbstractResourceFixture $productFixture
      */
     public function __construct(
-        TaxonFixture $taxonFixture,
-        RepositoryInterface $taxonRepository,
-        ProductAttributeFixture $productAttributeFixture,
-        ProductOptionFixture $productOptionFixture,
-        ProductArchetypeFixture $productArchetypeFixture,
-        ProductFixture $productFixture
+        AbstractResourceFixture $taxonFixture,
+        AbstractResourceFixture $productAttributeFixture,
+        AbstractResourceFixture $productOptionFixture,
+        AbstractResourceFixture $productFixture
     ) {
         $this->taxonFixture = $taxonFixture;
-        $this->taxonRepository = $taxonRepository;
         $this->productAttributeFixture = $productAttributeFixture;
         $this->productOptionFixture = $productOptionFixture;
-        $this->productArchetypeFixture = $productArchetypeFixture;
         $this->productFixture = $productFixture;
 
         $this->faker = \Faker\Factory::create();
@@ -120,42 +103,37 @@ final class MugProductFixture extends AbstractFixture
         ]]]);
 
         $this->productAttributeFixture->load(['custom' => [
-            ['name' => 'Mug material', 'code' => 'MUG-MATERIAL', 'type' => TextAttributeType::TYPE],
+            ['name' => 'Mug material', 'code' => 'mug_material', 'type' => TextAttributeType::TYPE],
         ]]);
 
         $this->productOptionFixture->load(['custom' => [
             [
                 'name' => 'Mug type',
-                'code' => 'MUG-TYPE',
+                'code' => 'mug_type',
                 'values' => [
-                    'MUG-TYPE-MEDIUM' => 'Medium mug',
-                    'MUG-TYPE-DOUBLE' => 'Double mug',
-                    'MUG-TYPE-MONSTER' => 'Monster mug',
+                    'mug_type_medium' => 'Medium mug',
+                    'mug_type_double' => 'Double mug',
+                    'mug_type_monster' => 'Monster mug',
                 ],
-            ],
-        ]]);
-
-        $this->productArchetypeFixture->load(['custom' => [
-            [
-                'name' => 'Mug',
-                'code' => 'MUG',
-                'product_attributes' => ['MUG-MATERIAL'],
-                'product_options' => ['MUG-TYPE'],
             ],
         ]]);
 
         $products = [];
+        $productsNames = $this->getUniqueNames($options['amount']);
         for ($i = 0; $i < $options['amount']; ++$i) {
             $products[] = [
-                'name' => sprintf('Mug "%s"', $this->faker->word),
+                'name' => sprintf('Mug "%s"', $productsNames[$i]),
                 'code' => $this->faker->uuid,
                 'main_taxon' => 'mugs',
-                'product_archetype' => 'MUG',
                 'taxons' => ['mugs'],
                 'product_attributes' => [
-                    'MUG-MATERIAL' => $this->faker->randomElement(['Invisible porcelain', 'Banana skin', 'Porcelain', 'Centipede']),
+                    'mug_material' => $this->faker->randomElement(['Invisible porcelain', 'Banana skin', 'Porcelain', 'Centipede']),
                 ],
-                'images' => [sprintf('%s/../Resources/fixtures/%s', __DIR__, 'mugs.jpg')],
+                'product_options' => ['mug_type'],
+                'images' => [
+                    'main' => sprintf('%s/../Resources/fixtures/%s', __DIR__, 'mugs.jpg'),
+                    'thumbnail' => sprintf('%s/../Resources/fixtures/%s', __DIR__, 'mugs.jpg'),
+                ],
             ];
         }
 
@@ -171,5 +149,25 @@ final class MugProductFixture extends AbstractFixture
             ->children()
                 ->integerNode('amount')->isRequired()->min(0)->end()
         ;
+    }
+
+    /**
+     * @param int $amount
+     *
+     * @return string
+     */
+    private function getUniqueNames($amount)
+    {
+        $productsNames = [];
+
+        for ($i = 0; $i < $amount; ++$i) {
+            $name = $this->faker->word;
+            while (in_array($name, $productsNames)) {
+                $name = $this->faker->word;
+            }
+            $productsNames[] = $name;
+        }
+
+        return $productsNames;
     }
 }

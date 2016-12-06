@@ -13,6 +13,7 @@ namespace Sylius\Behat\Context\Transform;
 
 use Behat\Behat\Context\Context;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Łukasz Chruściel <lukasz.chrusciel@lakion.com>
@@ -33,37 +34,32 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Transform /^product "([^"]+)"$/
-     * @Transform /^"([^"]+)" product$/
-     * @Transform /^"([^"]+)" products$/
+     * @Transform /^product(?:|s) "([^"]+)"$/
+     * @Transform /^"([^"]+)" product(?:|s)$/
      * @Transform /^(?:a|an) "([^"]+)"$/
      * @Transform :product
      */
     public function getProductByName($productName)
     {
-        $product = $this->productRepository->findOneByName($productName);
-        if (null === $product) {
-            throw new \InvalidArgumentException(sprintf('Product with name "%s" does not exist', $productName));
-        }
+        $products = $this->productRepository->findByName($productName, 'en_US');
 
-        return $product;
+        Assert::eq(
+            1,
+            count($products),
+            sprintf('%d products has been found with name "%s".', count($products), $productName)
+        );
+
+        return $products[0];
     }
 
     /**
      * @Transform /^products "([^"]+)" and "([^"]+)"$/
      * @Transform /^products "([^"]+)", "([^"]+)" and "([^"]+)"$/
      */
-    public function getProductsByNames($firstProductName, $secondProductName, $thirdProductName = null)
+    public function getProductsByNames(...$productsNames)
     {
-        $products = [
-            $this->getProductByName($firstProductName),
-            $this->getProductByName($secondProductName),
-        ];
-
-        if (null !== $thirdProductName) {
-            $products[] = $this->getProductByName($thirdProductName);
-        }
-
-        return $products;
+        return array_map(function ($productName) {
+            return $this->getProductByName($productName);
+        }, $productsNames);
     }
 }

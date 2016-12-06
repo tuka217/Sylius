@@ -1,33 +1,17 @@
 The Book
 ========
 
+The Developer's guide to leveraging the flexibility of Sylius. Here you will find all the concepts used in Sylius.
+The Books helps to understand how Sylius works.
+
 .. toctree::
     :hidden:
 
-    introduction
-    requirements
-    environments
-    installation
-    architecture
-    resource_layer
-    state_machine
-    channels
-    locales
-    currencies
-    countries
-    zones
-    products
-    addresses
-    inventory
-    orders
-    shipments
-    payments
-    taxation
-    pricing
-    promotions
-    users_and_groups
-    content
-    emails
-    settings
+    introduction/index
+    installation/index
+    architecture/index
+    customers/index
+    products/index
+    orders/index
 
 .. include:: /book/map.rst.inc

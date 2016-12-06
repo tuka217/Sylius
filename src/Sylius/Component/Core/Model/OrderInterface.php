@@ -12,22 +12,23 @@
 namespace Sylius\Component\Core\Model;
 
 use Doctrine\Common\Collections\Collection;
-use Sylius\Component\Cart\Model\CartInterface;
 use Sylius\Component\Channel\Model\ChannelAwareInterface;
+use Sylius\Component\Customer\Model\CustomerAwareInterface;
+use Sylius\Component\Order\Model\OrderInterface as BaseOrderInterface;
 use Sylius\Component\Payment\Model\PaymentsSubjectInterface;
-use Sylius\Component\Promotion\Model\CouponInterface as BaseCouponInterface;
-use Sylius\Component\Promotion\Model\PromotionCountableSubjectInterface;
-use Sylius\Component\Promotion\Model\PromotionCouponAwareSubjectInterface;
-use Sylius\Component\User\Model\CustomerAwareInterface;
+use Sylius\Component\Promotion\Model\PromotionCouponInterface as BaseCouponInterface;
+use Sylius\Component\Promotion\Model\CountablePromotionSubjectInterface;
+use Sylius\Component\Promotion\Model\PromotionCouponAwarePromotionSubjectInterface;
+use Sylius\Component\User\Model\UserInterface;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
 interface OrderInterface extends
-    CartInterface,
+    BaseOrderInterface,
     PaymentsSubjectInterface,
-    PromotionCountableSubjectInterface,
-    PromotionCouponAwareSubjectInterface,
+    CountablePromotionSubjectInterface,
+    PromotionCouponAwarePromotionSubjectInterface,
     CustomerAwareInterface,
     ChannelAwareInterface
 {
@@ -108,6 +109,8 @@ interface OrderInterface extends
      */
     public function removeShipment(ShipmentInterface $shipment);
 
+    public function removeShipments();
+
     /**
      * @param ShipmentInterface $shipment
      *
@@ -122,18 +125,22 @@ interface OrderInterface extends
 
     /**
      * @param string
+     *
+     * @throws \InvalidArgumentException
      */
     public function setCurrencyCode($currencyCode);
 
     /**
-     * @return float
+     * @return string
+     *
+     * @throws \InvalidArgumentException
      */
-    public function getExchangeRate();
+    public function getLocaleCode();
 
     /**
-     * @param float $exchangeRate
+     * @param string
      */
-    public function setExchangeRate($exchangeRate);
+    public function setLocaleCode($localeCode);
 
     /**
      * @param BaseCouponInterface $coupon
@@ -151,26 +158,9 @@ interface OrderInterface extends
     public function setShippingState($state);
 
     /**
-     * @return bool
-     */
-    public function isBackorder();
-
-    /**
-     * @return ShipmentInterface
-     */
-    public function getLastShipment();
-
-    /**
-     * @param $state
-     *
      * @return null|PaymentInterface
      */
-    public function getLastPayment($state = PaymentInterface::STATE_NEW);
-
-    /**
-     * @return bool
-     */
-    public function isInvoiceAvailable();
+    public function getLastNewPayment();
 
     /**
      * @return int
@@ -186,4 +176,24 @@ interface OrderInterface extends
      * @return int
      */
     public function getOrderPromotionTotal();
+
+    /**
+     * @return string
+     */
+    public function getTokenValue();
+
+    /**
+     * @param string $tokenValue
+     */
+    public function setTokenValue($tokenValue);
+
+    /**
+     * @return string
+     */
+    public function getCustomerIp();
+
+    /**
+     * @param string $customerIp
+     */
+    public function setCustomerIp($customerIp);
 }

@@ -22,37 +22,6 @@ use Sylius\Component\User\Model\UserInterface;
 interface UserRepositoryInterface extends RepositoryInterface
 {
     /**
-     * @param array $criteria
-     * @param array $sorting
-     *
-     * @return PagerfantaInterface
-     */
-    public function createFilterPaginator(array $criteria = null, array $sorting = null);
-
-    /**
-     * @param mixed $id
-     *
-     * @return UserInterface|null
-     */
-    public function findForDetailsPage($id);
-
-    /**
-     * @param \DateTime $from
-     * @param \DateTime $to
-     * @param null|string $status
-     *
-     * @return int
-     */
-    public function countBetweenDates(\DateTime $from, \DateTime $to, $status = null);
-
-    /**
-     * @param array $configuration
-     *
-     * @return array
-     */
-    public function getRegistrationStatistic(array $configuration = []);
-
-    /**
      * @param string $email
      *
      * @return UserInterface|null

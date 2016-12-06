@@ -5,14 +5,14 @@ Feature: Customer password validation
     I want to be prevented from entering incorrect password
 
     Background:
-        Given the store operates on a single channel in "France"
+        Given the store operates on a single channel in "United States"
         And there is a customer account "francis@underwood.com" identified by "whitehouse"
         And I am logged in as "francis@underwood.com"
 
     @ui
     Scenario: Trying to change my password with a wrong current password
-        Given I want to change my password
-        When I specify the current password as "greenhouse"
+        When I want to change my password
+        And I specify the current password as "greenhouse"
         And I specify the new password as "blackhouse"
         And I confirm this password as "blackhouse"
         And I try to save my changes
@@ -20,8 +20,8 @@ Feature: Customer password validation
 
     @ui
     Scenario: Trying to change my password with a wrong confirmation password2
-        Given I want to change my password
-        When I specify the current password as "whitehouse"
+        When I want to change my password
+        And I specify the current password as "whitehouse"
         And I specify the new password as "blackhouse"
         And I confirm this password as "greenhouse"
         And I try to save my changes
@@ -29,8 +29,8 @@ Feature: Customer password validation
 
     @ui
     Scenario: Trying to change my password with a too short password
-        Given I want to change my password
-        When I specify the current password as "whitehouse"
+        When I want to change my password
+        And I specify the current password as "whitehouse"
         And I specify the new password as "fu"
         And I confirm this password as "fu"
         And I try to save my changes

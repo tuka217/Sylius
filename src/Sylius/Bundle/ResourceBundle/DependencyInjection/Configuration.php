@@ -19,14 +19,9 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * This class contains the configuration information for the bundle.
- *
- * This information is solely responsible for how the different configuration
- * sections are normalized, and merged.
- *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
     /**
      * {@inheritdoc}
@@ -76,16 +71,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
                                     ->scalarNode('repository')->cannotBeEmpty()->end()
                                     ->scalarNode('factory')->defaultValue(Factory::class)->end()
-                                    ->arrayNode('form')
-                                        ->prototype('scalar')->end()
-                                    ->end()
-                                ->end()
-                            ->end()
-                            ->arrayNode('validation_groups')
-                                ->useAttributeAsKey('name')
-                                ->prototype('array')
-                                    ->prototype('scalar')->end()
-                                    ->defaultValue([])
+                                    ->scalarNode('form')->cannotBeEmpty()->end()
                                 ->end()
                             ->end()
                             ->arrayNode('translation')
@@ -100,16 +86,7 @@ class Configuration implements ConfigurationInterface
                                             ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
                                             ->scalarNode('repository')->cannotBeEmpty()->end()
                                             ->scalarNode('factory')->defaultValue(Factory::class)->end()
-                                            ->arrayNode('form')
-                                                ->prototype('scalar')->end()
-                                            ->end()
-                                        ->end()
-                                    ->end()
-                                    ->arrayNode('validation_groups')
-                                        ->useAttributeAsKey('name')
-                                        ->prototype('array')
-                                            ->prototype('scalar')->end()
-                                            ->defaultValue([])
+                                            ->scalarNode('form')->cannotBeEmpty()->end()
                                         ->end()
                                     ->end()
                                     ->arrayNode('fields')
@@ -126,7 +103,7 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * @param $node
+     * @param ArrayNodeDefinition $node
      */
     private function addSettingsSection(ArrayNodeDefinition $node)
     {
@@ -160,46 +137,26 @@ class Configuration implements ConfigurationInterface
         $node
             ->children()
                 ->arrayNode('translation')
-                    ->canBeEnabled()
+                    ->canBeDisabled()
                     ->children()
-                        ->scalarNode('default_locale')->cannotBeEmpty()->end()
-                        ->scalarNode('locale_provider')->defaultValue('sylius.translation.locale_provider.request')->cannotBeEmpty()->end()
-                        ->scalarNode('available_locales_provider')->defaultValue('sylius.translation.locales_provider.array')->cannotBeEmpty()->end()
-                        ->arrayNode('available_locales') ->prototype('scalar')->end()
-                    ->end()
+                        ->scalarNode('locale_provider')->defaultValue('sylius.translation_locale_provider.immutable')->cannotBeEmpty()->end()
                 ->end()
             ->end()
         ;
     }
 
+    /**
+     * @param ArrayNodeDefinition $node
+     */
     private function addDriversSection(ArrayNodeDefinition $node)
     {
-        // determine which drivers are distributed with this bundle
-        $driverDir = __DIR__ . '/../Resources/config/driver';
-        $iterator = new \RecursiveDirectoryIterator($driverDir);
-        foreach (new \RecursiveIteratorIterator($iterator) as $file) {
-            if ($file->getExtension() !== 'xml') {
-                continue;
-            }
-
-            // we use the parent directory name in addition to the filename to
-            // determine the name of the driver (e.g. doctrine/orm)
-            $validDrivers[] = str_replace('\\','/',substr($file->getPathname(), 1 + strlen($driverDir), -4));
-        }
-
         $node
             ->children()
                 ->arrayNode('drivers')
-                    ->info('Enable drivers which are distributed with this bundle')
-                    ->validate()
-                    ->ifTrue(function ($value) use ($validDrivers) {
-                        return 0 !== count(array_diff($value, $validDrivers));
-                    })
-                        ->thenInvalid(sprintf('Invalid driver specified in %%s, valid drivers: ["%s"]', implode('", "', $validDrivers)))
-                    ->end()
-                    ->defaultValue(['doctrine/orm'])
-                    ->prototype('scalar')->end()
+                    ->defaultValue([SyliusResourceBundle::DRIVER_DOCTRINE_ORM])
+                    ->prototype('enum')->values(SyliusResourceBundle::getAvailableDrivers())->end()
                 ->end()
-            ->end();
+            ->end()
+        ;
     }
 }

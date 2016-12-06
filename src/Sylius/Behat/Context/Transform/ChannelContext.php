@@ -13,6 +13,7 @@ namespace Sylius\Behat\Context\Transform;
 
 use Behat\Behat\Context\Context;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Łukasz Chruściel <lukasz.chrusciel@lakion.com>
@@ -35,15 +36,27 @@ final class ChannelContext implements Context
     /**
      * @Transform /^channel "([^"]+)"$/
      * @Transform /^"([^"]+)" channel/
+     * @Transform /^channel to "([^"]+)"$/
      * @Transform :channel
      */
     public function getChannelByName($channelName)
     {
-        $channel = $this->channelRepository->findOneByName($channelName);
-        if (null === $channel) {
-            throw new \InvalidArgumentException('Channel with name "'.$channelName.'" does not exist');
-        }
+        $channels = $this->channelRepository->findByName($channelName);
 
-        return $channel;
+        Assert::eq(
+            1,
+            count($channels),
+            sprintf('%d channels has been found with name "%s".', count($channels), $channelName)
+        );
+
+        return $channels[0];
+    }
+
+    /**
+     * @Transform all channels
+     */
+    public function getAllChannels()
+    {
+        return $this->channelRepository->findAll();
     }
 }

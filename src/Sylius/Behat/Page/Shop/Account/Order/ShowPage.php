@@ -56,7 +56,7 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
      */
     public function getNumber()
     {
-        $numberText = $this->getElement('number')->find('css', 'strong')->getText();
+        $numberText = $this->getElement('number')->getText();
         $numberText = str_replace('#', '', $numberText);
 
         return $numberText;
@@ -113,6 +113,16 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
     /**
      * {@inheritdoc}
      */
+    public function getPaymentPrice()
+    {
+        $paymentsPrice = $this->getElement('payments')->find('css', 'p');
+
+        return $paymentsPrice->getText();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isProductInTheList($name)
     {
         try {
@@ -122,7 +132,6 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
             );
 
             return 1 === count($rows);
-
         } catch (\InvalidArgumentException $exception) {
             return false;
         }
@@ -131,13 +140,43 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
     /**
      * {@inheritdoc}
      */
+    public function getItemPrice()
+    {
+        return $this->getElement('product_price')->getText();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasShippingProvinceName($provinceName)
+    {
+        $shippingAddressText = $this->getElement('shipping_address')->getText();
+
+        return false !== stripos($shippingAddressText, $provinceName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasBillingProvinceName($provinceName)
+    {
+        $billingAddressText = $this->getElement('billing_address')->getText();
+
+        return false !== stripos($billingAddressText, $provinceName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefinedElements()
     {
         return array_merge(parent::getDefinedElements(), [
-            'billing_address' => '#billing-address',
+            'billing_address' => '#sylius-billing-address',
+            'shipping_address' => '#sylius-shipping-address',
             'number' => '#number',
-            'order_items' => '#sylius-customer-order-items',
-            'shipping_address' => '#shipping-address',
+            'order_items' => '#sylius-order',
+            'payments' => '#sylius-payments',
+            'product_price' => '#sylius-order td:nth-child(2)',
             'subtotal' => '#subtotal',
             'total' => '#total',
         ]);
@@ -158,8 +197,8 @@ class ShowPage extends SymfonyPage implements ShowPageInterface
         return
             (stripos($elementText, $customerName) !== false) &&
             (stripos($elementText, $street) !== false) &&
-            (stripos($elementText, $city) !== false) &&
-            (stripos($elementText, $countryName.' '.$postcode) !== false)
+            (stripos($elementText, $city.', '.$postcode) !== false) &&
+            (stripos($elementText, $countryName) !== false)
         ;
     }
 }

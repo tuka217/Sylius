@@ -12,12 +12,14 @@
 namespace Sylius\Component\Core\Model;
 
 use Doctrine\Common\Collections\Collection;
-use Sylius\Component\User\Model\CustomerInterface as BaseCustomerInterface;
+use Sylius\Component\Customer\Model\CustomerInterface as BaseCustomerInterface;
+use Sylius\Component\User\Model\UserAwareInterface;
+use Sylius\Component\User\Model\UserInterface as BaseUserInterface;
 
 /**
  * @author Michał Marcinkowski <michal.marcinkowski@lakion.com>
  */
-interface CustomerInterface extends BaseCustomerInterface
+interface CustomerInterface extends BaseCustomerInterface, UserAwareInterface
 {
     /**
      * @return Collection|OrderInterface[]
@@ -25,24 +27,14 @@ interface CustomerInterface extends BaseCustomerInterface
     public function getOrders();
 
     /**
-     * @param AddressInterface $billingAddress
-     */
-    public function setBillingAddress(AddressInterface $billingAddress = null);
-
-    /**
      * @return AddressInterface
      */
-    public function getBillingAddress();
+    public function getDefaultAddress();
 
     /**
-     * @param AddressInterface $shippingAddress
+     * @param AddressInterface|null $defaultAddress
      */
-    public function setShippingAddress(AddressInterface $shippingAddress = null);
-
-    /**
-     * @return AddressInterface
-     */
-    public function getShippingAddress();
+    public function setDefaultAddress(AddressInterface $defaultAddress = null);
 
     /**
      * @param AddressInterface $address
@@ -65,4 +57,19 @@ interface CustomerInterface extends BaseCustomerInterface
      * @return Collection|AddressInterface[]
      */
     public function getAddresses();
+
+    /**
+     * @return BaseUserInterface
+     */
+    public function getUser();
+
+    /**
+     * @param BaseUserInterface|null $user
+     */
+    public function setUser(BaseUserInterface $user = null);
+    
+    /**
+     * @return bool
+     */
+    public function hasUser();
 }

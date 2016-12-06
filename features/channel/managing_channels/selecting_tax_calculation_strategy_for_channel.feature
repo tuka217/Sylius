@@ -5,15 +5,17 @@ Feature: Selecting tax calculation strategy for a channel
     I want to be able to select tax calculation strategy
 
     Background:
-        Given I am logged in as an administrator
-        And the store has currency "Euro"
+        Given the store has currency "Euro"
+        And the store has locale "English (United States)"
+        And I am logged in as an administrator
 
     @ui
     Scenario: Adding a new channel with implicitly selected tax calculation strategy
         Given I want to create a new channel
         When I specify its code as "MOBILE"
         And I name it "Mobile store"
-        And I choose "Euro" as a default currency
+        And I choose "Euro" as the base currency
+        And I choose "English (United States)" as a default locale
         And I add it
         Then I should be notified that it has been successfully created
         And the tax calculation strategy for the "Mobile store" channel should be "Order items based"
@@ -24,7 +26,8 @@ Feature: Selecting tax calculation strategy for a channel
         When I specify its code as "MOBILE"
         And I select the "Order item units based" as tax calculation strategy
         And I name it "Mobile store"
-        And I choose "Euro" as a default currency
+        And I choose "Euro" as the base currency
+        And I choose "English (United States)" as a default locale
         And I add it
         Then I should be notified that it has been successfully created
         And the tax calculation strategy for the "Mobile store" channel should be "Order item units based"

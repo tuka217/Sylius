@@ -11,23 +11,23 @@
 
 namespace Sylius\Component\Taxation\Calculator;
 
-use Sylius\Component\Registry\ServiceRegistry;
+use Sylius\Component\Registry\ServiceRegistryInterface;
 use Sylius\Component\Taxation\Model\TaxRateInterface;
 
 /**
- * Delegating calculator.
- * It uses proper calculator to calculate the amount of tax.
- *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  */
-class DelegatingCalculator implements CalculatorInterface
+final class DelegatingCalculator implements CalculatorInterface
 {
     /**
-     * @var ServiceRegistry
+     * @var ServiceRegistryInterface
      */
     private $calculatorsRegistry;
 
-    public function __construct(ServiceRegistry $serviceRegistry)
+    /**
+     * @param ServiceRegistryInterface $serviceRegistry
+     */
+    public function __construct(ServiceRegistryInterface $serviceRegistry)
     {
         $this->calculatorsRegistry = $serviceRegistry;
     }
@@ -37,6 +37,7 @@ class DelegatingCalculator implements CalculatorInterface
      */
     public function calculate($base, TaxRateInterface $rate)
     {
+        /** @var CalculatorInterface $calculator */
         $calculator = $this->calculatorsRegistry->get($rate->getCalculator());
 
         return $calculator->calculate($base, $rate);

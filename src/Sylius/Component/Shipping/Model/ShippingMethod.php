@@ -11,8 +11,6 @@
 
 namespace Sylius\Component\Shipping\Model;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Resource\Model\TimestampableTrait;
 use Sylius\Component\Resource\Model\ToggleableTrait;
 use Sylius\Component\Resource\Model\TranslatableTrait;
@@ -39,13 +37,16 @@ class ShippingMethod implements ShippingMethodInterface
     protected $code;
 
     /**
+     * @var int
+     */
+    protected $position;
+
+    /**
      * @var ShippingCategoryInterface
      */
     protected $category;
 
     /**
-     * The one of 3 requirement variants.
-     *
      * @var int
      */
     protected $categoryRequirement = ShippingMethodInterface::CATEGORY_REQUIREMENT_MATCH_ANY;
@@ -60,25 +61,19 @@ class ShippingMethod implements ShippingMethodInterface
      */
     protected $configuration = [];
 
-    /**
-     * @var Collection|RuleInterface[]
-     */
-    protected $rules;
-
     public function __construct()
     {
         $this->initializeTranslationsCollection();
 
-        $this->rules = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function __toString()
     {
-        return $this->translate()->__toString();
+        return $this->getTranslation()->__toString();
     }
 
     /**
@@ -103,6 +98,22 @@ class ShippingMethod implements ShippingMethodInterface
     public function setCode($code)
     {
         $this->code = $code;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
     }
 
     /**
@@ -150,7 +161,7 @@ class ShippingMethod implements ShippingMethodInterface
      */
     public function getName()
     {
-        return $this->translate()->getName();
+        return $this->getTranslation()->getName();
     }
 
     /**
@@ -158,7 +169,7 @@ class ShippingMethod implements ShippingMethodInterface
      */
     public function setName($name)
     {
-        $this->translate()->setName($name);
+        $this->getTranslation()->setName($name);
     }
 
     /**
@@ -166,7 +177,7 @@ class ShippingMethod implements ShippingMethodInterface
      */
     public function getDescription()
     {
-        return $this->translate()->getDescription();
+        return $this->getTranslation()->getDescription();
     }
 
     /**
@@ -174,7 +185,7 @@ class ShippingMethod implements ShippingMethodInterface
      */
     public function setDescription($description)
     {
-        $this->translate()->setDescription($description);
+        $this->getTranslation()->setDescription($description);
     }
 
     /**
@@ -210,42 +221,6 @@ class ShippingMethod implements ShippingMethodInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getRules()
-    {
-        return $this->rules;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasRule(RuleInterface $rule)
-    {
-        return $this->rules->contains($rule);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addRule(RuleInterface $rule)
-    {
-        if (!$this->hasRule($rule)) {
-            $rule->setMethod($this);
-            $this->rules->add($rule);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeRule(RuleInterface $rule)
-    {
-        $rule->setMethod(null);
-        $this->rules->removeElement($rule);
-    }
-
-    /**
      * @return array
      */
     public static function getCategoryRequirementLabels()
@@ -255,5 +230,13 @@ class ShippingMethod implements ShippingMethodInterface
             ShippingMethodInterface::CATEGORY_REQUIREMENT_MATCH_ANY => 'At least 1 unit has to match the method category',
             ShippingMethodInterface::CATEGORY_REQUIREMENT_MATCH_ALL => 'All units has to match the method category',
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createTranslation()
+    {
+        return new ShippingMethodTranslation();
     }
 }

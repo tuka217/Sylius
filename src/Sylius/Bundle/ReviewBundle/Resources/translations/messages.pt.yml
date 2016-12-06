@@ -4,6 +4,14 @@
 sylius:
     form:
         review:
+            author: Autor
+            comment: Comentário
+            header: Avaliar
             rating: Avaliação
             status:
+                approved: Aprovado
+                label: Estado
                 new: Novo
+                rejected: Rejeitado
+            submit: Submeter
+            title: Título

@@ -52,10 +52,49 @@ interface ShowPageInterface extends PageInterface
     /**
      * @return string
      */
-    public function getShippingAddress();
+    public function getDefaultAddress();
+
+    /**
+     * @return bool
+     */
+    public function hasAccount();
+
+    /**
+     * @return bool
+     */
+    public function isSubscribedToNewsletter();
+
+    /**
+     * @param string $provinceName
+     *
+     * @return bool
+     */
+    public function hasDefaultAddressProvinceName($provinceName);
+
+    /**
+     * @return bool
+     */
+    public function hasVerifiedEmail();
 
     /**
      * @return string
      */
-    public function getBillingAddress();
+    public function getGroupName();
+
+    /**
+     * @return bool
+     */
+    public function hasEmailVerificationInformation();
+
+    /**
+     * @return bool
+     */
+    public function hasImpersonateButton();
+
+    public function impersonate();
+
+    /**
+     * @return string
+     */
+    public function getSuccessFlashMessage();
 }
