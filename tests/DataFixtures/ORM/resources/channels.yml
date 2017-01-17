@@ -9,6 +9,16 @@ Sylius\Component\Core\Model\Channel:
         color: "black"
         enabled: true
         taxCalculationStrategy: "order_items_based"
+    channel_mob:
+        code: "MOB"
+        name: "Mobile Channel"
+        hostname: "localhost"
+        description: "Lorem ipsum psole"
+        baseCurrency: "@currency"
+        defaultLocale: "@locale"
+        color: "yellow"
+        enabled: true
+        taxCalculationStrategy: "order_items_based"
 
 Sylius\Component\Currency\Model\Currency:
     currency:

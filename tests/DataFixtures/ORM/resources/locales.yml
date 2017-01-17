@@ -1,3 +1,5 @@
 Sylius\Component\Locale\Model\Locale:
-    locale_{en, nl, fr}:
+    locale_{en, nl, fr, de}:
         code: <current()>
+    locale_en_US:
+        code: en_US

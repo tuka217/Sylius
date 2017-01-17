@@ -2,7 +2,7 @@
     "page": 1,
     "limit": 10,
     "pages": 1,
-    "total": 3,
+    "total": 5,
     "_links": {
         "self": {
             "href": "\/api\/v1\/locales\/?page=1&limit=10"
@@ -29,6 +29,14 @@
 
                 "id": @integer@,
                 "code": "fr"
+            },
+            {
+                "id": @integer@,
+                "code": "de"
+            },
+            {
+                "id": @integer@,
+                "code": "en_US"
             }
         ]
     }
