@@ -20,5 +20,10 @@
             <argument type="service" id="fos_oauth_server.entity_manager" />
             <argument>%fos_oauth_server.model.client.class%</argument>
         </service>
+
+        <service id="sylius.form.event_subscriber.api_channel_pricing" class="Sylius\Bundle\ApiBundle\Form\EventSubscriber\ChannelPricingsFormSubscriber">
+            <argument type="service" id="sylius.repository.channel" />
+            <argument type="service" id="sylius.factory.channel_pricing" />
+        </service>
     </services>
 </container>

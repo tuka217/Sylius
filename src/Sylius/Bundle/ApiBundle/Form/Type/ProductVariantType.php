@@ -12,6 +12,7 @@
 namespace Sylius\Bundle\ApiBundle\Form\Type;
 
 use Sylius\Bundle\ProductBundle\Form\Type\ProductVariantType as BaseProductVariantType;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -22,6 +23,22 @@ use Symfony\Component\Form\FormEvents;
  */
 final class ProductVariantType extends AbstractType
 {
+
+    /**
+     * @var EventSubscriberInterface
+     */
+    private $oldChannelPricingFormSubscriber;
+
+    /**
+     * @var EventSubscriberInterface
+     */
+    private $newChannelPricingFormSubscriber;
+
+    public function __construct(EventSubscriberInterface $oldChannelPricingFormSubscriber, EventSubscriberInterface $newChannelPricingFormSubscriber)
+    {
+        $this->oldChannelPricingFormSubscriber = $oldChannelPricingFormSubscriber;
+        $this->newChannelPricingFormSubscriber = $newChannelPricingFormSubscriber;
+    }
     /**
      * {@inheritdoc}
      */
@@ -35,6 +52,10 @@ final class ProductVariantType extends AbstractType
                 $event->setData($data);
             }
         });
+
+        $builder->getEventDispatcher()->removeSubscriber($this->oldChannelPricingFormSubscriber);
+
+        $builder->addEventSubscriber($this->newChannelPricingFormSubscriber);
     }
 
     /**
