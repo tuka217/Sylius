@@ -51,7 +51,6 @@
 
         <service id="sylius.form.type.api_product_variant" class="Sylius\Bundle\ApiBundle\Form\Type\ProductVariantType">
             <argument type="service" id="sylius.form.event_subscriber.channel_pricing" />
-            <argument type="service" id="sylius.form.event_subscriber.api_channel_pricing" />
             <tag name="form.type" />
         </service>
 
