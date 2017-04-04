@@ -777,6 +777,16 @@ final class ProductContext implements Context
     }
 
     /**
+     * @Given /^the ("([^"]+)" variant) is at (\d)(?:st|nd|rd|th) position$/
+     */
+    public function theProductVariantIsSetAsFirst(ProductVariantInterface $variant, $position)
+    {
+        $variant->setPosition((int) $position - 1);
+
+        $this->objectManager->flush();
+    }
+
+    /**
      * @param string $price
      *
      * @return int
